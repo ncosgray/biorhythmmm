@@ -20,4 +20,5 @@ class Str {
   static String get biorhythmPhysical => 'Physical';
   static String get birthdayButton => 'Edit birthday';
   static String get birthdayLabel => 'Your birthday:';
+  static String get birthdaySelectText => 'When were you born?';
 }

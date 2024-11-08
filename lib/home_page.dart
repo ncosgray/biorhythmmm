@@ -30,8 +30,25 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  DateTime birthday =
+  // State variables
+  DateTime _birthday =
       DateTime.fromMillisecondsSinceEpoch(sharedPrefs.getInt(birthdayKey) ?? 0);
+
+  @override
+  void initState() {
+    // Prompt user once if birthday is unset
+    Future.delayed(
+      Duration.zero,
+      () {
+        if (mounted && !sharedPrefs.containsKey(birthdayKey)) {
+          saveBirthday(_birthday);
+          pickBirthday(context);
+        }
+      },
+    );
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +61,7 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            BiorhythmChart(birthday: birthday),
+            BiorhythmChart(birthday: _birthday),
             // Birthday setting
             Padding(
               padding: const EdgeInsets.all(16),
@@ -52,7 +69,7 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    '${Str.birthdayLabel} ${longDate(birthday)}',
+                    '${Str.birthdayLabel} ${longDate(_birthday)}',
                     style: labelStyle,
                   ),
                   FilledButton.tonal(
@@ -85,20 +102,20 @@ class _HomePageState extends State<HomePage> {
 
   // Save chosen birthday
   saveBirthday(DateTime picked) {
-    setState(() => birthday = picked);
-    sharedPrefs.setInt(birthdayKey, birthday.millisecondsSinceEpoch);
+    setState(() => _birthday = picked);
+    sharedPrefs.setInt(birthdayKey, _birthday.millisecondsSinceEpoch);
   }
 
   // Android date picker
   buildMaterialDatePicker(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: birthday,
+      helpText: Str.birthdaySelectText,
+      initialDate: _birthday,
       firstDate: DateTime(0),
       lastDate: DateTime(DateTime.now().year),
-      //builder: (context, child) => child!,
     );
-    if (picked != null && picked != birthday) {
+    if (picked != null) {
       saveBirthday(picked);
     }
   }
@@ -107,18 +124,33 @@ class _HomePageState extends State<HomePage> {
   buildCupertinoDatePicker(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      builder: (BuildContext builder) {
+      builder: (_) {
         return SizedBox(
           height: MediaQuery.of(context).copyWith().size.height / 3,
-          child: CupertinoDatePicker(
-            mode: CupertinoDatePickerMode.date,
-            onDateTimeChanged: (picked) {
-              if (picked != birthday) {
-                saveBirthday(picked);
-              }
-            },
-            initialDateTime: birthday,
-            maximumYear: DateTime.now().year,
+          child: Stack(
+            children: [
+              // Help text overlay
+              Padding(
+                padding: EdgeInsets.all(8),
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: Text(
+                    Str.birthdaySelectText,
+                    style: titleStyle,
+                  ),
+                ),
+              ),
+              // Date picker
+              Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: CupertinoDatePicker(
+                  mode: CupertinoDatePickerMode.date,
+                  onDateTimeChanged: (picked) => saveBirthday(picked),
+                  initialDateTime: _birthday,
+                  maximumYear: DateTime.now().year,
+                ),
+              ),
+            ],
           ),
         );
       },
