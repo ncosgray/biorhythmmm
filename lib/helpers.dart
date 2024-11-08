@@ -13,6 +13,7 @@
 // Biorhythmmm
 // - Helper functions for string formatting
 
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 // Get inclusive date difference in days
@@ -33,10 +34,24 @@ String longDate(DateTime d) {
   return DateFormat.yMd().format(d);
 }
 
-// Format number as percent with directional indicator
-String directionalPercent(double x) {
-  x = (x * 1000).round() / 10; // Round to neareast percent
-  return x == 0
-      ? '\u27350%'
-      : '${x > 0 ? '\u2191' : '\u2193'}${x.toInt().abs()}%';
+// Round double to neareast int
+int roundInt(double x) {
+  return (x * 1000).round() ~/ 10;
+}
+
+// Format number as absolute percent
+String shortPercent(double x) {
+  return '${roundInt(x).abs()}%';
+}
+
+// Get phase icon for a value (up, down, or critical)
+IconData getPhaseIcon(double x) {
+  int i = roundInt(x);
+  if (i == 0) {
+    return Icons.warning;
+  } else if (i > 0) {
+    return Icons.arrow_upward;
+  } else {
+    return Icons.arrow_downward;
+  }
 }

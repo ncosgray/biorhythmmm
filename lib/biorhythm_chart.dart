@@ -58,39 +58,37 @@ class BiorhythmChartState extends State<BiorhythmChart> {
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 0.8,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          // Biorhythm chart
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: LineChart(
-                biorhythmData,
-                duration: const Duration(milliseconds: 250),
-              ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        // Biorhythm chart
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: AspectRatio(
+            aspectRatio: 1,
+            child: LineChart(
+              biorhythmData,
+              duration: const Duration(milliseconds: 250),
             ),
           ),
-          // Biorhythm percentages
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                for (int i = 0; i < Biorhythm.values.length; i++)
-                  Expanded(
-                    child: biorhythmPercentBox(
-                      biorhythm: Biorhythm.values[i],
-                      point: _biorhythmPoints[i],
-                    ),
+        ),
+        // Biorhythm percentages
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              for (int i = 0; i < Biorhythm.values.length; i++)
+                Expanded(
+                  child: biorhythmPercentBox(
+                    biorhythm: Biorhythm.values[i],
+                    point: _biorhythmPoints[i],
                   ),
-              ],
-            ),
+                ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -197,7 +195,7 @@ class BiorhythmChartState extends State<BiorhythmChart> {
 
   SideTitles get bottomTitles => SideTitles(
         showTitles: true,
-        reservedSize: 28,
+        reservedSize: titleStyle.fontSize! * 2.25,
         interval: 1,
         getTitlesWidget: bottomTitleWidgets,
       );
@@ -286,13 +284,25 @@ class BiorhythmChartState extends State<BiorhythmChart> {
         ),
         child: Column(
           children: [
+            // Name label
             Text(
               biorhythm.name,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: labelStyle,
             ),
-            Text(directionalPercent(point), style: pointStyle),
+            // Point percentage with phase icon
+            SizedBox.fromSize(
+              size: Size.fromHeight(pointStyle.fontSize!) * 2,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(getPhaseIcon(point)),
+                  Text(shortPercent(point), style: pointStyle),
+                ],
+              ),
+            ),
           ],
         ),
       ),
