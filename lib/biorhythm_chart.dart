@@ -66,7 +66,7 @@ class BiorhythmChartState extends State<BiorhythmChart> {
           // Biorhythm chart
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: LineChart(
                 biorhythmData,
                 duration: const Duration(milliseconds: 250),
@@ -75,7 +75,7 @@ class BiorhythmChartState extends State<BiorhythmChart> {
           ),
           // Biorhythm percentages
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.all(16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

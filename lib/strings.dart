@@ -18,7 +18,6 @@ class Str {
   static String get biorhythmIntellectual => 'Intellectual';
   static String get biorhythmEmotional => 'Emotional';
   static String get biorhythmPhysical => 'Physical';
-  static String get birthdayButton => 'Edit birthday';
-  static String get birthdayLabel => 'Your birthday:';
+  static String get birthdayLabel => 'Birthday:';
   static String get birthdaySelectText => 'When were you born?';
 }

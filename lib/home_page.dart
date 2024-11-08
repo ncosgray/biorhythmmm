@@ -61,27 +61,24 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            BiorhythmChart(birthday: _birthday),
             // Birthday setting
             Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    '${Str.birthdayLabel} ${longDate(_birthday)}',
-                    style: labelStyle,
-                  ),
-                  FilledButton.tonal(
-                    onPressed: () => pickBirthday(context),
-                    child: Text(
-                      Str.birthdayButton,
-                      style: buttonStyle,
-                    ),
-                  ),
-                ],
+              padding: const EdgeInsets.all(4),
+              child: TextButton.icon(
+                onPressed: () => pickBirthday(context),
+                style: TextButton.styleFrom(
+                  splashFactory: NoSplash.splashFactory,
+                ),
+                label: Text(
+                  '${Str.birthdayLabel} ${longDate(_birthday)}',
+                  style: labelStyle,
+                ),
+                icon: Icon(Icons.edit, size: labelStyle.fontSize),
+                iconAlignment: IconAlignment.end,
               ),
             ),
+            // Chart
+            BiorhythmChart(birthday: _birthday),
           ],
         ),
       ),
