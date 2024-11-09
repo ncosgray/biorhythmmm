@@ -57,6 +57,12 @@ class BiorhythmChartState extends State<BiorhythmChart> {
   }
 
   @override
+  void didUpdateWidget(BiorhythmChart oldWidget) {
+    resetPoints();
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
