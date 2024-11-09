@@ -19,20 +19,29 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 enum Biorhythm {
-  intellectual(Colors.green, 33),
-  emotional(Colors.pink, 28),
-  physical(Colors.cyan, 23);
+  intellectual(Colors.green, 33, true),
+  emotional(Colors.pink, 28, true),
+  physical(Colors.cyan, 23, true),
+  intuition(Colors.purple, 38, false),
+  aesthetic(Colors.indigoAccent, 43, false),
+  awareness(Colors.orange, 48, false),
+  spiritual(Colors.blueGrey, 53, false);
 
-  const Biorhythm(this.color, this.cycleDays);
+  const Biorhythm(this.color, this.cycleDays, this.primary);
 
   final Color color;
   final int cycleDays;
+  final bool primary;
 
   // Biorhythm names
   String get name => switch (this) {
         intellectual => Str.biorhythmIntellectual,
         emotional => Str.biorhythmEmotional,
         physical => Str.biorhythmPhysical,
+        intuition => Str.biorhythmIntuition,
+        aesthetic => Str.biorhythmAesthetic,
+        awareness => Str.biorhythmAwareness,
+        spiritual => Str.biorhythmSpiritual,
       };
 
   // Biorhythm colors

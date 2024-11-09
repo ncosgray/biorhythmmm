@@ -17,6 +17,7 @@
 
 import 'package:biorhythmmm/biorhythm.dart';
 import 'package:biorhythmmm/helpers.dart';
+import 'package:biorhythmmm/prefs.dart';
 import 'package:biorhythmmm/text_styles.dart';
 
 import 'package:fl_chart/fl_chart.dart';
@@ -38,16 +39,31 @@ class BiorhythmChart extends StatefulWidget {
 
 class BiorhythmChartState extends State<BiorhythmChart> {
   // State variables
-  List<double> _biorhythmPoints = List.filled(Biorhythm.values.length, 0);
+  late List<double> _chartPoints;
   Biorhythm? _highlighted;
+  bool _showExtraPoints = Prefs.showExtraPoints;
+
+  // Biorhythm list: all available or only primary points
+  List<Biorhythm> get biorhythms => _showExtraPoints
+      ? Biorhythm.values.toList()
+      : Biorhythm.values.where((b) => b.primary).toList();
 
   // Reset biorhythm points to today
   void resetPoints() {
-    _biorhythmPoints = List.generate(
-      Biorhythm.values.length,
-      (i) => Biorhythm.values[i].getPoint(dateDiff(widget.birthday, 0)),
+    _chartPoints = List.generate(
+      biorhythms.length,
+      (i) => biorhythms[i].getPoint(dateDiff(widget.birthday, 0)),
     );
     _highlighted = null;
+  }
+
+  // Toggle extra points setting
+  void toggleExtraPoints() {
+    setState(() {
+      _showExtraPoints = !_showExtraPoints;
+      Prefs.showExtraPoints = _showExtraPoints;
+      resetPoints();
+    });
   }
 
   @override
@@ -78,20 +94,30 @@ class BiorhythmChartState extends State<BiorhythmChart> {
             ),
           ),
         ),
-        // Biorhythm percentages
         Padding(
           padding: const EdgeInsets.all(16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              for (int i = 0; i < Biorhythm.values.length; i++)
-                Expanded(
-                  child: biorhythmPercentBox(
-                    biorhythm: Biorhythm.values[i],
-                    point: _biorhythmPoints[i],
+          child: Center(
+            child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                // Biorhythm percentages
+                for (int i = 0; i < _chartPoints.length; i++)
+                  biorhythmPercentBox(
+                    biorhythm: biorhythms[i],
+                    point: _chartPoints[i],
+                  ),
+                // Toggle extra biorhythms
+                IconButton(
+                  onPressed: toggleExtraPoints,
+                  icon: Icon(Icons.expand_more),
+                  isSelected: _showExtraPoints,
+                  selectedIcon: Icon(Icons.expand_less),
+                  style: TextButton.styleFrom(
+                    splashFactory: NoSplash.splashFactory,
                   ),
                 ),
-            ],
+              ],
+            ),
           ),
         ),
       ],
@@ -142,8 +168,8 @@ class BiorhythmChartState extends State<BiorhythmChart> {
       if (response?.lineBarSpots != null) {
         // Update percent displays
         for (int i = 0; i < response!.lineBarSpots!.length; i++) {
-          if (i < _biorhythmPoints.length) {
-            _biorhythmPoints[i] = response.lineBarSpots![i].y;
+          if (i < _chartPoints.length) {
+            _chartPoints[i] = response.lineBarSpots![i].y;
           }
         }
       }
@@ -244,7 +270,7 @@ class BiorhythmChartState extends State<BiorhythmChart> {
 
   // Define chart data
   List<LineChartBarData> get lineBarsData => [
-        for (final Biorhythm b in Biorhythm.values)
+        for (final Biorhythm b in biorhythms)
           biorhythmLineData(
             color: _highlighted == b ? b.highlightColor : b.graphColor,
             pointCount: dayRange,
@@ -299,7 +325,10 @@ class BiorhythmChartState extends State<BiorhythmChart> {
             ),
             // Point percentage with phase icon
             SizedBox.fromSize(
-              size: Size.fromHeight(pointStyle.fontSize!) * 2,
+              size: Size(
+                pointStyle.fontSize! * 4.8,
+                pointStyle.fontSize! * 1.8,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,

@@ -18,6 +18,10 @@ class Str {
   static String get biorhythmIntellectual => 'Intellectual';
   static String get biorhythmEmotional => 'Emotional';
   static String get biorhythmPhysical => 'Physical';
+  static String get biorhythmIntuition => 'Intuition';
+  static String get biorhythmAesthetic => 'Aesthetic';
+  static String get biorhythmAwareness => 'Awareness';
+  static String get biorhythmSpiritual => 'Spiritual';
   static String get birthdayLabel => 'Birthday:';
   static String get birthdaySelectText => 'When were you born?';
 }
