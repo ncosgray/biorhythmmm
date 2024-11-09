@@ -15,7 +15,7 @@
 
 import 'package:biorhythmmm/biorhythm_chart.dart';
 import 'package:biorhythmmm/helpers.dart';
-import 'package:biorhythmmm/main.dart';
+import 'package:biorhythmmm/prefs.dart';
 import 'package:biorhythmmm/strings.dart';
 import 'package:biorhythmmm/text_styles.dart';
 
@@ -31,8 +31,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   // State variables
-  DateTime _birthday =
-      DateTime.fromMillisecondsSinceEpoch(sharedPrefs.getInt(birthdayKey) ?? 0);
+  DateTime _birthday = Prefs.birthday;
 
   @override
   void initState() {
@@ -40,7 +39,7 @@ class _HomePageState extends State<HomePage> {
     Future.delayed(
       Duration.zero,
       () {
-        if (mounted && !sharedPrefs.containsKey(birthdayKey)) {
+        if (mounted && !Prefs.isBirthdaySet) {
           saveBirthday(_birthday);
           pickBirthday(context);
         }
@@ -100,7 +99,7 @@ class _HomePageState extends State<HomePage> {
   // Save chosen birthday
   saveBirthday(DateTime picked) {
     setState(() => _birthday = picked);
-    sharedPrefs.setInt(birthdayKey, _birthday.millisecondsSinceEpoch);
+    Prefs.birthday = _birthday;
   }
 
   // Android date picker
