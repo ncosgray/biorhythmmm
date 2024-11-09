@@ -13,9 +13,9 @@
 // Biorhythmmm
 // - App initialization
 
-import 'package:biorhythmmm/home_page.dart';
 import 'package:biorhythmmm/prefs.dart';
 import 'package:biorhythmmm/strings.dart';
+import 'package:biorhythmmm/widgets/home_page.dart';
 
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';

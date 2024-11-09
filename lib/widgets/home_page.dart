@@ -13,11 +13,11 @@
 // Biorhythmmm
 // - App home page
 
-import 'package:biorhythmmm/biorhythm_chart.dart';
 import 'package:biorhythmmm/helpers.dart';
 import 'package:biorhythmmm/prefs.dart';
 import 'package:biorhythmmm/strings.dart';
 import 'package:biorhythmmm/text_styles.dart';
+import 'package:biorhythmmm/widgets/biorhythm_chart.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
