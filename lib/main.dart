@@ -45,6 +45,7 @@ class BiorhythmApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: Str.appName,
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.orange.shade300,
