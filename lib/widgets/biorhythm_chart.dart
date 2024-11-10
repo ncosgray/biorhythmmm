@@ -18,7 +18,7 @@
 import 'package:biorhythmmm/biorhythm.dart';
 import 'package:biorhythmmm/helpers.dart';
 import 'package:biorhythmmm/prefs.dart';
-import 'package:biorhythmmm/text_styles.dart';
+import 'package:biorhythmmm/styles.dart';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -109,12 +109,10 @@ class BiorhythmChartState extends State<BiorhythmChart> {
                 // Toggle extra biorhythms
                 IconButton(
                   onPressed: toggleExtraPoints,
-                  icon: Icon(Icons.expand_more),
-                  isSelected: _showExtraPoints,
-                  selectedIcon: Icon(Icons.expand_less),
-                  style: TextButton.styleFrom(
-                    splashFactory: NoSplash.splashFactory,
-                  ),
+                  icon: _showExtraPoints
+                      ? Icon(Icons.expand_less)
+                      : Icon(Icons.expand_more),
+                  style: buttonStyle,
                 ),
               ],
             ),
@@ -154,7 +152,7 @@ class BiorhythmChartState extends State<BiorhythmChart> {
                 shortDate(
                   DateTime.now().add(Duration(days: touchedSpots[0].x.toInt())),
                 ),
-                titleStyle,
+                titleText,
               );
             }
             return items;
@@ -227,7 +225,7 @@ class BiorhythmChartState extends State<BiorhythmChart> {
 
   SideTitles get bottomTitles => SideTitles(
         showTitles: true,
-        reservedSize: titleStyle.fontSize! * 2.25,
+        reservedSize: titleText.fontSize! * 2.25,
         interval: 1,
         getTitlesWidget: bottomTitleWidgets,
       );
@@ -238,12 +236,12 @@ class BiorhythmChartState extends State<BiorhythmChart> {
     if (value.toInt().abs() == dayRangeSplit) {
       title = Text(
         shortDate(DateTime.now().add(Duration(days: value.toInt()))),
-        style: titleStyle,
+        style: titleText,
       );
     } else if (value.toInt() == 0) {
       title = Text(
         'Today',
-        style: titleStyle,
+        style: titleText,
       );
     }
 
@@ -321,20 +319,20 @@ class BiorhythmChartState extends State<BiorhythmChart> {
               biorhythm.name,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: labelStyle,
+              style: labelText,
             ),
             // Point percentage with phase icon
             SizedBox.fromSize(
               size: Size(
-                pointStyle.fontSize! * 4.8,
-                pointStyle.fontSize! * 1.8,
+                pointText.fontSize! * 4.8,
+                pointText.fontSize! * 1.8,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(getPhaseIcon(point)),
-                  Text(shortPercent(point), style: pointStyle),
+                  Text(shortPercent(point), style: pointText),
                 ],
               ),
             ),

@@ -1,7 +1,7 @@
 /*
  *******************************************************************************
  Package:  biorhythmmm
- Class:    text_styles.dart
+ Class:    styles.dart
  Author:   Nathan Cosgray | https://www.nathanatos.com
  -------------------------------------------------------------------------------
  Copyright (c) 2024 Nathan Cosgray. All rights reserved.
@@ -11,27 +11,45 @@
 */
 
 // Biorhythmmm
-// - Text styles
+// - Text and button styles
 
 import 'package:flutter/material.dart';
 
-const titleStyle = TextStyle(
+const bodyText = TextStyle(
+  fontSize: 14,
+);
+
+const bodyBoldText = TextStyle(
   fontSize: 14,
   fontWeight: FontWeight.bold,
 );
 
-const buttonStyle = TextStyle(
+const footerText = TextStyle(
+  fontSize: 12,
+  color: Colors.grey,
+);
+
+const titleText = TextStyle(
+  fontSize: 14,
+  fontWeight: FontWeight.bold,
+);
+
+const buttonText = TextStyle(
   fontSize: 14,
 );
 
-const labelStyle = TextStyle(
+const labelText = TextStyle(
   fontSize: 16,
 );
 
-const pointStyle = TextStyle(
+const pointText = TextStyle(
   fontSize: 20,
   fontWeight: FontWeight.bold,
   fontFeatures: [
     FontFeature.tabularFigures(),
   ],
+);
+
+ButtonStyle buttonStyle = TextButton.styleFrom(
+  splashFactory: NoSplash.splashFactory,
 );

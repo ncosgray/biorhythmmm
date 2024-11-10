@@ -16,9 +16,10 @@
 import 'package:biorhythmmm/helpers.dart';
 import 'package:biorhythmmm/prefs.dart';
 import 'package:biorhythmmm/strings.dart';
-import 'package:biorhythmmm/text_styles.dart';
+import 'package:biorhythmmm/styles.dart';
 import 'package:biorhythmmm/widgets/biorhythm_chart.dart';
 
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -55,6 +56,12 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(Str.appName),
+        // About button
+        leading: IconButton(
+          icon: const Icon(Icons.help_outline),
+          onPressed: () => showAboutDialog(),
+          style: buttonStyle,
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -65,14 +72,12 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.all(4),
               child: TextButton.icon(
                 onPressed: () => pickBirthday(context),
-                style: TextButton.styleFrom(
-                  splashFactory: NoSplash.splashFactory,
-                ),
+                style: buttonStyle,
                 label: Text(
                   '${Str.birthdayLabel} ${longDate(_birthday)}',
-                  style: labelStyle,
+                  style: labelText,
                 ),
-                icon: Icon(Icons.edit, size: labelStyle.fontSize),
+                icon: Icon(Icons.edit, size: labelText.fontSize),
                 iconAlignment: IconAlignment.end,
               ),
             ),
@@ -86,13 +91,10 @@ class _HomePageState extends State<HomePage> {
 
   // Open a dialog box to choose user birthday
   pickBirthday(BuildContext context) async {
-    final ThemeData theme = Theme.of(context);
-    switch (theme.platform) {
-      case TargetPlatform.iOS:
-      case TargetPlatform.macOS:
-        return buildCupertinoDatePicker(context);
-      default:
-        return buildMaterialDatePicker(context);
+    if (Platform.isIOS) {
+      return buildCupertinoDatePicker(context);
+    } else {
+      return buildMaterialDatePicker(context);
     }
   }
 
@@ -132,7 +134,7 @@ class _HomePageState extends State<HomePage> {
                   alignment: Alignment.topCenter,
                   child: Text(
                     Str.birthdaySelectText,
-                    style: titleStyle,
+                    style: titleText,
                   ),
                 ),
               ),
@@ -151,5 +153,131 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
+  }
+
+  // About Biorhythms dialog
+  Future<void> showAboutDialog() {
+    return showAdaptiveDialog<void>(
+      context: context,
+      builder: (_) {
+        return StatefulBuilder(
+          builder: (_, setDialogState) {
+            return AlertDialog.adaptive(
+              title: Text(Str.aboutTitle),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: [
+                    // About text
+                    RichText(
+                      text: TextSpan(
+                        style: bodyText.copyWith(
+                          color: Theme.of(context).textTheme.bodyMedium!.color,
+                        ),
+                        children: [
+                          lineBreak,
+                          TextSpan(text: Str.aboutCycles),
+                          lineBreak,
+                          lineBreak,
+                          TextSpan(
+                            text: Str.aboutIntellectualBullet,
+                            style: bodyBoldText,
+                          ),
+                          TextSpan(text: Str.aboutIntellectualText),
+                          lineBreak,
+                          TextSpan(
+                            text: Str.aboutEmotionalBullet,
+                            style: bodyBoldText,
+                          ),
+                          TextSpan(text: Str.aboutEmotionalText),
+                          lineBreak,
+                          TextSpan(
+                            text: Str.aboutPhysicalBullet,
+                            style: bodyBoldText,
+                          ),
+                          TextSpan(text: Str.aboutPhysicalText),
+                          lineBreak,
+                          lineBreak,
+                          TextSpan(text: Str.aboutAdditional),
+                          TextSpan(
+                            text: Str.biorhythmIntuition,
+                            style: bodyBoldText,
+                          ),
+                          TextSpan(text: Str.aboutIntutionDays),
+                          TextSpan(
+                            text: Str.biorhythmAesthetic,
+                            style: bodyBoldText,
+                          ),
+                          TextSpan(text: Str.aboutAestheticDays),
+                          TextSpan(
+                            text: Str.biorhythmAwareness,
+                            style: bodyBoldText,
+                          ),
+                          TextSpan(text: Str.aboutAwarenessDays),
+                          TextSpan(
+                            text: Str.biorhythmSpiritual,
+                            style: bodyBoldText,
+                          ),
+                          TextSpan(text: Str.aboutSpiritualDays),
+                          lineBreak,
+                          lineBreak,
+                          TextSpan(text: Str.aboutPhases),
+                          lineBreak,
+                          lineBreak,
+                          TextSpan(text: Str.aboutUnderstanding),
+                          lineBreak,
+                          lineBreak,
+                          TextSpan(
+                            text: Str.aboutApp,
+                            style: footerText,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                // Dismiss dialog button
+                adaptiveDialogAction(
+                  isDefaultAction: true,
+                  text: Str.okLabel,
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // Line break for RichText widget
+  TextSpan get lineBreak => TextSpan(text: '\n');
+
+  // Dialog action button appropriate to platform
+  Widget adaptiveDialogAction({
+    bool isDefaultAction = false,
+    bool isDestructiveAction = false,
+    required String text,
+    required Function()? onPressed,
+  }) {
+    if (Platform.isIOS) {
+      return CupertinoDialogAction(
+        isDefaultAction: isDefaultAction,
+        isDestructiveAction: isDestructiveAction,
+        onPressed: onPressed,
+        child: Text(text),
+      );
+    } else {
+      return isDestructiveAction
+          ? TextButton(
+              onPressed: onPressed,
+              child: Text(text),
+            )
+          : FilledButton.tonal(
+              onPressed: onPressed,
+              child: Text(text),
+            );
+    }
   }
 }
