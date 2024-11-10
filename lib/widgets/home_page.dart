@@ -17,6 +17,7 @@ import 'package:biorhythmmm/helpers.dart';
 import 'package:biorhythmmm/prefs.dart';
 import 'package:biorhythmmm/strings.dart';
 import 'package:biorhythmmm/styles.dart';
+import 'package:biorhythmmm/widgets/about_text.dart';
 import 'package:biorhythmmm/widgets/biorhythm_chart.dart';
 
 import 'dart:io';
@@ -42,7 +43,7 @@ class _HomePageState extends State<HomePage> {
       () {
         if (mounted && !Prefs.isBirthdaySet) {
           saveBirthday(_birthday);
-          pickBirthday(context);
+          adaptiveBirthdayPicker(context);
         }
       },
     );
@@ -59,8 +60,7 @@ class _HomePageState extends State<HomePage> {
         // About button
         leading: IconButton(
           icon: const Icon(Icons.help_outline),
-          onPressed: () => showAboutDialog(),
-          style: buttonStyle,
+          onPressed: showAboutDialog,
         ),
       ),
       body: SingleChildScrollView(
@@ -71,8 +71,7 @@ class _HomePageState extends State<HomePage> {
             Padding(
               padding: const EdgeInsets.all(4),
               child: TextButton.icon(
-                onPressed: () => pickBirthday(context),
-                style: buttonStyle,
+                onPressed: () => adaptiveBirthdayPicker(context),
                 label: Text(
                   '${Str.birthdayLabel} ${longDate(_birthday)}',
                   style: labelText,
@@ -90,7 +89,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   // Open a dialog box to choose user birthday
-  pickBirthday(BuildContext context) async {
+  adaptiveBirthdayPicker(BuildContext context) async {
     if (Platform.isIOS) {
       return buildCupertinoDatePicker(context);
     } else {
@@ -159,87 +158,24 @@ class _HomePageState extends State<HomePage> {
   Future<void> showAboutDialog() {
     return showAdaptiveDialog<void>(
       context: context,
+      barrierDismissible: true,
       builder: (_) {
         return StatefulBuilder(
           builder: (_, setDialogState) {
             return AlertDialog.adaptive(
-              title: Text(Str.aboutTitle),
+              // About Biorthythms
+              title: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Text(Str.aboutTitle),
+              ),
               content: SingleChildScrollView(
-                child: ListBody(
-                  children: [
-                    // About text
-                    RichText(
-                      text: TextSpan(
-                        style: bodyText.copyWith(
-                          color: Theme.of(context).textTheme.bodyMedium!.color,
-                        ),
-                        children: [
-                          lineBreak,
-                          TextSpan(text: Str.aboutCycles),
-                          lineBreak,
-                          lineBreak,
-                          TextSpan(
-                            text: Str.aboutIntellectualBullet,
-                            style: bodyBoldText,
-                          ),
-                          TextSpan(text: Str.aboutIntellectualText),
-                          lineBreak,
-                          TextSpan(
-                            text: Str.aboutEmotionalBullet,
-                            style: bodyBoldText,
-                          ),
-                          TextSpan(text: Str.aboutEmotionalText),
-                          lineBreak,
-                          TextSpan(
-                            text: Str.aboutPhysicalBullet,
-                            style: bodyBoldText,
-                          ),
-                          TextSpan(text: Str.aboutPhysicalText),
-                          lineBreak,
-                          lineBreak,
-                          TextSpan(text: Str.aboutAdditional),
-                          TextSpan(
-                            text: Str.biorhythmIntuition,
-                            style: bodyBoldText,
-                          ),
-                          TextSpan(text: Str.aboutIntutionDays),
-                          TextSpan(
-                            text: Str.biorhythmAesthetic,
-                            style: bodyBoldText,
-                          ),
-                          TextSpan(text: Str.aboutAestheticDays),
-                          TextSpan(
-                            text: Str.biorhythmAwareness,
-                            style: bodyBoldText,
-                          ),
-                          TextSpan(text: Str.aboutAwarenessDays),
-                          TextSpan(
-                            text: Str.biorhythmSpiritual,
-                            style: bodyBoldText,
-                          ),
-                          TextSpan(text: Str.aboutSpiritualDays),
-                          lineBreak,
-                          lineBreak,
-                          TextSpan(text: Str.aboutPhases),
-                          lineBreak,
-                          lineBreak,
-                          TextSpan(text: Str.aboutUnderstanding),
-                          lineBreak,
-                          lineBreak,
-                          TextSpan(
-                            text: Str.aboutApp,
-                            style: footerText,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                child: aboutText(
+                  textColor: Theme.of(context).textTheme.bodyMedium!.color!,
                 ),
               ),
               actions: [
                 // Dismiss dialog button
                 adaptiveDialogAction(
-                  isDefaultAction: true,
                   text: Str.okLabel,
                   onPressed: () => Navigator.of(context).pop(),
                 ),
@@ -250,9 +186,6 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
-
-  // Line break for RichText widget
-  TextSpan get lineBreak => TextSpan(text: '\n');
 
   // Dialog action button appropriate to platform
   Widget adaptiveDialogAction({

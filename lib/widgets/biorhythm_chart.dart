@@ -18,6 +18,7 @@
 import 'package:biorhythmmm/biorhythm.dart';
 import 'package:biorhythmmm/helpers.dart';
 import 'package:biorhythmmm/prefs.dart';
+import 'package:biorhythmmm/strings.dart';
 import 'package:biorhythmmm/styles.dart';
 
 import 'package:fl_chart/fl_chart.dart';
@@ -97,24 +98,27 @@ class BiorhythmChartState extends State<BiorhythmChart> {
         Padding(
           padding: const EdgeInsets.all(16),
           child: Center(
-            child: Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                // Biorhythm percentages
-                for (int i = 0; i < _chartPoints.length; i++)
-                  biorhythmPercentBox(
-                    biorhythm: biorhythms[i],
-                    point: _chartPoints[i],
+            child: AnimatedSize(
+              duration: const Duration(milliseconds: 150),
+              child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  // Biorhythm percentages
+                  for (int i = 0; i < _chartPoints.length; i++)
+                    biorhythmPercentBox(
+                      biorhythm: biorhythms[i],
+                      point: _chartPoints[i],
+                    ),
+                  // Toggle extra biorhythms
+                  IconButton(
+                    onPressed: toggleExtraPoints,
+                    icon: _showExtraPoints
+                        ? Icon(Icons.keyboard_double_arrow_left)
+                        : Icon(Icons.keyboard_double_arrow_right),
+                    iconSize: 28,
                   ),
-                // Toggle extra biorhythms
-                IconButton(
-                  onPressed: toggleExtraPoints,
-                  icon: _showExtraPoints
-                      ? Icon(Icons.expand_less)
-                      : Icon(Icons.expand_more),
-                  style: buttonStyle,
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -193,11 +197,11 @@ class BiorhythmChartState extends State<BiorhythmChart> {
   FlLine getDrawingHorizontalLine(double value) {
     return value == 0
         ? FlLine(
-            color: Theme.of(context).dividerColor,
-            strokeWidth: 1,
+            color: Colors.amber,
+            strokeWidth: 2,
           )
         : FlLine(
-            color: Theme.of(context).dividerColor,
+            color: value > 0 ? Colors.green : Colors.red,
             strokeWidth: 1,
             dashArray: [2, 2],
           );
@@ -205,15 +209,19 @@ class BiorhythmChartState extends State<BiorhythmChart> {
 
   FlLine getDrawingVerticalLine(double value) {
     return value == 0
-        ? FlLine(color: Theme.of(context).dividerColor, strokeWidth: 2)
-        : FlLine(color: Theme.of(context).dividerColor, strokeWidth: 1);
+        ? FlLine(
+            color: Theme.of(context).dividerColor,
+            strokeWidth: 8,
+          )
+        : FlLine(
+            color: Theme.of(context).dividerColor,
+            strokeWidth: 1,
+          );
   }
 
   // Chart titles
   FlTitlesData get titlesData => FlTitlesData(
-        bottomTitles: AxisTitles(
-          sideTitles: bottomTitles,
-        ),
+        bottomTitles: AxisTitles(sideTitles: bottomTitles),
         rightTitles: noTitles,
         topTitles: noTitles,
         leftTitles: noTitles,
@@ -240,7 +248,7 @@ class BiorhythmChartState extends State<BiorhythmChart> {
       );
     } else if (value.toInt() == 0) {
       title = Text(
-        'Today',
+        Str.todayLabel,
         style: titleText,
       );
     }
@@ -253,16 +261,16 @@ class BiorhythmChartState extends State<BiorhythmChart> {
   }
 
   // Chart borders
-  BorderSide get borderSideData =>
-      BorderSide(color: Theme.of(context).dividerColor, width: 2);
+  BorderSide borderSideData([Color? color]) =>
+      BorderSide(color: color ?? Theme.of(context).dividerColor, width: 2);
 
   FlBorderData get borderData => FlBorderData(
         show: true,
         border: Border(
-          bottom: borderSideData,
-          left: borderSideData,
-          right: borderSideData,
-          top: borderSideData,
+          bottom: borderSideData(Colors.pink),
+          left: borderSideData(),
+          right: borderSideData(),
+          top: borderSideData(Colors.green),
         ),
       );
 

@@ -11,12 +11,14 @@
 */
 
 // Biorhythmmm
-// - App initialization
+// - App initialization and themes
 
 import 'package:biorhythmmm/prefs.dart';
 import 'package:biorhythmmm/strings.dart';
 import 'package:biorhythmmm/widgets/home_page.dart';
 
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/find_locale.dart';
@@ -49,7 +51,10 @@ class BiorhythmApp extends StatelessWidget {
           brightness: Brightness.light,
         ),
         dividerColor: Colors.black26,
-        useMaterial3: true,
+        splashFactory: Platform.isIOS ? NoSplash.splashFactory : null,
+        cupertinoOverrideTheme: const CupertinoThemeData(
+          primaryColor: CupertinoColors.systemBlue,
+        ),
       ),
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
@@ -57,7 +62,10 @@ class BiorhythmApp extends StatelessWidget {
           brightness: Brightness.dark,
         ),
         dividerColor: Colors.white12,
-        useMaterial3: true,
+        splashFactory: Platform.isIOS ? NoSplash.splashFactory : null,
+        cupertinoOverrideTheme: const CupertinoThemeData(
+          primaryColor: CupertinoColors.systemBlue,
+        ),
       ),
       home: HomePage(),
     );

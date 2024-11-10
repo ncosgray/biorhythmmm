@@ -26,9 +26,10 @@ class Str {
   static String get biorhythmSpiritual => 'Spiritual';
   static String get birthdayLabel => 'Birthday:';
   static String get birthdaySelectText => 'When were you born?';
+  static String get todayLabel => 'Today';
   static String get aboutTitle => 'About Biorhythms';
   static String get aboutCycles =>
-      'Biorhythms are natural cycles that influence the states of our minds and bodies. The three main cycles are:';
+      'Biorhythms are natural cycles that influence the states of our minds and bodies. The three primary cycles are:';
   static String get aboutIntellectualBullet =>
       '\u2022 ${Str.biorhythmIntellectual}';
   static String get aboutIntellectualText =>
@@ -49,10 +50,8 @@ class Str {
   static String get aboutSpiritualDays =>
       ' (${Biorhythm.spiritual.cycleDays} days).';
   static String get aboutPhases =>
-      'Each cycle moves through high, low, and critical phases. During the critical phase a cycle crosses from high to low or from low to high. It is at this time \u2014 when the body and mind are out of sync \u2014 that individuals may experience a higher likelihood of stress, accidents, or mistakes.';
-  static String get aboutUnderstanding =>
-      'Understanding these cycles is believed to help people optimize their activities based on their peak performance times.';
-  static String get aboutApp =>
-      '${Str.appName} is a free, open-source app \u00a9 Nathan Cosgray';
+      'Each cycle moves through \u2191 high, \u2193 low, and \u26A0 critical phases. During the critical phase a cycle crosses from high to low or from low to high. It is at this time \u2014 when the body and mind are out of sync \u2014 that individuals may experience a higher likelihood of stress, accidents, or mistakes.';
+  static String get aboutApp => '${Str.appName} is a free, open-source app';
+  static String get aboutCopyright => '\u00a9 Nathan Cosgray';
   static String get okLabel => 'OK';
 }

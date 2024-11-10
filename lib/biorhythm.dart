@@ -19,8 +19,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 enum Biorhythm {
-  intellectual(Colors.green, 33, true),
-  emotional(Colors.pink, 28, true),
+  intellectual(Colors.lightGreen, 33, true),
+  emotional(Colors.pinkAccent, 28, true),
   physical(Colors.cyan, 23, true),
   intuition(Colors.purple, 38, false),
   aesthetic(Colors.indigoAccent, 43, false),
@@ -45,7 +45,7 @@ enum Biorhythm {
       };
 
   // Biorhythm colors
-  Color get graphColor => color.withOpacity(0.5);
+  Color get graphColor => color.withOpacity(0.6);
   Color get highlightColor => color;
 
   // Calcuate biorhythm point for a given day

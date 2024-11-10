@@ -39,15 +39,15 @@ int roundInt(double x) {
   return (x * 1000).round() ~/ 10;
 }
 
-// Format number as absolute percent
+// Format number as percentage
 String shortPercent(double x) {
-  return '${roundInt(x).abs()}%';
+  return '${roundInt(x)}%';
 }
 
 // Get phase icon for a value (up, down, or critical)
 IconData getPhaseIcon(double x) {
   int i = roundInt(x);
-  if (i == 0) {
+  if (i > -15 && i < 15) {
     return Icons.warning;
   } else if (i > 0) {
     return Icons.arrow_upward;

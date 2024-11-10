@@ -11,7 +11,7 @@
 */
 
 // Biorhythmmm
-// - Text and button styles
+// - Text styles
 
 import 'package:flutter/material.dart';
 
@@ -48,8 +48,4 @@ const pointText = TextStyle(
   fontFeatures: [
     FontFeature.tabularFigures(),
   ],
-);
-
-ButtonStyle buttonStyle = TextButton.styleFrom(
-  splashFactory: NoSplash.splashFactory,
 );
