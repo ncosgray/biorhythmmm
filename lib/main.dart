@@ -44,18 +44,16 @@ class BiorhythmApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      home: HomePage(),
       title: Str.appName,
-      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.orange.shade300,
           brightness: Brightness.light,
         ),
         dividerColor: Colors.black26,
-        splashFactory: Platform.isIOS ? NoSplash.splashFactory : null,
-        cupertinoOverrideTheme: const CupertinoThemeData(
-          primaryColor: CupertinoColors.systemBlue,
-        ),
+        splashFactory: splashFactory,
+        cupertinoOverrideTheme: cupertinoOverrideTheme,
       ),
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
@@ -63,12 +61,17 @@ class BiorhythmApp extends StatelessWidget {
           brightness: Brightness.dark,
         ),
         dividerColor: Colors.white12,
-        splashFactory: Platform.isIOS ? NoSplash.splashFactory : null,
-        cupertinoOverrideTheme: const CupertinoThemeData(
-          primaryColor: CupertinoColors.systemBlue,
-        ),
+        splashFactory: splashFactory,
+        cupertinoOverrideTheme: cupertinoOverrideTheme,
       ),
-      home: HomePage(),
+      debugShowCheckedModeBanner: false,
     );
   }
+
+  // Common theme elements
+  InteractiveInkFeatureFactory? get splashFactory =>
+      Platform.isIOS ? NoSplash.splashFactory : null;
+
+  CupertinoThemeData get cupertinoOverrideTheme =>
+      const CupertinoThemeData(primaryColor: CupertinoColors.systemBlue);
 }
