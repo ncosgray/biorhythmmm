@@ -85,40 +85,33 @@ class BiorhythmChartState extends State<BiorhythmChart> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         // Biorhythm chart
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: AspectRatio(
-            aspectRatio: 1,
-            child: LineChart(
-              biorhythmData,
-              duration: const Duration(milliseconds: 250),
-            ),
+        Expanded(
+          child: LineChart(
+            biorhythmData,
+            duration: const Duration(milliseconds: 250),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(8),
           child: Center(
-            child: AnimatedSize(
-              duration: const Duration(milliseconds: 150),
-              child: Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  // Biorhythm percentages
-                  for (int i = 0; i < _chartPoints.length; i++)
-                    biorhythmPercentBox(
-                      biorhythm: biorhythms[i],
-                      point: _chartPoints[i],
-                    ),
-                  // Toggle extra biorhythms
-                  IconButton(
-                    onPressed: toggleExtraPoints,
-                    icon: _showExtraPoints
-                        ? Icon(Icons.keyboard_double_arrow_left)
-                        : Icon(Icons.keyboard_double_arrow_right),
-                    iconSize: 28,
+            child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                // Biorhythm percentages
+                for (int i = 0; i < _chartPoints.length; i++)
+                  biorhythmPercentBox(
+                    biorhythm: biorhythms[i],
+                    point: _chartPoints[i],
                   ),
-                ],
-              ),
+                // Toggle extra biorhythms
+                IconButton(
+                  onPressed: toggleExtraPoints,
+                  icon: _showExtraPoints
+                      ? Icon(Icons.keyboard_double_arrow_left)
+                      : Icon(Icons.keyboard_double_arrow_right),
+                  iconSize: 28,
+                ),
+              ],
             ),
           ),
         ),
@@ -339,8 +332,14 @@ class BiorhythmChartState extends State<BiorhythmChart> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(getPhaseIcon(point)),
-                  Text(shortPercent(point), style: pointText),
+                  Icon(
+                    getPhaseIcon(point),
+                    size: pointText.fontSize!,
+                  ),
+                  Text(
+                    shortPercent(point),
+                    style: pointText,
+                  ),
                 ],
               ),
             ),

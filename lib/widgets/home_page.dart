@@ -63,25 +63,27 @@ class _HomePageState extends State<HomePage> {
           onPressed: showAboutDialog,
         ),
       ),
-      body: SingleChildScrollView(
+      body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             // Birthday setting
-            Padding(
-              padding: const EdgeInsets.all(4),
-              child: TextButton.icon(
-                onPressed: () => adaptiveBirthdayPicker(context),
-                label: Text(
-                  '${Str.birthdayLabel} ${longDate(_birthday)}',
-                  style: labelText,
-                ),
-                icon: Icon(Icons.edit, size: labelText.fontSize),
-                iconAlignment: IconAlignment.end,
+            TextButton.icon(
+              onPressed: () => adaptiveBirthdayPicker(context),
+              label: Text(
+                '${Str.birthdayLabel} ${longDate(_birthday)}',
+                style: labelText,
               ),
+              icon: Icon(Icons.edit, size: labelText.fontSize),
+              iconAlignment: IconAlignment.end,
             ),
             // Chart
-            BiorhythmChart(birthday: _birthday),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: BiorhythmChart(birthday: _birthday),
+              ),
+            ),
           ],
         ),
       ),
@@ -123,7 +125,7 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (_) {
         return SizedBox(
-          height: MediaQuery.of(context).copyWith().size.height / 3,
+          height: MediaQuery.of(context).size.height / 3,
           child: Stack(
             children: [
               // Help text overlay
