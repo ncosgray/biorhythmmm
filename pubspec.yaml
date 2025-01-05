@@ -28,11 +28,11 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  fl_chart: ^0.69.0
+  fl_chart: ^0.70.0
   flutter:
     sdk: flutter
-  intl: ^0.19.0
-  shared_preferences: ^2.3.3
+  intl: ^0.20.1
+  shared_preferences: ^2.3.5
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
