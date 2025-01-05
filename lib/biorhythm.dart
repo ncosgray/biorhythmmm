@@ -45,7 +45,7 @@ enum Biorhythm {
       };
 
   // Biorhythm colors
-  Color get graphColor => color.withOpacity(0.6);
+  Color get graphColor => color.withValues(alpha: 0.6);
   Color get highlightColor => color;
 
   // Calcuate biorhythm point for a given day
