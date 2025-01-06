@@ -17,11 +17,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 // Get inclusive date difference in days
-int dateDiff(DateTime from, int addDays) {
-  DateTime to =
-      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day)
-          .add(Duration(days: addDays));
-  return to.difference(from).inDays + 1;
+int dateDiff(DateTime from, DateTime to, {int addDays = 0}) {
+  return 1 +
+      DateUtils.dateOnly(to)
+          .add(Duration(days: addDays))
+          .difference(from)
+          .inDays;
 }
 
 // Format date as short date

@@ -40,22 +40,29 @@ class BiorhythmChart extends StatefulWidget {
 
 class BiorhythmChartState extends State<BiorhythmChart> {
   // State variables
-  late List<double> _chartPoints;
+  late DateTime _targetDate;
   Biorhythm? _highlighted;
   bool _showExtraPoints = Prefs.showExtraPoints;
+  late List<double> _chartPoints;
 
   // Biorhythm list: all available or only primary points
   List<Biorhythm> get biorhythms => _showExtraPoints
       ? Biorhythm.values.toList()
       : Biorhythm.values.where((b) => b.primary).toList();
 
-  // Reset biorhythm points to today
-  void resetPoints() {
+  // Populate chart data
+  void setPoints() {
     _chartPoints = List.generate(
       biorhythms.length,
-      (i) => biorhythms[i].getPoint(dateDiff(widget.birthday, 0)),
+      (i) => biorhythms[i].getPoint(dateDiff(widget.birthday, _targetDate)),
     );
+  }
+
+  // Reset biorhythm points to today
+  void resetPoints() {
+    _targetDate = DateUtils.dateOnly(DateTime.now());
     _highlighted = null;
+    setPoints();
   }
 
   // Toggle extra points setting
@@ -63,7 +70,7 @@ class BiorhythmChartState extends State<BiorhythmChart> {
     setState(() {
       _showExtraPoints = !_showExtraPoints;
       Prefs.showExtraPoints = _showExtraPoints;
-      resetPoints();
+      setPoints();
     });
   }
 
@@ -88,7 +95,7 @@ class BiorhythmChartState extends State<BiorhythmChart> {
         Expanded(
           child: LineChart(
             biorhythmData,
-            duration: const Duration(milliseconds: 250),
+            duration: Duration.zero,
           ),
         ),
         Padding(
@@ -147,7 +154,7 @@ class BiorhythmChartState extends State<BiorhythmChart> {
             if (touchedSpots.isNotEmpty) {
               items[0] = LineTooltipItem(
                 shortDate(
-                  DateTime.now().add(Duration(days: touchedSpots[0].x.toInt())),
+                  _targetDate.add(Duration(days: touchedSpots[0].x.toInt())),
                 ),
                 titleText,
               );
@@ -168,8 +175,6 @@ class BiorhythmChartState extends State<BiorhythmChart> {
           }
         }
       }
-    } else {
-      resetPoints();
     }
 
     // UI state update
@@ -201,15 +206,17 @@ class BiorhythmChartState extends State<BiorhythmChart> {
   }
 
   FlLine getDrawingVerticalLine(double value) {
-    return value == 0
-        ? FlLine(
-            color: Theme.of(context).dividerColor,
-            strokeWidth: 8,
-          )
-        : FlLine(
-            color: Theme.of(context).dividerColor,
-            strokeWidth: 1,
-          );
+    return FlLine(
+      color: Theme.of(context).dividerColor,
+      strokeWidth: DateUtils.isSameDay(
+        _targetDate.add(Duration(days: value.toInt())),
+        DateTime.now(),
+      )
+          ? 8
+          : value == 0
+              ? 4
+              : 1,
+    );
   }
 
   // Chart titles
@@ -226,23 +233,39 @@ class BiorhythmChartState extends State<BiorhythmChart> {
 
   SideTitles get bottomTitles => SideTitles(
         showTitles: true,
-        reservedSize: titleText.fontSize! * 2.25,
+        reservedSize: titleText.fontSize! * 3,
         interval: 1,
         getTitlesWidget: bottomTitleWidgets,
       );
 
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
+    int valueInt = value.toInt();
+    DateTime valueDate = _targetDate.add(Duration(days: valueInt));
     Widget title = Container();
 
-    if (value.toInt().abs() == dayRangeSplit) {
-      title = Text(
-        shortDate(DateTime.now().add(Duration(days: value.toInt()))),
-        style: titleText,
+    if (valueInt == 0) {
+      title = TextButton(
+        child: Text(
+          DateUtils.isSameDay(valueDate, DateTime.now())
+              ? Str.todayLabel
+              : shortDate(valueDate),
+          style: titleTodayText,
+        ),
+        onPressed: () => setState(() => resetPoints()),
       );
-    } else if (value.toInt() == 0) {
-      title = Text(
-        Str.todayLabel,
-        style: titleText,
+    } else if (valueInt.abs() == dayRangeSplit) {
+      title = TextButton.icon(
+        icon: Icon(valueInt < 0 ? Icons.arrow_back : Icons.arrow_forward),
+        iconAlignment: valueInt < 0 ? IconAlignment.start : IconAlignment.end,
+        label: Text(
+          shortDate(valueDate),
+          style: titleDateText,
+        ),
+        onPressed: () => setState(() {
+          _targetDate =
+              _targetDate.add(Duration(days: (valueInt < 0 ? -1 : 1)));
+          setPoints();
+        }),
       );
     }
 
@@ -294,7 +317,13 @@ class BiorhythmChartState extends State<BiorhythmChart> {
         pointCount,
         (int day) => FlSpot(
           (day - dayRangeSplit).toDouble(),
-          pointGenerator(dateDiff(widget.birthday, day - dayRangeSplit)),
+          pointGenerator(
+            dateDiff(
+              widget.birthday,
+              _targetDate,
+              addDays: day - dayRangeSplit,
+            ),
+          ),
         ),
       ),
     );
