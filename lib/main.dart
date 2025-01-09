@@ -13,6 +13,7 @@
 // Biorhythmmm
 // - App initialization and themes
 
+import 'package:biorhythmmm/app_model.dart';
 import 'package:biorhythmmm/prefs.dart';
 import 'package:biorhythmmm/strings.dart';
 import 'package:biorhythmmm/widgets/home_page.dart';
@@ -23,6 +24,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/find_locale.dart';
 import 'package:intl/intl.dart';
+import 'package:watch_it/watch_it.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,6 +35,9 @@ void main() async {
   // Get default locale for DateFormat and NumberFormat
   await initializeDateFormatting();
   Intl.defaultLocale = await findSystemLocale();
+
+  // Register AppModel
+  di.registerSingleton<AppModel>(AppModelImplementation());
 
   runApp(const BiorhythmApp());
 }

@@ -15,24 +15,23 @@
 // - Percentage widget
 // - Chart interactivity
 
+import 'package:biorhythmmm/app_model.dart';
 import 'package:biorhythmmm/biorhythm.dart';
 import 'package:biorhythmmm/helpers.dart';
-import 'package:biorhythmmm/prefs.dart';
 import 'package:biorhythmmm/strings.dart';
 import 'package:biorhythmmm/styles.dart';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:watch_it/watch_it.dart';
 
 // Chart ranges
 final int dayRange = 29;
 final int dayRangeSplit = (dayRange / 2).floor();
 
 // Interactive biorhythm chart
-class BiorhythmChart extends StatefulWidget {
-  const BiorhythmChart({super.key, required this.birthday});
-
-  final DateTime birthday;
+class BiorhythmChart extends WatchingStatefulWidget {
+  const BiorhythmChart({super.key});
 
   @override
   State<StatefulWidget> createState() => BiorhythmChartState();
@@ -42,19 +41,15 @@ class BiorhythmChartState extends State<BiorhythmChart> {
   // State variables
   late DateTime _targetDate;
   Biorhythm? _highlighted;
-  bool _showExtraPoints = Prefs.showExtraPoints;
   late List<double> _chartPoints;
-
-  // Biorhythm list: all available or only primary points
-  List<Biorhythm> get biorhythms => _showExtraPoints
-      ? Biorhythm.values.toList()
-      : Biorhythm.values.where((b) => b.primary).toList();
 
   // Populate chart data
   void setPoints() {
     _chartPoints = List.generate(
-      biorhythms.length,
-      (i) => biorhythms[i].getPoint(dateDiff(widget.birthday, _targetDate)),
+      di<AppModel>().biorhythms.length,
+      (i) => di<AppModel>()
+          .biorhythms[i]
+          .getPoint(dateDiff(di<AppModel>().birthday, _targetDate)),
     );
   }
 
@@ -63,15 +58,6 @@ class BiorhythmChartState extends State<BiorhythmChart> {
     _targetDate = DateUtils.dateOnly(DateTime.now());
     _highlighted = null;
     setPoints();
-  }
-
-  // Toggle extra points setting
-  void toggleExtraPoints() {
-    setState(() {
-      _showExtraPoints = !_showExtraPoints;
-      Prefs.showExtraPoints = _showExtraPoints;
-      setPoints();
-    });
   }
 
   @override
@@ -88,6 +74,9 @@ class BiorhythmChartState extends State<BiorhythmChart> {
 
   @override
   Widget build(BuildContext context) {
+    final showExtraPoints =
+        watchPropertyValue((AppModel m) => m.showExtraPoints);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
@@ -107,13 +96,16 @@ class BiorhythmChartState extends State<BiorhythmChart> {
                 // Biorhythm percentages
                 for (int i = 0; i < _chartPoints.length; i++)
                   biorhythmPercentBox(
-                    biorhythm: biorhythms[i],
+                    biorhythm: di<AppModel>().biorhythms[i],
                     point: _chartPoints[i],
                   ),
                 // Toggle extra biorhythms
                 IconButton(
-                  onPressed: toggleExtraPoints,
-                  icon: _showExtraPoints
+                  onPressed: () {
+                    di<AppModel>().toggleExtraPoints();
+                    setPoints();
+                  },
+                  icon: showExtraPoints
                       ? Icon(Icons.keyboard_double_arrow_left)
                       : Icon(Icons.keyboard_double_arrow_right),
                   iconSize: 28,
@@ -175,6 +167,8 @@ class BiorhythmChartState extends State<BiorhythmChart> {
           }
         }
       }
+    } else {
+      setPoints();
     }
 
     // UI state update
@@ -292,7 +286,7 @@ class BiorhythmChartState extends State<BiorhythmChart> {
 
   // Define chart data
   List<LineChartBarData> get lineBarsData => [
-        for (final Biorhythm b in biorhythms)
+        for (final Biorhythm b in di<AppModel>().biorhythms)
           biorhythmLineData(
             color: _highlighted == b ? b.highlightColor : b.graphColor,
             pointCount: dayRange,
@@ -319,7 +313,7 @@ class BiorhythmChartState extends State<BiorhythmChart> {
           (day - dayRangeSplit).toDouble(),
           pointGenerator(
             dateDiff(
-              widget.birthday,
+              di<AppModel>().birthday,
               _targetDate,
               addDays: day - dayRangeSplit,
             ),

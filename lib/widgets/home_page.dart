@@ -13,8 +13,8 @@
 // Biorhythmmm
 // - App home page
 
+import 'package:biorhythmmm/app_model.dart';
 import 'package:biorhythmmm/helpers.dart';
-import 'package:biorhythmmm/prefs.dart';
 import 'package:biorhythmmm/strings.dart';
 import 'package:biorhythmmm/styles.dart';
 import 'package:biorhythmmm/widgets/about_text.dart';
@@ -23,36 +23,25 @@ import 'package:biorhythmmm/widgets/biorhythm_chart.dart';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:watch_it/watch_it.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends WatchingWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
-}
+  Widget build(BuildContext context) {
+    final birthday = watchPropertyValue((AppModel m) => m.birthday);
 
-class _HomePageState extends State<HomePage> {
-  // State variables
-  DateTime _birthday = Prefs.birthday;
-
-  @override
-  void initState() {
     // Prompt user once if birthday is unset
     Future.delayed(
       Duration.zero,
       () {
-        if (mounted && !Prefs.isBirthdaySet) {
-          saveBirthday(_birthday);
+        if (context.mounted && !di<AppModel>().isBirthdaySet) {
           adaptiveBirthdayPicker(context);
         }
       },
     );
 
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -60,7 +49,7 @@ class _HomePageState extends State<HomePage> {
         // About button
         leading: IconButton(
           icon: const Icon(Icons.help_outline),
-          onPressed: showAboutDialog,
+          onPressed: () => showAboutDialog(context),
         ),
       ),
       body: SafeArea(
@@ -71,7 +60,7 @@ class _HomePageState extends State<HomePage> {
             TextButton.icon(
               onPressed: () => adaptiveBirthdayPicker(context),
               label: Text(
-                '${Str.birthdayLabel} ${longDate(_birthday)}',
+                '${Str.birthdayLabel} ${longDate(birthday)}',
                 style: labelText,
               ),
               icon: Icon(Icons.edit, size: labelText.fontSize),
@@ -81,7 +70,7 @@ class _HomePageState extends State<HomePage> {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: BiorhythmChart(birthday: _birthday),
+                child: BiorhythmChart(),
               ),
             ),
           ],
@@ -99,23 +88,17 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  // Save chosen birthday
-  saveBirthday(DateTime picked) {
-    setState(() => _birthday = picked);
-    Prefs.birthday = _birthday;
-  }
-
   // Android date picker
   buildMaterialDatePicker(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       helpText: Str.birthdaySelectText,
-      initialDate: _birthday,
+      initialDate: di<AppModel>().birthday,
       firstDate: DateTime(0),
       lastDate: DateTime(DateTime.now().year),
     );
     if (picked != null) {
-      saveBirthday(picked);
+      di<AppModel>().birthday = picked;
     }
   }
 
@@ -144,8 +127,9 @@ class _HomePageState extends State<HomePage> {
                 padding: EdgeInsets.only(top: 16),
                 child: CupertinoDatePicker(
                   mode: CupertinoDatePickerMode.date,
-                  onDateTimeChanged: (picked) => saveBirthday(picked),
-                  initialDateTime: _birthday,
+                  onDateTimeChanged: (picked) =>
+                      di<AppModel>().birthday = picked,
+                  initialDateTime: di<AppModel>().birthday,
                   maximumYear: DateTime.now().year,
                 ),
               ),
@@ -157,7 +141,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   // About Biorhythms dialog
-  Future<void> showAboutDialog() {
+  Future<void> showAboutDialog(BuildContext context) {
     return showAdaptiveDialog<void>(
       context: context,
       barrierDismissible: true,
