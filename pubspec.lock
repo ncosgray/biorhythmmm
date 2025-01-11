@@ -77,10 +77,10 @@ packages:
     dependency: "direct main"
     description:
       name: fl_chart
-      sha256: c724234b05e378383e958f3e82ca84a3e1e3c06a0898462044dd8a24b1ee9864
+      sha256: "10ddaf334fe84d59333a12d153043e366f243e0bdfff2df0313e1e249f5bf926"
       url: "https://pub.dev"
     source: hosted
-    version: "0.70.0"
+    version: "0.70.1"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -260,10 +260,10 @@ packages:
     dependency: transitive
     description:
       name: shared_preferences_android
-      sha256: "02a7d8a9ef346c9af715811b01fbd8e27845ad2c41148eefd31321471b41863d"
+      sha256: bf808be89fe9dc467475e982c1db6c2faf3d2acf54d526cd5ec37d86c99dbd84
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.0"
+    version: "2.4.1"
   shared_preferences_foundation:
     dependency: transitive
     description:
@@ -385,10 +385,10 @@ packages:
     dependency: "direct main"
     description:
       name: watch_it
-      sha256: cdde70641e090d6ab8cf80476bb6346fb9b6c85791ab7f7904e28d8736fa3d44
+      sha256: "8ce7e442a65ef81db155dc505594f1856660fa5dd068471a1fe9c5eeaced9b93"
       url: "https://pub.dev"
     source: hosted
-    version: "1.6.1"
+    version: "1.6.2"
   web:
     dependency: transitive
     description:
@@ -407,4 +407,4 @@ packages:
     version: "1.1.0"
 sdks:
   dart: ">=3.6.0 <4.0.0"
-  flutter: ">=3.27.0"
+  flutter: ">=3.24.0"
