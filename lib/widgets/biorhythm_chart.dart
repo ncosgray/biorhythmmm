@@ -44,7 +44,6 @@ class BiorhythmChartState extends State<BiorhythmChart> {
   late DateTime _targetDate;
   Biorhythm? _highlighted;
   late List<double> _chartPoints;
-  bool _resetChart = false;
   final TransformationController _controller = TransformationController();
 
   // Populate chart data
@@ -59,9 +58,9 @@ class BiorhythmChartState extends State<BiorhythmChart> {
 
   // Reset biorhythm points to today
   void resetPoints() {
+    di<AppModel>().resetChart = true;
     _targetDate = DateUtils.dateOnly(DateTime.now());
     _highlighted = null;
-    _resetChart = true;
     setPoints();
   }
 
@@ -85,9 +84,13 @@ class BiorhythmChartState extends State<BiorhythmChart> {
 
   @override
   Widget build(BuildContext context) {
+    final resetChart = watchPropertyValue((AppModel m) => m.resetChart);
+    final showExtraPoints =
+        watchPropertyValue((AppModel m) => m.showExtraPoints);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_resetChart) {
-        _resetChart = false;
+      if (resetChart) {
+        di<AppModel>().resetChart = false;
 
         // Scale chart to show default range
         double scaleFactor = chartRangeSplit / chartWindow;
@@ -97,9 +100,6 @@ class BiorhythmChartState extends State<BiorhythmChart> {
           ..translate(-((chartWidth - chartWindow) / 2));
       }
     });
-
-    final showExtraPoints =
-        watchPropertyValue((AppModel m) => m.showExtraPoints);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

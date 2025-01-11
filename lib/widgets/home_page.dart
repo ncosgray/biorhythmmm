@@ -56,15 +56,30 @@ class HomePage extends WatchingWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            // Birthday setting
-            TextButton.icon(
-              onPressed: () => adaptiveBirthdayPicker(context),
-              label: Text(
-                '${Str.birthdayLabel} ${longDate(birthday)}',
-                style: labelText,
-              ),
-              icon: Icon(Icons.edit, size: labelText.fontSize),
-              iconAlignment: IconAlignment.end,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Reset button
+                TextButton.icon(
+                  onPressed: () => di<AppModel>().resetChart = true,
+                  label: Text(
+                    Str.todayLabel,
+                    style: labelText,
+                  ),
+                  icon: const Icon(Icons.calendar_today),
+                  iconAlignment: IconAlignment.start,
+                ),
+                // Birthday setting
+                TextButton.icon(
+                  onPressed: () => adaptiveBirthdayPicker(context),
+                  label: Text(
+                    '${Str.birthdayLabel} ${longDate(birthday)}',
+                    style: labelText,
+                  ),
+                  icon: Icon(Icons.edit, size: labelText.fontSize),
+                  iconAlignment: IconAlignment.end,
+                ),
+              ],
             ),
             // Chart
             Expanded(

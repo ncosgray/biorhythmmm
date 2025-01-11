@@ -29,6 +29,10 @@ abstract class AppModel extends ChangeNotifier {
   bool get showExtraPoints;
   void toggleExtraPoints();
   List<Biorhythm> get biorhythms;
+
+  // Chart data
+  bool get resetChart;
+  set resetChart(bool newValue);
 }
 
 class AppModelImplementation extends AppModel {
@@ -67,4 +71,16 @@ class AppModelImplementation extends AppModel {
   List<Biorhythm> get biorhythms => _showExtraPoints
       ? Biorhythm.values.toList()
       : Biorhythm.values.where((b) => b.primary).toList();
+
+  // Chart data
+  bool _resetChart = true;
+
+  @override
+  bool get resetChart => _resetChart;
+
+  @override
+  set resetChart(bool newValue) {
+    _resetChart = newValue;
+    notifyListeners();
+  }
 }
