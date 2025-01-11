@@ -41,7 +41,6 @@ class BiorhythmChart extends WatchingStatefulWidget {
 
 class BiorhythmChartState extends State<BiorhythmChart> {
   // State variables
-  late DateTime _targetDate;
   Biorhythm? _highlighted;
   late List<double> _chartPoints;
   final TransformationController _controller = TransformationController();
@@ -52,14 +51,13 @@ class BiorhythmChartState extends State<BiorhythmChart> {
       di<AppModel>().biorhythms.length,
       (i) => di<AppModel>()
           .biorhythms[i]
-          .getPoint(dateDiff(di<AppModel>().birthday, _targetDate)),
+          .getPoint(dateDiff(di<AppModel>().birthday, today)),
     );
   }
 
   // Reset biorhythm points to today
   void resetPoints() {
     di<AppModel>().resetChart = true;
-    _targetDate = DateUtils.dateOnly(DateTime.now());
     _highlighted = null;
     setPoints();
   }
@@ -177,7 +175,7 @@ class BiorhythmChartState extends State<BiorhythmChart> {
             if (touchedSpots.isNotEmpty) {
               items[0] = LineTooltipItem(
                 shortDate(
-                  _targetDate.add(Duration(days: touchedSpots[0].x.toInt())),
+                  today.add(Duration(days: touchedSpots[0].x.toInt())),
                 ),
                 titleText,
               );
@@ -233,14 +231,7 @@ class BiorhythmChartState extends State<BiorhythmChart> {
   FlLine getDrawingVerticalLine(double value) {
     return FlLine(
       color: Theme.of(context).dividerColor,
-      strokeWidth: DateUtils.isSameDay(
-        _targetDate.add(Duration(days: value.toInt())),
-        DateTime.now(),
-      )
-          ? 8
-          : value == 0
-              ? 4
-              : 1,
+      strokeWidth: value == 0 ? 8 : 1,
     );
   }
 
@@ -264,20 +255,16 @@ class BiorhythmChartState extends State<BiorhythmChart> {
       );
 
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
-    int valueInt = value.toInt();
-    DateTime valueDate = _targetDate.add(Duration(days: valueInt));
     Widget title = Container();
 
-    if (valueInt == 0) {
+    if (value == 0) {
       title = Text(
-        DateUtils.isSameDay(valueDate, DateTime.now())
-            ? Str.todayLabel
-            : shortDate(valueDate),
+        Str.todayLabel,
         style: titleTodayText,
       );
-    } else if (valueInt.abs() % (chartWindow / 2) == 0) {
+    } else if (value.abs() % (chartWindow / 2) == 0) {
       title = Text(
-        shortDate(valueDate),
+        shortDate(today.add(Duration(days: value.toInt()))),
         style: titleDateText,
       );
     }
@@ -329,7 +316,7 @@ class BiorhythmChartState extends State<BiorhythmChart> {
           pointGenerator(
             dateDiff(
               di<AppModel>().birthday,
-              _targetDate,
+              today,
               addDays: day - chartRangeSplit,
             ),
           ),

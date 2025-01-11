@@ -16,6 +16,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+// Today's date with no time component
+DateTime get today => DateUtils.dateOnly(DateTime.now());
+
 // Get inclusive date difference in days
 int dateDiff(DateTime from, DateTime to, {int addDays = 0}) {
   return 1 +
