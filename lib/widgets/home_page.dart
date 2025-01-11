@@ -25,18 +25,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:watch_it/watch_it.dart';
 
-class HomePage extends WatchingWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final birthday = watchPropertyValue((AppModel m) => m.birthday);
-
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {
         // Prompt user once if birthday is unset
         if (context.mounted && !di<AppModel>().isBirthdaySet) {
-          di<AppModel>().birthday = birthday;
+          di<AppModel>().birthday = di<AppModel>().birthday;
           adaptiveBirthdayPicker(context);
         }
       },
@@ -70,14 +68,8 @@ class HomePage extends WatchingWidget {
                   iconAlignment: IconAlignment.start,
                 ),
                 // Birthday setting
-                TextButton.icon(
+                birthdayButton(
                   onPressed: () => adaptiveBirthdayPicker(context),
-                  label: Text(
-                    '${Str.birthdayLabel} ${longDate(birthday)}',
-                    style: labelText,
-                  ),
-                  icon: Icon(Icons.edit, size: labelText.fontSize),
-                  iconAlignment: IconAlignment.end,
                 ),
               ],
             ),
@@ -91,6 +83,21 @@ class HomePage extends WatchingWidget {
           ],
         ),
       ),
+    );
+  }
+
+  // Birthday setting text button
+  Widget birthdayButton({required VoidCallback onPressed}) {
+    final birthday = watchPropertyValue((AppModel m) => m.birthday);
+
+    return TextButton.icon(
+      onPressed: onPressed,
+      label: Text(
+        '${Str.birthdayLabel} ${longDate(birthday)}',
+        style: labelText,
+      ),
+      icon: Icon(Icons.edit, size: labelText.fontSize),
+      iconAlignment: IconAlignment.end,
     );
   }
 
