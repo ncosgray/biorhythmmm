@@ -32,11 +32,11 @@ class HomePage extends WatchingWidget {
   Widget build(BuildContext context) {
     final birthday = watchPropertyValue((AppModel m) => m.birthday);
 
-    // Prompt user once if birthday is unset
-    Future.delayed(
-      Duration.zero,
-      () {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        // Prompt user once if birthday is unset
         if (context.mounted && !di<AppModel>().isBirthdaySet) {
+          di<AppModel>().birthday = birthday;
           adaptiveBirthdayPicker(context);
         }
       },
