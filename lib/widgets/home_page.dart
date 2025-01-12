@@ -68,7 +68,7 @@ class HomePage extends StatelessWidget {
                   iconAlignment: IconAlignment.start,
                 ),
                 // Birthday setting
-                birthdayButton(
+                BirthdayButton(
                   onPressed: () => adaptiveBirthdayPicker(context),
                 ),
               ],
@@ -83,21 +83,6 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  // Birthday setting text button
-  Widget birthdayButton({required VoidCallback onPressed}) {
-    final birthday = watchPropertyValue((AppModel m) => m.birthday);
-
-    return TextButton.icon(
-      onPressed: onPressed,
-      label: Text(
-        '${Str.birthdayLabel} ${longDate(birthday)}',
-        style: labelText,
-      ),
-      icon: Icon(Icons.edit, size: labelText.fontSize),
-      iconAlignment: IconAlignment.end,
     );
   }
 
@@ -220,5 +205,30 @@ class HomePage extends StatelessWidget {
               child: Text(text),
             );
     }
+  }
+}
+
+// Birthday setting text button
+class BirthdayButton extends WatchingWidget {
+  const BirthdayButton({
+    super.key,
+    this.onPressed,
+  });
+
+  final Function()? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final birthday = watchPropertyValue((AppModel m) => m.birthday);
+
+    return TextButton.icon(
+      onPressed: onPressed,
+      label: Text(
+        '${Str.birthdayLabel} ${longDate(birthday)}',
+        style: labelText,
+      ),
+      icon: Icon(Icons.edit, size: labelText.fontSize),
+      iconAlignment: IconAlignment.end,
+    );
   }
 }
