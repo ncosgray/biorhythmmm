@@ -46,7 +46,7 @@ class HomePage extends StatelessWidget {
         title: Text(Str.appName),
         // About button
         leading: IconButton(
-          icon: const Icon(Icons.help_outline),
+          icon: Icon(helpIcon),
           onPressed: () => showAboutDialog(context),
         ),
       ),
@@ -64,7 +64,7 @@ class HomePage extends StatelessWidget {
                     Str.todayLabel,
                     style: labelText,
                   ),
-                  icon: Icon(Icons.calendar_today, size: labelText.fontSize),
+                  icon: Icon(todayIcon, size: labelText.fontSize),
                   iconAlignment: IconAlignment.start,
                 ),
                 // Birthday setting
@@ -208,6 +208,16 @@ class HomePage extends StatelessWidget {
   }
 }
 
+// Platform aware icons
+IconData get helpIcon =>
+    Platform.isIOS ? CupertinoIcons.question_circle : Icons.help_outline;
+
+IconData get todayIcon =>
+    Platform.isIOS ? CupertinoIcons.calendar_today : Icons.calendar_today;
+
+IconData get editIcon =>
+    Platform.isIOS ? CupertinoIcons.square_pencil_fill : Icons.edit;
+
 // Birthday setting text button
 class BirthdayButton extends WatchingWidget {
   const BirthdayButton({
@@ -227,7 +237,7 @@ class BirthdayButton extends WatchingWidget {
         '${Str.birthdayLabel} ${longDate(birthday)}',
         style: labelText,
       ),
-      icon: Icon(Icons.edit, size: labelText.fontSize),
+      icon: Icon(editIcon, size: labelText.fontSize),
       iconAlignment: IconAlignment.end,
     );
   }
