@@ -42,29 +42,27 @@ class BiorhythmChart extends WatchingStatefulWidget {
 class BiorhythmChartState extends State<BiorhythmChart> {
   // State variables
   Biorhythm? _highlighted;
-  late List<double> _chartPoints;
+  late List<double> _points;
   final TransformationController _controller = TransformationController();
 
-  // Populate chart data
-  void setPoints() {
-    _chartPoints = List.generate(
+  // Populate data points
+  void setPoints(DateTime birthday) {
+    _points = List.generate(
       di<AppModel>().biorhythms.length,
-      (i) => di<AppModel>()
-          .biorhythms[i]
-          .getPoint(dateDiff(di<AppModel>().birthday, today)),
+      (i) => di<AppModel>().biorhythms[i].getPoint(dateDiff(birthday, today)),
     );
   }
 
-  // Reset biorhythm points to today
-  void resetPoints() {
+  // Reset biorhythm chart and points to today
+  void resetChart() {
     di<AppModel>().resetChart = true;
     _highlighted = null;
-    setPoints();
+    setPoints(di<AppModel>().birthday);
   }
 
   @override
   void initState() {
-    resetPoints();
+    resetChart();
     super.initState();
   }
 
@@ -76,12 +74,13 @@ class BiorhythmChartState extends State<BiorhythmChart> {
 
   @override
   void didUpdateWidget(BiorhythmChart oldWidget) {
-    resetPoints();
+    resetChart();
     super.didUpdateWidget(oldWidget);
   }
 
   @override
   Widget build(BuildContext context) {
+    final birthday = watchPropertyValue((AppModel m) => m.birthday);
     final resetChart = watchPropertyValue((AppModel m) => m.resetChart);
     final showExtraPoints =
         watchPropertyValue((AppModel m) => m.showExtraPoints);
@@ -125,16 +124,16 @@ class BiorhythmChartState extends State<BiorhythmChart> {
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 // Biorhythm percentages
-                for (int i = 0; i < _chartPoints.length; i++)
+                for (int i = 0; i < _points.length; i++)
                   biorhythmPercentBox(
                     biorhythm: di<AppModel>().biorhythms[i],
-                    point: _chartPoints[i],
+                    point: _points[i],
                   ),
                 // Toggle extra biorhythms
                 IconButton(
                   onPressed: () {
                     di<AppModel>().toggleExtraPoints();
-                    setPoints();
+                    setPoints(birthday);
                   },
                   icon: showExtraPoints
                       ? Icon(Icons.keyboard_double_arrow_left)
@@ -189,15 +188,15 @@ class BiorhythmChartState extends State<BiorhythmChart> {
   void touchCallback(FlTouchEvent event, LineTouchResponse? response) {
     if (event.isInterestedForInteractions) {
       if (response?.lineBarSpots != null) {
-        // Update percent displays
+        // Update points for percent displays
         for (int i = 0; i < response!.lineBarSpots!.length; i++) {
-          if (i < _chartPoints.length) {
-            _chartPoints[i] = response.lineBarSpots![i].y;
+          if (i < _points.length) {
+            _points[i] = response.lineBarSpots![i].y;
           }
         }
       }
     } else {
-      setPoints();
+      setPoints(di<AppModel>().birthday);
     }
 
     // UI state update
