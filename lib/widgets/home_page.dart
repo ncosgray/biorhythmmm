@@ -64,7 +64,7 @@ class HomePage extends StatelessWidget {
                     Str.todayLabel,
                     style: labelText,
                   ),
-                  icon: const Icon(Icons.calendar_today),
+                  icon: Icon(Icons.calendar_today, size: labelText.fontSize),
                   iconAlignment: IconAlignment.start,
                 ),
                 // Birthday setting
