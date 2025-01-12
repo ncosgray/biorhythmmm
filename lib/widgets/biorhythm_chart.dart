@@ -173,7 +173,7 @@ class BiorhythmChartState extends State<BiorhythmChart> {
                 List.filled(touchedSpots.length, null);
             if (touchedSpots.isNotEmpty) {
               items[0] = LineTooltipItem(
-                shortDate(
+                dateAndDay(
                   today.add(Duration(days: touchedSpots[0].x.toInt())),
                 ),
                 titleText,

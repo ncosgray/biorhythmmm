@@ -33,6 +33,11 @@ String shortDate(DateTime d) {
   return DateFormat.Md().format(d);
 }
 
+// Format date as short date with day of week
+String dateAndDay(DateTime d) {
+  return DateFormat.E().add_Md().format(d);
+}
+
 // Format date as long date
 String longDate(DateTime d) {
   return DateFormat.yMd().format(d);
