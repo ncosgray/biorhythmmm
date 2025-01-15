@@ -124,7 +124,9 @@ class BiorhythmChartState extends State<BiorhythmChart> {
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 // Biorhythm percentages
-                for (int i = 0; i < _points.length; i++)
+                for (int i = 0;
+                    i < _points.length && i < di<AppModel>().biorhythms.length;
+                    i++)
                   biorhythmPercentBox(
                     biorhythm: di<AppModel>().biorhythms[i],
                     point: _points[i],

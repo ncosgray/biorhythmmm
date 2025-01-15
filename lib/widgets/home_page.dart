@@ -71,6 +71,10 @@ class HomePage extends StatelessWidget {
                 BirthdayButton(
                   onPressed: () => adaptiveBirthdayPicker(context),
                 ),
+                // Toggle extra biorhythms
+                ToggleExtraButton(
+                  onPressed: () => di<AppModel>().toggleExtraPoints(),
+                ),
               ],
             ),
             // Chart
@@ -218,6 +222,12 @@ IconData get todayIcon =>
 IconData get editIcon =>
     Platform.isIOS ? CupertinoIcons.square_pencil_fill : Icons.edit;
 
+IconData get visibleIcon =>
+    Platform.isIOS ? CupertinoIcons.eye : Icons.visibility;
+
+IconData get invisibleIcon =>
+    Platform.isIOS ? CupertinoIcons.eye_slash : Icons.visibility_off;
+
 // Birthday setting text button
 class BirthdayButton extends WatchingWidget {
   const BirthdayButton({
@@ -238,6 +248,35 @@ class BirthdayButton extends WatchingWidget {
         style: labelText,
       ),
       icon: Icon(editIcon, size: labelText.fontSize),
+      iconAlignment: IconAlignment.end,
+    );
+  }
+}
+
+// Toggle extra biorhythms button
+class ToggleExtraButton extends WatchingWidget {
+  const ToggleExtraButton({
+    super.key,
+    this.onPressed,
+  });
+
+  final Function()? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final showExtraPoints =
+        watchPropertyValue((AppModel m) => m.showExtraPoints);
+
+    return TextButton.icon(
+      onPressed: onPressed,
+      label: Text(
+        Str.toggleExtraLabel,
+        style: labelText,
+      ),
+      icon: Icon(
+        showExtraPoints ? visibleIcon : invisibleIcon,
+        size: labelText.fontSize,
+      ),
       iconAlignment: IconAlignment.end,
     );
   }

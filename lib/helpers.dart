@@ -40,7 +40,7 @@ String dateAndDay(DateTime d) {
 
 // Format date as long date
 String longDate(DateTime d) {
-  return DateFormat.yMd().format(d);
+  return DateFormat('M/d/yy').format(d);
 }
 
 // Round double to neareast int

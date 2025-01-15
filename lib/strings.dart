@@ -24,9 +24,10 @@ class Str {
   static String get biorhythmAesthetic => 'Aesthetic';
   static String get biorhythmAwareness => 'Awareness';
   static String get biorhythmSpiritual => 'Spiritual';
-  static String get birthdayLabel => 'Birthday:';
+  static String get birthdayLabel => 'DOB:';
   static String get birthdaySelectText => 'When were you born?';
   static String get todayLabel => 'Today';
+  static String get toggleExtraLabel => 'All';
   static String get aboutTitle => 'About Biorhythms';
   static String get aboutCycles =>
       'Biorhythms are natural cycles that influence the states of our minds and bodies. The three primary cycles are:';
