@@ -15,7 +15,7 @@
 // - Percentage widget
 // - Chart interactivity (touch, pan, zoom)
 
-import 'package:biorhythmmm/app_model.dart';
+import 'package:biorhythmmm/app_state.dart';
 import 'package:biorhythmmm/biorhythm.dart';
 import 'package:biorhythmmm/helpers.dart';
 import 'package:biorhythmmm/strings.dart';
@@ -23,41 +23,50 @@ import 'package:biorhythmmm/styles.dart';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:watch_it/watch_it.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+// Chart
+final GlobalKey chartKey = GlobalKey();
+final TransformationController chartController = TransformationController();
 
 // Chart ranges
-final GlobalKey chartKey = GlobalKey();
 final int chartRange = 180;
 final int chartRangeSplit = (chartRange / 2).floor();
 final int chartWindow = 14;
 
 // Interactive biorhythm chart
-class BiorhythmChart extends WatchingStatefulWidget {
+class BiorhythmChart extends StatefulWidget {
   const BiorhythmChart({super.key});
 
   @override
-  State<StatefulWidget> createState() => BiorhythmChartState();
+  State<StatefulWidget> createState() => _BiorhythmChartState();
 }
 
-class BiorhythmChartState extends State<BiorhythmChart> {
+class _BiorhythmChartState extends State<BiorhythmChart> {
   // State variables
+  List<BiorhythmPoint> _points = [];
   Biorhythm? _highlighted;
-  late List<double> _points;
-  final TransformationController _controller = TransformationController();
 
   // Populate data points
-  void setPoints(DateTime birthday) {
-    _points = List.generate(
-      di<AppModel>().biorhythms.length,
-      (i) => di<AppModel>().biorhythms[i].getPoint(dateDiff(birthday, today)),
-    );
+  void setPoints([List<BiorhythmPoint>? newPoints]) {
+    if (newPoints != null) {
+      // Update points with specified data
+      _points = newPoints;
+    } else {
+      // Reset points to today
+      int day = dateDiff(context.read<AppStateCubit>().birthday, today);
+      _points = [
+        for (final Biorhythm b in context.read<AppStateCubit>().biorhythms)
+          b.getBiorhythmPoint(day),
+      ];
+    }
   }
 
   // Reset biorhythm chart and points to today
   void resetChart() {
-    di<AppModel>().resetChart = true;
+    setPoints();
     _highlighted = null;
-    setPoints(di<AppModel>().birthday);
+    context.read<AppStateCubit>().reload();
   }
 
   @override
@@ -68,7 +77,7 @@ class BiorhythmChartState extends State<BiorhythmChart> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    chartController.dispose();
     super.dispose();
   }
 
@@ -80,86 +89,93 @@ class BiorhythmChartState extends State<BiorhythmChart> {
 
   @override
   Widget build(BuildContext context) {
-    final birthday = watchPropertyValue((AppModel m) => m.birthday);
-    final resetChart = watchPropertyValue((AppModel m) => m.resetChart);
-    final showExtraPoints =
-        watchPropertyValue((AppModel m) => m.showExtraPoints);
+    return BlocBuilder<AppStateCubit, AppState>(
+      builder: (context, state) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          // Process a rebuild request
+          if (state.reload) {
+            context.read<AppStateCubit>().resetReload();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (resetChart) {
-        di<AppModel>().resetChart = false;
+            // Scale chart to show default range
+            double scaleFactor = chartRangeSplit / chartWindow;
+            double chartWidth = chartKey.currentContext!.size!.width;
+            chartController.value = Matrix4.identity()
+              ..scale(scaleFactor)
+              ..translate(-((chartWidth - chartWindow) / 2));
+          }
+        });
 
-        // Scale chart to show default range
-        double scaleFactor = chartRangeSplit / chartWindow;
-        double chartWidth = chartKey.currentContext!.size!.width;
-        _controller.value = Matrix4.identity()
-          ..scale(scaleFactor)
-          ..translate(-((chartWidth - chartWindow) / 2));
-      }
-    });
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        // Biorhythm chart
-        Expanded(
-          child: LineChart(
-            biorhythmData,
-            key: chartKey,
-            duration: Duration.zero,
-            transformationConfig: FlTransformationConfig(
-              scaleAxis: FlScaleAxis.horizontal,
-              minScale: chartWindow / 4,
-              maxScale: chartWindow.toDouble(),
-              scaleEnabled: true,
-              panEnabled: true,
-              transformationController: _controller,
+        // Biorhythm chart and points
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Expanded(child: biorhythmChart),
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: Center(child: biorhythmPoints),
             ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: Center(
-            child: Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                // Biorhythm percentages
-                for (int i = 0;
-                    i < _points.length && i < di<AppModel>().biorhythms.length;
-                    i++)
-                  biorhythmPercentBox(
-                    biorhythm: di<AppModel>().biorhythms[i],
-                    point: _points[i],
-                  ),
-                // Toggle extra biorhythms
-                IconButton(
-                  onPressed: () {
-                    di<AppModel>().toggleExtraPoints();
-                    setPoints(birthday);
-                  },
-                  icon: showExtraPoints
-                      ? Icon(Icons.keyboard_double_arrow_left)
-                      : Icon(Icons.keyboard_double_arrow_right),
-                  iconSize: 28,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
+          ],
+        );
+      },
     );
   }
 
   // Create a line chart graphing biorhythm data
-  LineChartData get biorhythmData => LineChartData(
+  LineChart get biorhythmChart => LineChart(
+        chartData,
+        chartRendererKey: chartKey,
+        duration: Duration.zero,
+        transformationConfig: chartTransformation,
+      );
+
+  // Define chart data
+  LineChartData get chartData => LineChartData(
+        lineBarsData: lineBarsData,
         lineTouchData: lineTouchData,
         gridData: gridData,
         titlesData: titlesData,
         borderData: borderData,
-        lineBarsData: lineBarsData,
         maxY: 1,
         minY: -1,
       );
+
+  List<LineChartBarData> get lineBarsData => [
+        for (final Biorhythm b in context.read<AppStateCubit>().biorhythms)
+          biorhythmLineData(
+            color: _highlighted == b ? b.highlightColor : b.graphColor,
+            pointCount: chartRange,
+            pointGenerator: b.getPoint,
+          ),
+      ];
+
+  LineChartBarData biorhythmLineData({
+    required Color color,
+    required int pointCount,
+    required double Function(int) pointGenerator,
+  }) {
+    return LineChartBarData(
+      isCurved: true,
+      color: color,
+      barWidth: 4,
+      isStrokeCapRound: true,
+      dotData: FlDotData(show: false),
+      belowBarData: BarAreaData(show: false),
+      // Graph a range of biorhythm points
+      spots: List.generate(
+        pointCount,
+        (int day) => FlSpot(
+          (day - chartRangeSplit).toDouble(),
+          pointGenerator(
+            dateDiff(
+              context.read<AppStateCubit>().birthday,
+              today,
+              addDays: day - chartRangeSplit,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   // Chart interactivity
   LineTouchData get lineTouchData => LineTouchData(
@@ -188,21 +204,26 @@ class BiorhythmChartState extends State<BiorhythmChart> {
       );
 
   void touchCallback(FlTouchEvent event, LineTouchResponse? response) {
-    if (event.isInterestedForInteractions) {
-      if (response?.lineBarSpots != null) {
-        // Update points for percent displays
-        for (int i = 0; i < response!.lineBarSpots!.length; i++) {
-          if (i < _points.length) {
-            _points[i] = response.lineBarSpots![i].y;
-          }
+    setState(() {
+      if (event.isInterestedForInteractions) {
+        if (response?.lineBarSpots != null) {
+          // Update points for percent displays
+          setPoints(
+            [
+              for (final TouchLineBarSpot spot in response!.lineBarSpots!)
+                (
+                  biorhythm:
+                      context.read<AppStateCubit>().biorhythms[spot.barIndex],
+                  point: spot.y
+                ),
+            ],
+          );
         }
+      } else {
+        // Reset points to today
+        setPoints();
       }
-    } else {
-      setPoints(di<AppModel>().birthday);
-    }
-
-    // UI state update
-    setState(() => ());
+    });
   }
 
   // Chart grids
@@ -287,63 +308,48 @@ class BiorhythmChartState extends State<BiorhythmChart> {
         ),
       );
 
-  // Define chart data
-  List<LineChartBarData> get lineBarsData => [
-        for (final Biorhythm b in di<AppModel>().biorhythms)
-          biorhythmLineData(
-            color: _highlighted == b ? b.highlightColor : b.graphColor,
-            pointCount: chartRange,
-            pointGenerator: b.getPoint,
-          ),
-      ];
+  // Chart tranformation
+  FlTransformationConfig get chartTransformation => FlTransformationConfig(
+        scaleAxis: FlScaleAxis.horizontal,
+        minScale: chartWindow / 4,
+        maxScale: chartWindow.toDouble(),
+        scaleEnabled: true,
+        panEnabled: true,
+        transformationController: chartController,
+      );
 
-  LineChartBarData biorhythmLineData({
-    required Color color,
-    required int pointCount,
-    required double Function(int) pointGenerator,
-  }) {
-    return LineChartBarData(
-      isCurved: true,
-      color: color,
-      barWidth: 4,
-      isStrokeCapRound: true,
-      dotData: FlDotData(show: false),
-      belowBarData: BarAreaData(show: false),
-      // Graph a range of biorhythm points
-      spots: List.generate(
-        pointCount,
-        (int day) => FlSpot(
-          (day - chartRangeSplit).toDouble(),
-          pointGenerator(
-            dateDiff(
-              di<AppModel>().birthday,
-              today,
-              addDays: day - chartRangeSplit,
-            ),
-          ),
+  // Wrapping list of current biorhythm point data
+  Widget get biorhythmPoints => BlocListener<AppStateCubit, AppState>(
+        listener: (context, state) {
+          // Redraw points if biorhythm selection changes
+          setPoints();
+        },
+        listenWhen: (previous, current) =>
+            previous.biorhythms != current.biorhythms,
+        child: Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            for (int i = 0; i < _points.length; i++)
+              biorhythmPercentBox(_points[i]),
+          ],
         ),
-      ),
-    );
-  }
+      );
 
   // Display a biorhythm point as a percentage with label
-  Widget biorhythmPercentBox({
-    required Biorhythm biorhythm,
-    required double point,
-  }) {
+  Widget biorhythmPercentBox(BiorhythmPoint point) {
     return GestureDetector(
       child: Container(
         padding: EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: _highlighted == biorhythm
-              ? biorhythm.highlightColor
-              : biorhythm.graphColor,
+          color: _highlighted == point.biorhythm
+              ? point.biorhythm.highlightColor
+              : point.biorhythm.graphColor,
         ),
         child: Column(
           children: [
             // Name label
             Text(
-              biorhythm.name,
+              point.biorhythm.name,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: labelText,
@@ -359,11 +365,11 @@ class BiorhythmChartState extends State<BiorhythmChart> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    getPhaseIcon(point),
+                    getPhaseIcon(point.point),
                     size: pointText.fontSize!,
                   ),
                   Text(
-                    shortPercent(point),
+                    shortPercent(point.point),
                     style: pointText,
                   ),
                 ],
@@ -373,7 +379,7 @@ class BiorhythmChartState extends State<BiorhythmChart> {
         ),
       ),
       // Chart interactivity
-      onTapDown: (_) => setState(() => _highlighted = biorhythm),
+      onTapDown: (_) => setState(() => _highlighted = point.biorhythm),
       onTapUp: (_) => setState(() => _highlighted = null),
       onTapCancel: () => setState(() => _highlighted = null),
     );

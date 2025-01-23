@@ -13,7 +13,7 @@
 // Biorhythmmm
 // - App initialization and themes
 
-import 'package:biorhythmmm/app_model.dart';
+import 'package:biorhythmmm/app_state.dart';
 import 'package:biorhythmmm/prefs.dart';
 import 'package:biorhythmmm/strings.dart';
 import 'package:biorhythmmm/widgets/home_page.dart';
@@ -21,10 +21,10 @@ import 'package:biorhythmmm/widgets/home_page.dart';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/find_locale.dart';
 import 'package:intl/intl.dart';
-import 'package:watch_it/watch_it.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,9 +36,6 @@ void main() async {
   await initializeDateFormatting();
   Intl.defaultLocale = await findSystemLocale();
 
-  // Register AppModel
-  di.registerSingleton<AppModel>(AppModelImplementation());
-
   runApp(const BiorhythmApp());
 }
 
@@ -48,28 +45,31 @@ class BiorhythmApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: HomePage(),
-      title: Str.appName,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.orange.shade300,
-          brightness: Brightness.light,
+    return BlocProvider<AppStateCubit>(
+      create: (BuildContext context) => AppStateCubit(),
+      child: MaterialApp(
+        home: HomePage(),
+        title: Str.appName,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.orange.shade300,
+            brightness: Brightness.light,
+          ),
+          dividerColor: Colors.black26,
+          splashFactory: splashFactory,
+          cupertinoOverrideTheme: cupertinoOverrideTheme,
         ),
-        dividerColor: Colors.black26,
-        splashFactory: splashFactory,
-        cupertinoOverrideTheme: cupertinoOverrideTheme,
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.orange,
-          brightness: Brightness.dark,
+        darkTheme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.orange,
+            brightness: Brightness.dark,
+          ),
+          dividerColor: Colors.white12,
+          splashFactory: splashFactory,
+          cupertinoOverrideTheme: cupertinoOverrideTheme,
         ),
-        dividerColor: Colors.white12,
-        splashFactory: splashFactory,
-        cupertinoOverrideTheme: cupertinoOverrideTheme,
+        debugShowCheckedModeBanner: false,
       ),
-      debugShowCheckedModeBanner: false,
     );
   }
 

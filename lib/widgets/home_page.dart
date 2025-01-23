@@ -13,7 +13,7 @@
 // Biorhythmmm
 // - App home page
 
-import 'package:biorhythmmm/app_model.dart';
+import 'package:biorhythmmm/app_state.dart';
 import 'package:biorhythmmm/helpers.dart';
 import 'package:biorhythmmm/strings.dart';
 import 'package:biorhythmmm/styles.dart';
@@ -23,7 +23,7 @@ import 'package:biorhythmmm/widgets/biorhythm_chart.dart';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:watch_it/watch_it.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -33,8 +33,8 @@ class HomePage extends StatelessWidget {
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {
         // Prompt user once if birthday is unset
-        if (context.mounted && !di<AppModel>().isBirthdaySet) {
-          di<AppModel>().birthday = di<AppModel>().birthday;
+        if (context.mounted && !context.read<AppStateCubit>().isBirthdaySet) {
+          context.read<AppStateCubit>().saveBirthday();
           adaptiveBirthdayPicker(context);
         }
       },
@@ -59,7 +59,7 @@ class HomePage extends StatelessWidget {
               children: [
                 // Reset button
                 TextButton.icon(
-                  onPressed: () => di<AppModel>().resetChart = true,
+                  onPressed: () => context.read<AppStateCubit>().reload(),
                   label: Text(
                     Str.todayLabel,
                     style: labelText,
@@ -68,12 +68,34 @@ class HomePage extends StatelessWidget {
                   iconAlignment: IconAlignment.start,
                 ),
                 // Birthday setting
-                BirthdayButton(
-                  onPressed: () => adaptiveBirthdayPicker(context),
+                BlocSelector<AppStateCubit, AppState, DateTime>(
+                  selector: (state) => state.birthday,
+                  builder: (context, birthday) => TextButton.icon(
+                    onPressed: () => adaptiveBirthdayPicker(context),
+                    label: Text(
+                      '${Str.birthdayLabel} ${longDate(birthday)}',
+                      style: labelText,
+                    ),
+                    icon: Icon(editIcon, size: labelText.fontSize),
+                    iconAlignment: IconAlignment.end,
+                  ),
                 ),
                 // Toggle extra biorhythms
-                ToggleExtraButton(
-                  onPressed: () => di<AppModel>().toggleExtraPoints(),
+                BlocSelector<AppStateCubit, AppState, bool>(
+                  selector: (state) => state.showExtraPoints,
+                  builder: (context, showExtraPoints) => TextButton.icon(
+                    onPressed: () =>
+                        context.read<AppStateCubit>().toggleExtraPoints(),
+                    label: Text(
+                      Str.toggleExtraLabel,
+                      style: labelText,
+                    ),
+                    icon: Icon(
+                      showExtraPoints ? visibleIcon : invisibleIcon,
+                      size: labelText.fontSize,
+                    ),
+                    iconAlignment: IconAlignment.end,
+                  ),
                 ),
               ],
             ),
@@ -91,25 +113,25 @@ class HomePage extends StatelessWidget {
   }
 
   // Open a dialog box to choose user birthday
-  adaptiveBirthdayPicker(BuildContext context) async {
+  adaptiveBirthdayPicker(BuildContext context) {
     if (Platform.isIOS) {
-      return buildCupertinoDatePicker(context);
+      buildCupertinoDatePicker(context);
     } else {
-      return buildMaterialDatePicker(context);
+      buildMaterialDatePicker(context);
     }
   }
 
   // Android date picker
   buildMaterialDatePicker(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    DateTime? picked = await showDatePicker(
       context: context,
       helpText: Str.birthdaySelectText,
-      initialDate: di<AppModel>().birthday,
+      initialDate: context.read<AppStateCubit>().birthday,
       firstDate: DateTime(0),
       lastDate: DateTime(DateTime.now().year),
     );
-    if (picked != null) {
-      di<AppModel>().birthday = picked;
+    if (picked != null && context.mounted) {
+      context.read<AppStateCubit>().setBirthday(picked);
     }
   }
 
@@ -139,8 +161,8 @@ class HomePage extends StatelessWidget {
                 child: CupertinoDatePicker(
                   mode: CupertinoDatePickerMode.date,
                   onDateTimeChanged: (picked) =>
-                      di<AppModel>().birthday = picked,
-                  initialDateTime: di<AppModel>().birthday,
+                      context.read<AppStateCubit>().setBirthday(picked),
+                  initialDateTime: context.read<AppStateCubit>().birthday,
                   maximumYear: DateTime.now().year,
                 ),
               ),
@@ -227,57 +249,3 @@ IconData get visibleIcon =>
 
 IconData get invisibleIcon =>
     Platform.isIOS ? CupertinoIcons.eye_slash : Icons.visibility_off;
-
-// Birthday setting text button
-class BirthdayButton extends WatchingWidget {
-  const BirthdayButton({
-    super.key,
-    this.onPressed,
-  });
-
-  final Function()? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final birthday = watchPropertyValue((AppModel m) => m.birthday);
-
-    return TextButton.icon(
-      onPressed: onPressed,
-      label: Text(
-        '${Str.birthdayLabel} ${longDate(birthday)}',
-        style: labelText,
-      ),
-      icon: Icon(editIcon, size: labelText.fontSize),
-      iconAlignment: IconAlignment.end,
-    );
-  }
-}
-
-// Toggle extra biorhythms button
-class ToggleExtraButton extends WatchingWidget {
-  const ToggleExtraButton({
-    super.key,
-    this.onPressed,
-  });
-
-  final Function()? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final showExtraPoints =
-        watchPropertyValue((AppModel m) => m.showExtraPoints);
-
-    return TextButton.icon(
-      onPressed: onPressed,
-      label: Text(
-        Str.toggleExtraLabel,
-        style: labelText,
-      ),
-      icon: Icon(
-        showExtraPoints ? visibleIcon : invisibleIcon,
-        size: labelText.fontSize,
-      ),
-      iconAlignment: IconAlignment.end,
-    );
-  }
-}

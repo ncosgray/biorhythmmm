@@ -18,6 +18,11 @@ import 'package:biorhythmmm/strings.dart';
 import 'dart:math';
 import 'package:flutter/material.dart';
 
+typedef BiorhythmPoint = ({
+  Biorhythm biorhythm,
+  double point,
+});
+
 enum Biorhythm {
   intellectual(Colors.lightGreen, 33, true),
   emotional(Colors.pinkAccent, 28, true),
@@ -50,4 +55,7 @@ enum Biorhythm {
 
   // Calcuate biorhythm point for a given day
   double getPoint(int day) => sin(2 * pi * day / cycleDays);
+
+  BiorhythmPoint getBiorhythmPoint(int day) =>
+      (biorhythm: this, point: getPoint(day));
 }
