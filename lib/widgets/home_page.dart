@@ -61,7 +61,7 @@ class HomePage extends StatelessWidget {
                 TextButton.icon(
                   onPressed: () => context.read<AppStateCubit>().reload(),
                   label: Text(
-                    Str.todayLabel,
+                    Str.resetLabel,
                     style: labelText,
                   ),
                   icon: Icon(todayIcon, size: labelText.fontSize),
