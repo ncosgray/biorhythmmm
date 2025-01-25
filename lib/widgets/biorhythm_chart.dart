@@ -73,6 +73,10 @@ class _BiorhythmChartState extends State<BiorhythmChart> {
   void initState() {
     resetChart();
     super.initState();
+
+    // Show the reset button when the chart gets transformed
+    chartController
+        .addListener(() => context.read<AppStateCubit>().enableResetButton());
   }
 
   @override
@@ -92,16 +96,15 @@ class _BiorhythmChartState extends State<BiorhythmChart> {
     return BlocBuilder<AppStateCubit, AppState>(
       builder: (context, state) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          // Process a rebuild request
+          // Process a reload request
           if (state.reload) {
-            context.read<AppStateCubit>().resetReload();
-
             // Scale chart to show default range
             double scaleFactor = chartRangeSplit / chartWindow;
             double chartWidth = chartKey.currentContext!.size!.width;
             chartController.value = Matrix4.identity()
               ..scale(scaleFactor)
               ..translate(-((chartWidth - chartWindow) / 2));
+            context.read<AppStateCubit>().resetReload();
           }
         });
 

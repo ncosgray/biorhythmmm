@@ -58,14 +58,20 @@ class HomePage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Reset button
-                TextButton.icon(
-                  onPressed: () => context.read<AppStateCubit>().reload(),
-                  label: Text(
-                    Str.resetLabel,
-                    style: labelText,
+                BlocSelector<AppStateCubit, AppState, bool>(
+                  selector: (state) => state.showResetButton,
+                  builder: (context, showResetButton) => Visibility.maintain(
+                    visible: showResetButton,
+                    child: TextButton.icon(
+                      onPressed: () => context.read<AppStateCubit>().reload(),
+                      label: Text(
+                        Str.resetLabel,
+                        style: labelText,
+                      ),
+                      icon: Icon(todayIcon, size: labelText.fontSize),
+                      iconAlignment: IconAlignment.start,
+                    ),
                   ),
-                  icon: Icon(todayIcon, size: labelText.fontSize),
-                  iconAlignment: IconAlignment.start,
                 ),
                 // Birthday setting
                 BlocSelector<AppStateCubit, AppState, DateTime>(

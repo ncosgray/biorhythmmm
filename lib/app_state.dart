@@ -24,12 +24,14 @@ class AppState {
     this.birthday,
     this.biorhythms,
     this.showExtraPoints,
+    this.showResetButton,
     this.reload,
   );
 
   final DateTime birthday;
   final List<Biorhythm> biorhythms;
   final bool showExtraPoints;
+  final bool showResetButton;
   final bool reload;
 
   // Populate state with initial values from shared preferences
@@ -37,6 +39,7 @@ class AppState {
         Prefs.birthday,
         Prefs.showExtraPoints ? allBiorhythms : primaryBiorhythms,
         Prefs.showExtraPoints,
+        false,
         false,
       );
 
@@ -51,8 +54,9 @@ class AppStateCubit extends Cubit<AppState> {
 
   // Getters
   DateTime get birthday => state.birthday;
-  bool get showExtraPoints => state.showExtraPoints;
   List<Biorhythm> get biorhythms => state.biorhythms;
+  bool get showExtraPoints => state.showExtraPoints;
+  bool get showResetButton => state.showResetButton;
 
   // Manage birthday
   saveBirthday() => Prefs.birthday = state.birthday;
@@ -65,6 +69,7 @@ class AppStateCubit extends Cubit<AppState> {
         newBirthday,
         state.biorhythms,
         state.showExtraPoints,
+        state.showResetButton,
         state.reload,
       ),
     );
@@ -81,9 +86,25 @@ class AppStateCubit extends Cubit<AppState> {
             ? AppState.allBiorhythms
             : AppState.primaryBiorhythms,
         newShowExtraPoints,
+        state.showResetButton,
         state.reload,
       ),
     );
+  }
+
+  // Enable reset button
+  void enableResetButton() {
+    if (!state.showResetButton) {
+      emit(
+        AppState(
+          state.birthday,
+          state.biorhythms,
+          state.showExtraPoints,
+          true,
+          state.reload,
+        ),
+      );
+    }
   }
 
   // Reload request
@@ -92,6 +113,7 @@ class AppStateCubit extends Cubit<AppState> {
           state.birthday,
           state.biorhythms,
           state.showExtraPoints,
+          state.showResetButton,
           true,
         ),
       );
@@ -101,6 +123,7 @@ class AppStateCubit extends Cubit<AppState> {
           state.birthday,
           state.biorhythms,
           state.showExtraPoints,
+          false,
           false,
         ),
       );
