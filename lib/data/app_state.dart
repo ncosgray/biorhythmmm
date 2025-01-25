@@ -14,8 +14,8 @@
 // - App state
 // - Manage preferences
 
-import 'package:biorhythmmm/biorhythm.dart';
-import 'package:biorhythmmm/prefs.dart';
+import 'package:biorhythmmm/data/biorhythm.dart';
+import 'package:biorhythmmm/data/prefs.dart';
 
 import 'package:bloc/bloc.dart';
 

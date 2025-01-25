@@ -13,15 +13,15 @@
 // Biorhythmmm
 // - App home page
 
-import 'package:biorhythmmm/app_state.dart';
-import 'package:biorhythmmm/helpers.dart';
-import 'package:biorhythmmm/strings.dart';
-import 'package:biorhythmmm/styles.dart';
-import 'package:biorhythmmm/widgets/about_text.dart';
+import 'package:biorhythmmm/common/helpers.dart';
+import 'package:biorhythmmm/common/icons.dart';
+import 'package:biorhythmmm/common/strings.dart';
+import 'package:biorhythmmm/common/styles.dart';
+import 'package:biorhythmmm/data/app_state.dart';
+import 'package:biorhythmmm/widgets/about_dialog.dart';
 import 'package:biorhythmmm/widgets/biorhythm_chart.dart';
+import 'package:biorhythmmm/widgets/birthday_picker.dart';
 
-import 'dart:io';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -47,7 +47,7 @@ class HomePage extends StatelessWidget {
         // About button
         leading: IconButton(
           icon: Icon(helpIcon),
-          onPressed: () => showAboutDialog(context),
+          onPressed: () => showAboutBiorhythms(context),
         ),
       ),
       body: SafeArea(
@@ -117,141 +117,4 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
-
-  // Open a dialog box to choose user birthday
-  adaptiveBirthdayPicker(BuildContext context) {
-    if (Platform.isIOS) {
-      buildCupertinoDatePicker(context);
-    } else {
-      buildMaterialDatePicker(context);
-    }
-  }
-
-  // Android date picker
-  buildMaterialDatePicker(BuildContext context) async {
-    DateTime? picked = await showDatePicker(
-      context: context,
-      helpText: Str.birthdaySelectText,
-      initialDate: context.read<AppStateCubit>().birthday,
-      firstDate: DateTime(0),
-      lastDate: DateTime(DateTime.now().year),
-    );
-    if (picked != null && context.mounted) {
-      context.read<AppStateCubit>().setBirthday(picked);
-    }
-  }
-
-  // Cupertino date picker
-  buildCupertinoDatePicker(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (_) {
-        return SizedBox(
-          height: MediaQuery.of(context).size.height / 3,
-          child: Stack(
-            children: [
-              // Help text overlay
-              Padding(
-                padding: EdgeInsets.all(8),
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: Text(
-                    Str.birthdaySelectText,
-                    style: titleText,
-                  ),
-                ),
-              ),
-              // Date picker
-              Padding(
-                padding: EdgeInsets.only(top: 16),
-                child: CupertinoDatePicker(
-                  mode: CupertinoDatePickerMode.date,
-                  onDateTimeChanged: (picked) =>
-                      context.read<AppStateCubit>().setBirthday(picked),
-                  initialDateTime: context.read<AppStateCubit>().birthday,
-                  maximumYear: DateTime.now().year,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  // About Biorhythms dialog
-  Future<void> showAboutDialog(BuildContext context) {
-    return showAdaptiveDialog<void>(
-      context: context,
-      barrierDismissible: true,
-      builder: (_) {
-        return StatefulBuilder(
-          builder: (_, setDialogState) {
-            return AlertDialog.adaptive(
-              // About Biorthythms
-              title: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Text(Str.aboutTitle),
-              ),
-              content: SingleChildScrollView(
-                child: aboutText(
-                  textColor: Theme.of(context).textTheme.bodyMedium!.color!,
-                ),
-              ),
-              actions: [
-                // Dismiss dialog button
-                adaptiveDialogAction(
-                  text: Str.okLabel,
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
-  // Dialog action button appropriate to platform
-  Widget adaptiveDialogAction({
-    bool isDefaultAction = false,
-    bool isDestructiveAction = false,
-    required String text,
-    required Function()? onPressed,
-  }) {
-    if (Platform.isIOS) {
-      return CupertinoDialogAction(
-        isDefaultAction: isDefaultAction,
-        isDestructiveAction: isDestructiveAction,
-        onPressed: onPressed,
-        child: Text(text),
-      );
-    } else {
-      return isDestructiveAction
-          ? TextButton(
-              onPressed: onPressed,
-              child: Text(text),
-            )
-          : FilledButton.tonal(
-              onPressed: onPressed,
-              child: Text(text),
-            );
-    }
-  }
 }
-
-// Platform aware icons
-IconData get helpIcon =>
-    Platform.isIOS ? CupertinoIcons.question_circle : Icons.help_outline;
-
-IconData get todayIcon =>
-    Platform.isIOS ? CupertinoIcons.calendar_today : Icons.calendar_today;
-
-IconData get editIcon =>
-    Platform.isIOS ? CupertinoIcons.square_pencil_fill : Icons.edit;
-
-IconData get visibleIcon =>
-    Platform.isIOS ? CupertinoIcons.eye : Icons.visibility;
-
-IconData get invisibleIcon =>
-    Platform.isIOS ? CupertinoIcons.eye_slash : Icons.visibility_off;

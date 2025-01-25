@@ -13,7 +13,7 @@
 // Biorhythmmm
 // - UI strings
 
-import 'package:biorhythmmm/biorhythm.dart';
+import 'package:biorhythmmm/data/biorhythm.dart';
 
 class Str {
   static String get appName => 'Biorhythmmm';

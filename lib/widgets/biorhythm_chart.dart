@@ -15,11 +15,11 @@
 // - Percentage widget
 // - Chart interactivity (touch, pan, zoom)
 
-import 'package:biorhythmmm/app_state.dart';
-import 'package:biorhythmmm/biorhythm.dart';
-import 'package:biorhythmmm/helpers.dart';
-import 'package:biorhythmmm/strings.dart';
-import 'package:biorhythmmm/styles.dart';
+import 'package:biorhythmmm/common/helpers.dart';
+import 'package:biorhythmmm/common/strings.dart';
+import 'package:biorhythmmm/common/styles.dart';
+import 'package:biorhythmmm/data/app_state.dart';
+import 'package:biorhythmmm/data/biorhythm.dart';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';

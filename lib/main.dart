@@ -13,9 +13,9 @@
 // Biorhythmmm
 // - App initialization and themes
 
-import 'package:biorhythmmm/app_state.dart';
-import 'package:biorhythmmm/prefs.dart';
-import 'package:biorhythmmm/strings.dart';
+import 'package:biorhythmmm/data/app_state.dart';
+import 'package:biorhythmmm/data/prefs.dart';
+import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/widgets/home_page.dart';
 
 import 'dart:io';

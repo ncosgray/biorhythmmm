@@ -13,7 +13,7 @@
 // Biorhythmmm
 // - Biorhythm definitions
 
-import 'package:biorhythmmm/strings.dart';
+import 'package:biorhythmmm/common/strings.dart';
 
 import 'dart:math';
 import 'package:flutter/material.dart';
