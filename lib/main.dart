@@ -11,15 +11,14 @@
 */
 
 // Biorhythmmm
-// - App initialization and themes
+// - App initialization
 
 import 'package:biorhythmmm/data/app_state.dart';
 import 'package:biorhythmmm/data/prefs.dart';
 import 'package:biorhythmmm/common/strings.dart';
+import 'package:biorhythmmm/common/themes.dart';
 import 'package:biorhythmmm/widgets/home_page.dart';
 
-import 'dart:io';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -50,33 +49,10 @@ class BiorhythmApp extends StatelessWidget {
       child: MaterialApp(
         home: HomePage(),
         title: Str.appName,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.orange.shade300,
-            brightness: Brightness.light,
-          ),
-          dividerColor: Colors.black26,
-          splashFactory: splashFactory,
-          cupertinoOverrideTheme: cupertinoOverrideTheme,
-        ),
-        darkTheme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.orange,
-            brightness: Brightness.dark,
-          ),
-          dividerColor: Colors.white12,
-          splashFactory: splashFactory,
-          cupertinoOverrideTheme: cupertinoOverrideTheme,
-        ),
+        theme: lightTheme,
+        darkTheme: darkTheme,
         debugShowCheckedModeBanner: false,
       ),
     );
   }
-
-  // Common theme elements
-  InteractiveInkFeatureFactory? get splashFactory =>
-      Platform.isIOS ? NoSplash.splashFactory : null;
-
-  CupertinoThemeData get cupertinoOverrideTheme =>
-      const CupertinoThemeData(primaryColor: CupertinoColors.systemBlue);
 }
