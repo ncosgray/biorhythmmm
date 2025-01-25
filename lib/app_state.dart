@@ -42,11 +42,6 @@ class AppState {
         false,
         false,
       );
-
-  // Define default biorhythm list options
-  static final List<Biorhythm> allBiorhythms = Biorhythm.values.toList();
-  static final List<Biorhythm> primaryBiorhythms =
-      Biorhythm.values.where((b) => b.primary).toList();
 }
 
 class AppStateCubit extends Cubit<AppState> {
@@ -82,9 +77,7 @@ class AppStateCubit extends Cubit<AppState> {
     emit(
       AppState(
         state.birthday,
-        newShowExtraPoints
-            ? AppState.allBiorhythms
-            : AppState.primaryBiorhythms,
+        newShowExtraPoints ? allBiorhythms : primaryBiorhythms,
         newShowExtraPoints,
         state.showResetButton,
         state.reload,

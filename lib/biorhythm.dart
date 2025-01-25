@@ -59,3 +59,8 @@ enum Biorhythm {
   BiorhythmPoint getBiorhythmPoint(int day) =>
       (biorhythm: this, point: getPoint(day));
 }
+
+// Define default biorhythm list options
+final List<Biorhythm> allBiorhythms = Biorhythm.values.toList();
+final List<Biorhythm> primaryBiorhythms =
+    Biorhythm.values.where((b) => b.primary).toList();
