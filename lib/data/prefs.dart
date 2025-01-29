@@ -13,6 +13,7 @@
 // Biorhythmmm
 // - Shared preferences
 
+import 'package:biorhythmmm/data/biorhythm.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class Prefs {
@@ -25,7 +26,7 @@ abstract class Prefs {
 
   // Preference keys
   static String get birthdayKey => 'birthday';
-  static String get showExtraPointsKey => 'showExtraPoints';
+  static String get biorhythmsKey => 'biorhythms';
 
   // Get and set birthday
   static DateTime get birthday =>
@@ -34,9 +35,18 @@ abstract class Prefs {
       sharedPrefs.setInt(birthdayKey, d.millisecondsSinceEpoch);
   static bool get isBirthdaySet => sharedPrefs.containsKey(birthdayKey);
 
-  // Get and set showExtraPoints
-  static bool get showExtraPoints =>
-      sharedPrefs.getBool(showExtraPointsKey) ?? false;
-  static set showExtraPoints(bool v) =>
-      sharedPrefs.setBool(showExtraPointsKey, v);
+  // Get and set biorhythm list
+  static List<Biorhythm> get biorhythms {
+    List<String>? l = sharedPrefs.getStringList(biorhythmsKey);
+    if (l == null) {
+      return primaryBiorhythms;
+    } else {
+      return l
+          .map((name) => Biorhythm.values.where((b) => b.name == name).first)
+          .toList();
+    }
+  }
+
+  static set biorhythms(List<Biorhythm> l) =>
+      sharedPrefs.setStringList(biorhythmsKey, l.map((b) => b.name).toList());
 }

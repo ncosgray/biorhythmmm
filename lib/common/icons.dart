@@ -20,6 +20,9 @@ import 'package:flutter/material.dart';
 IconData get helpIcon =>
     Platform.isIOS ? CupertinoIcons.question_circle : Icons.help_outline;
 
+IconData get settingsIcon =>
+    Platform.isIOS ? CupertinoIcons.settings : Icons.settings;
+
 IconData get todayIcon =>
     Platform.isIOS ? CupertinoIcons.calendar_today : Icons.calendar_today;
 

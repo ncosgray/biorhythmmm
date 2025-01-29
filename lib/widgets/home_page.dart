@@ -21,6 +21,7 @@ import 'package:biorhythmmm/data/app_state.dart';
 import 'package:biorhythmmm/widgets/about_dialog.dart';
 import 'package:biorhythmmm/widgets/biorhythm_chart.dart';
 import 'package:biorhythmmm/widgets/birthday_picker.dart';
+import 'package:biorhythmmm/widgets/settings_dialog.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -44,11 +45,18 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(Str.appName),
-        // About button
-        leading: IconButton(
-          icon: Icon(helpIcon),
-          onPressed: () => showAboutBiorhythms(context),
-        ),
+        actions: [
+          // About button
+          IconButton(
+            icon: Icon(helpIcon),
+            onPressed: () => showAboutBiorhythms(context),
+          ),
+          // Settings button
+          IconButton(
+            icon: Icon(settingsIcon),
+            onPressed: () => showSettings(context),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Column(

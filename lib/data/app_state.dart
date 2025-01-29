@@ -37,8 +37,8 @@ class AppState {
   // Populate state with initial values from shared preferences
   static AppState initial() => AppState(
         Prefs.birthday,
-        Prefs.showExtraPoints ? allBiorhythms : primaryBiorhythms,
-        Prefs.showExtraPoints,
+        Prefs.biorhythms,
+        Prefs.biorhythms.length == allBiorhythms.length ? true : false,
         false,
         false,
       );
@@ -70,14 +70,53 @@ class AppStateCubit extends Cubit<AppState> {
     );
   }
 
-  // Toggle extra biorhythms display
-  void toggleExtraPoints() {
-    bool newShowExtraPoints = !state.showExtraPoints;
-    Prefs.showExtraPoints = newShowExtraPoints;
+  // Manage biorhythms
+  void addBiorhythm(Biorhythm newBiorhythm) {
+    // Add biorthyhm maintaining correct sort order
+    Set<Biorhythm> selectedBiorhythms = Set.from(Prefs.biorhythms)
+      ..add(newBiorhythm);
+    List<Biorhythm> newBiorhythms =
+        List.from(allBiorhythms.where((b) => selectedBiorhythms.contains(b)));
+    Prefs.biorhythms = newBiorhythms;
     emit(
       AppState(
         state.birthday,
-        newShowExtraPoints ? allBiorhythms : primaryBiorhythms,
+        newBiorhythms,
+        newBiorhythms.length == allBiorhythms.length ? true : false,
+        state.showResetButton,
+        state.reload,
+      ),
+    );
+  }
+
+  void removeBiorhythm(Biorhythm oldBiorhythm) {
+    List<Biorhythm> newBiorhythms = List.from(Prefs.biorhythms)
+      ..remove(oldBiorhythm);
+    Prefs.biorhythms = newBiorhythms;
+    emit(
+      AppState(
+        state.birthday,
+        newBiorhythms,
+        false,
+        state.showResetButton,
+        state.reload,
+      ),
+    );
+  }
+
+  bool isBiorhythmSelected(Biorhythm b) => Prefs.biorhythms.contains(b);
+
+  // Toggle extra biorhythms display
+  void toggleExtraPoints() {
+    bool newShowExtraPoints = !state.showExtraPoints;
+    emit(
+      AppState(
+        state.birthday,
+        newShowExtraPoints
+            ? allBiorhythms
+            : (Prefs.biorhythms.length == allBiorhythms.length
+                ? primaryBiorhythms
+                : Prefs.biorhythms),
         newShowExtraPoints,
         state.showResetButton,
         state.reload,
