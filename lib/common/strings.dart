@@ -30,7 +30,7 @@ class Str {
   static String get todayLabel => 'Today';
   static String get toggleExtraLabel => 'View';
   static String get biorhythmSelectText => 'Select biorhythms';
-  static String get aboutTitle => 'About Biorhythms';
+  static String get aboutTitle => 'About biorhythms';
   static String get aboutCycles =>
       'Biorhythms are natural cycles that influence the states of our minds and bodies. The three primary cycles are:';
   static String get aboutIntellectualBullet =>
