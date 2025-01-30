@@ -324,10 +324,11 @@ class _BiorhythmChartState extends State<BiorhythmChart> {
   // Wrapping list of current biorhythm point data
   Widget get biorhythmPoints => BlocListener<AppStateCubit, AppState>(
         listener: (context, state) {
-          // Redraw points if biorhythm selection changes
+          // Redraw points if birthday or biorhythm selection changes
           setPoints();
         },
         listenWhen: (previous, current) =>
+            previous.birthday != current.birthday ||
             previous.biorhythms != current.biorhythms,
         child: Wrap(
           crossAxisAlignment: WrapCrossAlignment.center,
