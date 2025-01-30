@@ -15,16 +15,33 @@
 
 import 'package:biorhythmmm/data/biorhythm.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences/util/legacy_to_async_migration_util.dart';
 
 abstract class Prefs {
-  static late SharedPreferences sharedPrefs;
+  static late SharedPreferencesWithCache sharedPrefs;
 
   // Initialize shared preferences instance
   static init() async {
-    sharedPrefs = await SharedPreferences.getInstance();
+    const SharedPreferencesOptions sharedPreferencesOptions =
+        SharedPreferencesOptions();
+
+    // Migrate legacy prefs
+    final legacyPrefs = await SharedPreferences.getInstance();
+    await migrateLegacySharedPreferencesToSharedPreferencesAsyncIfNecessary(
+      legacySharedPreferencesInstance: legacyPrefs,
+      sharedPreferencesAsyncOptions: sharedPreferencesOptions,
+      migrationCompletedKey: migrationCompletedKey,
+    );
+
+    // Instantiate shared prefs with caching
+    sharedPrefs = await SharedPreferencesWithCache.create(
+      cacheOptions: SharedPreferencesWithCacheOptions(),
+      sharedPreferencesOptions: sharedPreferencesOptions,
+    );
   }
 
   // Preference keys
+  static String get migrationCompletedKey => 'migrationCompleted';
   static String get birthdayKey => 'birthday';
   static String get biorhythmsKey => 'biorhythms';
 
