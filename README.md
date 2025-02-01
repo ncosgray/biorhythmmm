@@ -4,7 +4,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/ncosgray/Biorhythmmm?color=red)](https://github.com/ncosgray/Biorhythmmm/issues)
 [![GitHub license](https://img.shields.io/github/license/ncosgray/Biorhythmmm?color=lightgrey)](https://github.com/ncosgray/Biorhythmmm/blob/master/LICENSE.txt)
 
-### A graph of your biorhythms
+### An interactive graph of your biorhythm cycles.
 
 Biorhythms are natural cycles that influence the states of our minds and bodies. The three primary cycles are:
 
@@ -16,8 +16,8 @@ Biorhythms are natural cycles that influence the states of our minds and bodies.
 
 Biorthymmm is a simple app that displays your personal cycles for these primary biorhythms (and optionally four additional secondary cycles). We believe by having easy access to this information, your heightened awareness of biorhythm cycles will help you plan and optimize your activities based on your peak performance times.
 
-<img src="https://github.com/ncosgray/Biorhythmmm/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" width="200"/>|<img src="https://github.com/ncosgray/Biorhythmmm/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" width="200"/>
--|-
+<img src="https://github.com/ncosgray/Biorhythmmm/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" width="200"/>|<img src="https://github.com/ncosgray/Biorhythmmm/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" width="200"/>|<img src="https://github.com/ncosgray/Biorhythmmm/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" width="200"/>
+-|-|-
 
 ### About
 
