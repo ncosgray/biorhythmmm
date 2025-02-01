@@ -1,7 +1,7 @@
 /*
  *******************************************************************************
  Package:  biorhythmmm
- Class:    about_text.dart
+ Class:    about_dialog.dart
  Author:   Nathan Cosgray | https://www.nathanatos.com
  -------------------------------------------------------------------------------
  Copyright (c) 2024 Nathan Cosgray. All rights reserved.
@@ -13,10 +13,44 @@
 // Biorhythmmm
 // - About text
 
-import 'package:biorhythmmm/strings.dart';
-import 'package:biorhythmmm/styles.dart';
+import 'package:biorhythmmm/common/strings.dart';
+import 'package:biorhythmmm/common/styles.dart';
+import 'package:biorhythmmm/widgets/dialog_action.dart';
 
 import 'package:flutter/material.dart';
+
+// About Biorhythms dialog
+Future<void> showAboutBiorhythms(BuildContext context) {
+  return showAdaptiveDialog<void>(
+    context: context,
+    barrierDismissible: true,
+    builder: (_) {
+      return StatefulBuilder(
+        builder: (_, setDialogState) {
+          return AlertDialog.adaptive(
+            // About Biorthythms
+            title: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Text(Str.aboutTitle),
+            ),
+            content: SingleChildScrollView(
+              child: aboutText(
+                textColor: Theme.of(context).textTheme.bodyMedium!.color!,
+              ),
+            ),
+            actions: [
+              // Dismiss dialog button
+              adaptiveDialogAction(
+                text: Str.okLabel,
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
 
 // Rich text widget explaining biorhythms
 Widget aboutText({required Color textColor}) {

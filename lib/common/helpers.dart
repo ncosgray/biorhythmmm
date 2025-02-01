@@ -16,12 +16,16 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+// Today's date with no time component
+DateTime get today => DateUtils.dateOnly(DateTime.now());
+
 // Get inclusive date difference in days
-int dateDiff(DateTime from, int addDays) {
-  DateTime to =
-      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day)
-          .add(Duration(days: addDays));
-  return to.difference(from).inDays + 1;
+int dateDiff(DateTime from, DateTime to, {int addDays = 0}) {
+  return 1 +
+      DateUtils.dateOnly(to)
+          .add(Duration(days: addDays))
+          .difference(from)
+          .inDays;
 }
 
 // Format date as short date
@@ -29,9 +33,14 @@ String shortDate(DateTime d) {
   return DateFormat.Md().format(d);
 }
 
+// Format date as short date with day of week
+String dateAndDay(DateTime d) {
+  return DateFormat.E().add_Md().format(d);
+}
+
 // Format date as long date
 String longDate(DateTime d) {
-  return DateFormat.yMd().format(d);
+  return DateFormat('M/d/yy').format(d);
 }
 
 // Round double to neareast int

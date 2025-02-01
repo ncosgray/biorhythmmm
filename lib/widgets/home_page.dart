@@ -13,206 +13,116 @@
 // Biorhythmmm
 // - App home page
 
-import 'package:biorhythmmm/helpers.dart';
-import 'package:biorhythmmm/prefs.dart';
-import 'package:biorhythmmm/strings.dart';
-import 'package:biorhythmmm/styles.dart';
-import 'package:biorhythmmm/widgets/about_text.dart';
+import 'package:biorhythmmm/common/helpers.dart';
+import 'package:biorhythmmm/common/icons.dart';
+import 'package:biorhythmmm/common/strings.dart';
+import 'package:biorhythmmm/common/styles.dart';
+import 'package:biorhythmmm/data/app_state.dart';
+import 'package:biorhythmmm/widgets/about_dialog.dart';
 import 'package:biorhythmmm/widgets/biorhythm_chart.dart';
+import 'package:biorhythmmm/widgets/birthday_picker.dart';
+import 'package:biorhythmmm/widgets/settings_dialog.dart';
 
-import 'dart:io';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  // State variables
-  DateTime _birthday = Prefs.birthday;
-
-  @override
-  void initState() {
-    // Prompt user once if birthday is unset
-    Future.delayed(
-      Duration.zero,
-      () {
-        if (mounted && !Prefs.isBirthdaySet) {
-          saveBirthday(_birthday);
+  Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        // Prompt user once if birthday is unset
+        if (context.mounted && !context.read<AppStateCubit>().isBirthdaySet) {
+          context.read<AppStateCubit>().saveBirthday();
           adaptiveBirthdayPicker(context);
         }
       },
     );
 
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(Str.appName),
-        // About button
-        leading: IconButton(
-          icon: const Icon(Icons.help_outline),
-          onPressed: showAboutDialog,
-        ),
+        actions: [
+          // About button
+          IconButton(
+            icon: Icon(helpIcon),
+            onPressed: () => showAboutBiorhythms(context),
+          ),
+          // Settings button
+          IconButton(
+            icon: Icon(settingsIcon),
+            onPressed: () => showSettings(context),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            // Birthday setting
-            TextButton.icon(
-              onPressed: () => adaptiveBirthdayPicker(context),
-              label: Text(
-                '${Str.birthdayLabel} ${longDate(_birthday)}',
-                style: labelText,
-              ),
-              icon: Icon(Icons.edit, size: labelText.fontSize),
-              iconAlignment: IconAlignment.end,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Reset button
+                BlocSelector<AppStateCubit, AppState, bool>(
+                  selector: (state) => state.showResetButton,
+                  builder: (context, showResetButton) => Visibility.maintain(
+                    visible: showResetButton,
+                    child: TextButton.icon(
+                      onPressed: () => context.read<AppStateCubit>().reload(),
+                      label: Text(
+                        Str.resetLabel,
+                        style: labelText,
+                      ),
+                      icon: Icon(todayIcon, size: labelText.fontSize),
+                      iconAlignment: IconAlignment.start,
+                    ),
+                  ),
+                ),
+                // Birthday setting
+                BlocSelector<AppStateCubit, AppState, DateTime>(
+                  selector: (state) => state.birthday,
+                  builder: (context, birthday) => TextButton.icon(
+                    onPressed: () => adaptiveBirthdayPicker(context),
+                    label: Text(
+                      '${Str.birthdayLabel} ${longDate(birthday)}',
+                      style: labelText,
+                    ),
+                    icon: Icon(editIcon, size: labelText.fontSize),
+                    iconAlignment: IconAlignment.end,
+                  ),
+                ),
+                // Toggle extra biorhythms
+                BlocSelector<AppStateCubit, AppState, bool>(
+                  selector: (state) => state.showExtraPoints,
+                  builder: (context, showExtraPoints) => TextButton.icon(
+                    onPressed: () =>
+                        context.read<AppStateCubit>().toggleExtraPoints(),
+                    label: Text(
+                      Str.toggleExtraLabel,
+                      style: labelText,
+                    ),
+                    icon: Icon(
+                      showExtraPoints ? visibleIcon : invisibleIcon,
+                      size: labelText.fontSize,
+                    ),
+                    iconAlignment: IconAlignment.end,
+                  ),
+                ),
+              ],
             ),
             // Chart
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: BiorhythmChart(birthday: _birthday),
+                child: BiorhythmChart(),
               ),
             ),
           ],
         ),
       ),
     );
-  }
-
-  // Open a dialog box to choose user birthday
-  adaptiveBirthdayPicker(BuildContext context) async {
-    if (Platform.isIOS) {
-      return buildCupertinoDatePicker(context);
-    } else {
-      return buildMaterialDatePicker(context);
-    }
-  }
-
-  // Save chosen birthday
-  saveBirthday(DateTime picked) {
-    setState(() => _birthday = picked);
-    Prefs.birthday = _birthday;
-  }
-
-  // Android date picker
-  buildMaterialDatePicker(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      helpText: Str.birthdaySelectText,
-      initialDate: _birthday,
-      firstDate: DateTime(0),
-      lastDate: DateTime(DateTime.now().year),
-    );
-    if (picked != null) {
-      saveBirthday(picked);
-    }
-  }
-
-  // Cupertino date picker
-  buildCupertinoDatePicker(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (_) {
-        return SizedBox(
-          height: MediaQuery.of(context).size.height / 3,
-          child: Stack(
-            children: [
-              // Help text overlay
-              Padding(
-                padding: EdgeInsets.all(8),
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: Text(
-                    Str.birthdaySelectText,
-                    style: titleText,
-                  ),
-                ),
-              ),
-              // Date picker
-              Padding(
-                padding: EdgeInsets.only(top: 16),
-                child: CupertinoDatePicker(
-                  mode: CupertinoDatePickerMode.date,
-                  onDateTimeChanged: (picked) => saveBirthday(picked),
-                  initialDateTime: _birthday,
-                  maximumYear: DateTime.now().year,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  // About Biorhythms dialog
-  Future<void> showAboutDialog() {
-    return showAdaptiveDialog<void>(
-      context: context,
-      barrierDismissible: true,
-      builder: (_) {
-        return StatefulBuilder(
-          builder: (_, setDialogState) {
-            return AlertDialog.adaptive(
-              // About Biorthythms
-              title: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Text(Str.aboutTitle),
-              ),
-              content: SingleChildScrollView(
-                child: aboutText(
-                  textColor: Theme.of(context).textTheme.bodyMedium!.color!,
-                ),
-              ),
-              actions: [
-                // Dismiss dialog button
-                adaptiveDialogAction(
-                  text: Str.okLabel,
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
-  // Dialog action button appropriate to platform
-  Widget adaptiveDialogAction({
-    bool isDefaultAction = false,
-    bool isDestructiveAction = false,
-    required String text,
-    required Function()? onPressed,
-  }) {
-    if (Platform.isIOS) {
-      return CupertinoDialogAction(
-        isDefaultAction: isDefaultAction,
-        isDestructiveAction: isDestructiveAction,
-        onPressed: onPressed,
-        child: Text(text),
-      );
-    } else {
-      return isDestructiveAction
-          ? TextButton(
-              onPressed: onPressed,
-              child: Text(text),
-            )
-          : FilledButton.tonal(
-              onPressed: onPressed,
-              child: Text(text),
-            );
-    }
   }
 }

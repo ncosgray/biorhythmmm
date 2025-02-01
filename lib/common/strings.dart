@@ -13,7 +13,7 @@
 // Biorhythmmm
 // - UI strings
 
-import 'package:biorhythmmm/biorhythm.dart';
+import 'package:biorhythmmm/data/biorhythm.dart';
 
 class Str {
   static String get appName => 'Biorhythmmm';
@@ -24,10 +24,13 @@ class Str {
   static String get biorhythmAesthetic => 'Aesthetic';
   static String get biorhythmAwareness => 'Awareness';
   static String get biorhythmSpiritual => 'Spiritual';
-  static String get birthdayLabel => 'Birthday:';
+  static String get birthdayLabel => 'DOB:';
   static String get birthdaySelectText => 'When were you born?';
+  static String get resetLabel => 'Reset';
   static String get todayLabel => 'Today';
-  static String get aboutTitle => 'About Biorhythms';
+  static String get toggleExtraLabel => 'View';
+  static String get biorhythmSelectText => 'Select biorhythms';
+  static String get aboutTitle => 'About biorhythms';
   static String get aboutCycles =>
       'Biorhythms are natural cycles that influence the states of our minds and bodies. The three primary cycles are:';
   static String get aboutIntellectualBullet =>

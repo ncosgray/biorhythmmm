@@ -13,10 +13,15 @@
 // Biorhythmmm
 // - Biorhythm definitions
 
-import 'package:biorhythmmm/strings.dart';
+import 'package:biorhythmmm/common/strings.dart';
 
 import 'dart:math';
 import 'package:flutter/material.dart';
+
+typedef BiorhythmPoint = ({
+  Biorhythm biorhythm,
+  double point,
+});
 
 enum Biorhythm {
   intellectual(Colors.lightGreen, 33, true),
@@ -45,9 +50,17 @@ enum Biorhythm {
       };
 
   // Biorhythm colors
-  Color get graphColor => color.withOpacity(0.6);
+  Color get graphColor => color.withValues(alpha: 0.6);
   Color get highlightColor => color;
 
   // Calcuate biorhythm point for a given day
   double getPoint(int day) => sin(2 * pi * day / cycleDays);
+
+  BiorhythmPoint getBiorhythmPoint(int day) =>
+      (biorhythm: this, point: getPoint(day));
 }
+
+// Define default biorhythm list options
+final List<Biorhythm> allBiorhythms = Biorhythm.values.toList();
+final List<Biorhythm> primaryBiorhythms =
+    Biorhythm.values.where((b) => b.primary).toList();

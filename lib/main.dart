@@ -11,15 +11,16 @@
 */
 
 // Biorhythmmm
-// - App initialization and themes
+// - App initialization
 
-import 'package:biorhythmmm/prefs.dart';
-import 'package:biorhythmmm/strings.dart';
+import 'package:biorhythmmm/data/app_state.dart';
+import 'package:biorhythmmm/data/prefs.dart';
+import 'package:biorhythmmm/common/strings.dart';
+import 'package:biorhythmmm/common/themes.dart';
 import 'package:biorhythmmm/widgets/home_page.dart';
 
-import 'dart:io';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/find_locale.dart';
 import 'package:intl/intl.dart';
@@ -43,35 +44,15 @@ class BiorhythmApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: HomePage(),
-      title: Str.appName,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.orange.shade300,
-          brightness: Brightness.light,
-        ),
-        dividerColor: Colors.black26,
-        splashFactory: splashFactory,
-        cupertinoOverrideTheme: cupertinoOverrideTheme,
+    return BlocProvider<AppStateCubit>(
+      create: (BuildContext context) => AppStateCubit(),
+      child: MaterialApp(
+        home: HomePage(),
+        title: Str.appName,
+        theme: lightTheme,
+        darkTheme: darkTheme,
+        debugShowCheckedModeBanner: false,
       ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.orange,
-          brightness: Brightness.dark,
-        ),
-        dividerColor: Colors.white12,
-        splashFactory: splashFactory,
-        cupertinoOverrideTheme: cupertinoOverrideTheme,
-      ),
-      debugShowCheckedModeBanner: false,
     );
   }
-
-  // Common theme elements
-  InteractiveInkFeatureFactory? get splashFactory =>
-      Platform.isIOS ? NoSplash.splashFactory : null;
-
-  CupertinoThemeData get cupertinoOverrideTheme =>
-      const CupertinoThemeData(primaryColor: CupertinoColors.systemBlue);
 }

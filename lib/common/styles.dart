@@ -34,6 +34,21 @@ const titleText = TextStyle(
   fontWeight: FontWeight.bold,
 );
 
+const titleDateText = TextStyle(
+  fontSize: 14,
+  fontFeatures: [
+    FontFeature.tabularFigures(),
+  ],
+);
+
+const titleTodayText = TextStyle(
+  fontSize: 14,
+  fontWeight: FontWeight.bold,
+  fontFeatures: [
+    FontFeature.tabularFigures(),
+  ],
+);
+
 const buttonText = TextStyle(
   fontSize: 14,
 );

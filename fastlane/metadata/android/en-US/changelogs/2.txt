@@ -1,0 +1,2 @@
+* Zoom in/out or scroll your biorhythm graph to see more detail.
+* Select which biorhythms you want to see on the graph.
