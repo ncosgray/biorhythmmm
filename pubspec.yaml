@@ -34,6 +34,8 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_bloc: ^9.0.0
+  flutter_local_notifications: ^19.0.0-dev.6
+  flutter_timezone: ^4.0.0
   intl: ^0.20.2
   shared_preferences: ^2.5.1
 

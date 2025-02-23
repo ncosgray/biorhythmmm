@@ -44,6 +44,7 @@ abstract class Prefs {
   static String get migrationCompletedKey => 'migrationCompleted';
   static String get birthdayKey => 'birthday';
   static String get biorhythmsKey => 'biorhythms';
+  static String get dailyNotificationsKey => 'dailyNotifications';
 
   // Get and set birthday
   static DateTime get birthday =>
@@ -66,4 +67,10 @@ abstract class Prefs {
 
   static set biorhythms(List<Biorhythm> l) =>
       sharedPrefs.setStringList(biorhythmsKey, l.map((b) => b.name).toList());
+
+  // Get and set daily notification flag
+  static bool get dailyNotifications =>
+      sharedPrefs.getBool(dailyNotificationsKey) ?? false;
+  static set dailyNotifications(bool f) =>
+      sharedPrefs.setBool(dailyNotificationsKey, f);
 }

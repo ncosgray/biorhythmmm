@@ -29,7 +29,9 @@ class Str {
   static String get resetLabel => 'Reset';
   static String get todayLabel => 'Today';
   static String get toggleExtraLabel => 'View';
-  static String get biorhythmSelectText => 'Select biorhythms';
+  static String get selectBiorhythmsTitle => 'Select biorhythms';
+  static String get otherSettingsTitle => 'Other settings';
+  static String get dailyNotificationsText => 'Daily notifications';
   static String get aboutTitle => 'About biorhythms';
   static String get aboutCycles =>
       'Biorhythms are natural cycles that influence the states of our minds and bodies. The three primary cycles are:';
@@ -57,4 +59,6 @@ class Str {
   static String get aboutApp => '${Str.appName} is a free, open-source app';
   static String get aboutCopyright => '\u00a9 Nathan Cosgray';
   static String get okLabel => 'OK';
+  static String get notifyChannelName => 'Daily notifications';
+  static String get notifyTitle => "Today's biorhythms";
 }
