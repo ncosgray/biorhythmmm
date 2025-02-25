@@ -18,7 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences/util/legacy_to_async_migration_util.dart';
 
 abstract class Prefs {
-  static late SharedPreferencesWithCache sharedPrefs;
+  static late SharedPreferencesWithCache _sharedPrefs;
 
   // Initialize shared preferences instance
   static init() async {
@@ -30,32 +30,33 @@ abstract class Prefs {
     await migrateLegacySharedPreferencesToSharedPreferencesAsyncIfNecessary(
       legacySharedPreferencesInstance: legacyPrefs,
       sharedPreferencesAsyncOptions: sharedPreferencesOptions,
-      migrationCompletedKey: migrationCompletedKey,
+      migrationCompletedKey: _migrationCompletedKey,
     );
 
     // Instantiate shared prefs with caching
-    sharedPrefs = await SharedPreferencesWithCache.create(
+    _sharedPrefs = await SharedPreferencesWithCache.create(
       cacheOptions: SharedPreferencesWithCacheOptions(),
       sharedPreferencesOptions: sharedPreferencesOptions,
     );
   }
 
   // Preference keys
-  static String get migrationCompletedKey => 'migrationCompleted';
-  static String get birthdayKey => 'birthday';
-  static String get biorhythmsKey => 'biorhythms';
-  static String get dailyNotificationsKey => 'dailyNotifications';
+  static String get _migrationCompletedKey => 'migrationCompleted';
+  static String get _birthdayKey => 'birthday';
+  static String get _biorhythmsKey => 'biorhythms';
+  static String get _dailyNotificationsKey => 'dailyNotifications';
 
   // Get and set birthday
-  static DateTime get birthday =>
-      DateTime.fromMillisecondsSinceEpoch(sharedPrefs.getInt(birthdayKey) ?? 0);
+  static DateTime get birthday => DateTime.fromMillisecondsSinceEpoch(
+        _sharedPrefs.getInt(_birthdayKey) ?? 0,
+      );
   static set birthday(DateTime d) =>
-      sharedPrefs.setInt(birthdayKey, d.millisecondsSinceEpoch);
-  static bool get isBirthdaySet => sharedPrefs.containsKey(birthdayKey);
+      _sharedPrefs.setInt(_birthdayKey, d.millisecondsSinceEpoch);
+  static bool get isBirthdaySet => _sharedPrefs.containsKey(_birthdayKey);
 
   // Get and set biorhythm list
   static List<Biorhythm> get biorhythms {
-    List<String>? l = sharedPrefs.getStringList(biorhythmsKey);
+    List<String>? l = _sharedPrefs.getStringList(_biorhythmsKey);
     if (l == null) {
       return primaryBiorhythms;
     } else {
@@ -66,11 +67,11 @@ abstract class Prefs {
   }
 
   static set biorhythms(List<Biorhythm> l) =>
-      sharedPrefs.setStringList(biorhythmsKey, l.map((b) => b.name).toList());
+      _sharedPrefs.setStringList(_biorhythmsKey, l.map((b) => b.name).toList());
 
   // Get and set daily notification flag
   static bool get dailyNotifications =>
-      sharedPrefs.getBool(dailyNotificationsKey) ?? false;
+      _sharedPrefs.getBool(_dailyNotificationsKey) ?? false;
   static set dailyNotifications(bool f) =>
-      sharedPrefs.setBool(dailyNotificationsKey, f);
+      _sharedPrefs.setBool(_dailyNotificationsKey, f);
 }
