@@ -15,17 +15,24 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+// ignore: depend_on_referenced_packages
+import 'package:timezone/timezone.dart' as tz;
 
 // Today's date with no time component
-DateTime get today => DateUtils.dateOnly(DateTime.now());
+DateTime get today {
+  tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+  return tz.TZDateTime(tz.local, now.year, now.month, now.day);
+}
 
 // Get inclusive date difference in days
-int dateDiff(DateTime from, DateTime to, {int addDays = 0}) {
-  return 1 +
-      DateUtils.dateOnly(to)
-          .add(Duration(days: addDays))
-          .difference(from)
-          .inDays;
+int dateDiff(DateTime f, DateTime t, {int addDays = 0}) {
+  t = t.add(Duration(days: addDays));
+
+  // Use UTC to account for daylight savings
+  tz.TZDateTime from = tz.TZDateTime(tz.UTC, f.year, f.month, f.day);
+  tz.TZDateTime to = tz.TZDateTime(tz.UTC, t.year, t.month, t.day);
+
+  return 1 + to.difference(from).inDays;
 }
 
 // Format date as short date
