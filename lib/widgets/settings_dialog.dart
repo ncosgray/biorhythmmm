@@ -13,7 +13,6 @@
 // Biorhythmmm
 // - App settings: biorhythm selection
 
-import 'package:biorhythmmm/common/notifications.dart';
 import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/data/app_state.dart';
 import 'package:biorhythmmm/data/biorhythm.dart';
@@ -87,17 +86,9 @@ Future<void> showSettings(BuildContext context) {
                           SwitchListTile.adaptive(
                         title: Text(Str.dailyNotificationsText),
                         value: dailyNotifications,
-                        onChanged: (bool? value) async {
-                          // Schedule or cancel notifications
-                          context
-                              .read<AppStateCubit>()
-                              .setDailyNotifications(value!);
-                          if (value) {
-                            await Notifications.schedule();
-                          } else {
-                            await Notifications.cancel();
-                          }
-                        },
+                        onChanged: (bool? value) => context
+                            .read<AppStateCubit>()
+                            .setDailyNotifications(value!),
                         visualDensity: VisualDensity.compact,
                       ),
                     ),

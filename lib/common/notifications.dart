@@ -28,10 +28,10 @@ abstract class Notifications {
       FlutterLocalNotificationsPlugin();
 
   // Notification setup
-  static const int _notifyID = 0;
   static const String _notifyChannel = 'Biorhythmmm_channel';
   static const String _notifyIcon = 'ic_stat_name';
-  static const int _notifyHour = 6;
+  static const int _notifyLookAheadDays = 30;
+  static const int _notifyAtHour = 6;
 
   // Initialize notifications plugin
   static Future<void> init() async {
@@ -46,9 +46,16 @@ abstract class Notifications {
         ),
       ),
     );
+
+    // Ensure scheduled notifications are set properly
+    if (Prefs.dailyNotifications) {
+      await schedule();
+    } else {
+      await cancel();
+    }
   }
 
-  // Schedule daily biorhythm notifications
+  // Schedule biorhythm notifications
   static Future<void> schedule() async {
     // Request notification permissions
     if (Platform.isIOS) {
@@ -67,57 +74,71 @@ abstract class Notifications {
           ?.requestNotificationsPermission();
     }
 
-    // Schedule the alarm
-    await _notifications.zonedSchedule(
-      _notifyID,
-      Str.notifyTitle,
-      _biorhythmSummary(_nextScheduleInstance),
-      _nextScheduleInstance,
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          _notifyChannel,
-          Str.notifyChannelName,
-          showWhen: true,
-          visibility: NotificationVisibility.public,
-          channelShowBadge: true,
-          playSound: true,
-        ),
-        iOS: const DarwinNotificationDetails(
-          presentBadge: true,
-          presentSound: true,
-          presentBanner: true,
-          presentList: true,
-        ),
-      ),
-      payload: _notifyChannel,
-      androidScheduleMode: AndroidScheduleMode.inexact,
-      // Repeat daily at time
-      matchDateTimeComponents: DateTimeComponents.time,
+    // Generate upcoming notifications
+    List<(tz.TZDateTime, String)> alarms = List.generate(
+      _notifyLookAheadDays,
+      (int day) {
+        DateTime date = today.add(Duration(days: day + 1));
+        return (
+          _notifyAt(date),
+          _biorhythmSummary([
+            for (final Biorhythm b in Prefs.biorhythms)
+              (biorhythm: b, point: b.getPoint(dateDiff(Prefs.birthday, date))),
+          ])
+        );
+      },
     );
+
+    // Schedule alarms
+    for (int n = 0; n < alarms.length; n++) {
+      await _notifications.zonedSchedule(
+        n,
+        Str.notifyTitle,
+        alarms[n].$2,
+        alarms[n].$1,
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            _notifyChannel,
+            Str.notifyChannelName,
+            showWhen: true,
+            visibility: NotificationVisibility.public,
+            channelShowBadge: true,
+            playSound: true,
+          ),
+          iOS: const DarwinNotificationDetails(
+            presentBadge: true,
+            presentSound: true,
+            presentBanner: true,
+            presentList: true,
+          ),
+        ),
+        payload: _notifyChannel,
+        androidScheduleMode: AndroidScheduleMode.inexact,
+      );
+    }
   }
 
   // Cancel daily biorhythm notifications
   static Future<void> cancel() async {
-    await _notifications.cancel(_notifyID);
+    await _notifications.cancelAll();
   }
 
-  // Calculate the next notification time
-  static tz.TZDateTime get _nextScheduleInstance {
-    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-    tz.TZDateTime scheduledDate =
-        tz.TZDateTime(tz.local, now.year, now.month, now.day, _notifyHour);
-    if (scheduledDate.isBefore(now)) {
-      scheduledDate = scheduledDate.add(const Duration(days: 1));
+  // Calculate zoned notification time for a given date
+  static tz.TZDateTime _notifyAt(DateTime date) {
+    tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    tz.TZDateTime scheduleTime =
+        tz.TZDateTime(tz.local, date.year, date.month, date.day, _notifyAtHour);
+    if (scheduleTime.isBefore(now)) {
+      scheduleTime = now.add(const Duration(minutes: 1));
     }
-    return scheduledDate;
+    return scheduleTime;
   }
 
-  // Summarize biorhythms for date
-  static String _biorhythmSummary(tz.TZDateTime date) {
-    int day = dateDiff(Prefs.birthday, date);
+  // Summarize biorhythms for a list of points
+  static String _biorhythmSummary(List<BiorhythmPoint> points) {
     return [
-      for (final Biorhythm b in Prefs.biorhythms)
-        '${b.name}: ${shortPercent(b.getPoint(day))}',
+      for (final BiorhythmPoint p in points)
+        '${p.biorhythm.name}: ${shortPercent(p.point)}',
     ].join(', ');
   }
 }

@@ -14,6 +14,7 @@
 // - App state
 // - Manage preferences
 
+import 'package:biorhythmmm/common/notifications.dart';
 import 'package:biorhythmmm/data/biorhythm.dart';
 import 'package:biorhythmmm/data/prefs.dart';
 
@@ -73,6 +74,7 @@ class AppStateCubit extends Cubit<AppState> {
         state.reload,
       ),
     );
+    updateNotifications();
   }
 
   // Manage biorhythms
@@ -93,6 +95,7 @@ class AppStateCubit extends Cubit<AppState> {
         state.reload,
       ),
     );
+    updateNotifications();
   }
 
   void removeBiorhythm(Biorhythm oldBiorhythm) {
@@ -109,6 +112,7 @@ class AppStateCubit extends Cubit<AppState> {
         state.reload,
       ),
     );
+    updateNotifications();
   }
 
   bool isBiorhythmSelected(Biorhythm b) => Prefs.biorhythms.contains(b);
@@ -126,6 +130,16 @@ class AppStateCubit extends Cubit<AppState> {
         state.reload,
       ),
     );
+    updateNotifications();
+  }
+
+  // Schedule or cancel notifications after a settings change
+  void updateNotifications() {
+    if (state.dailyNotifications) {
+      Notifications.schedule();
+    } else {
+      Notifications.cancel();
+    }
   }
 
   // Toggle extra biorhythms display
