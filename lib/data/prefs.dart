@@ -13,6 +13,7 @@
 // Biorhythmmm
 // - Shared preferences
 
+import 'package:biorhythmmm/common/notifications.dart' show NotificationType;
 import 'package:biorhythmmm/data/biorhythm.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences/util/legacy_to_async_migration_util.dart';
@@ -44,7 +45,7 @@ abstract class Prefs {
   static String get _migrationCompletedKey => 'migrationCompleted';
   static String get _birthdayKey => 'birthday';
   static String get _biorhythmsKey => 'biorhythms';
-  static String get _dailyNotificationsKey => 'dailyNotifications';
+  static String get _notificationsKey => 'notifications';
 
   // Get and set birthday
   static DateTime get birthday => DateTime.fromMillisecondsSinceEpoch(
@@ -69,9 +70,9 @@ abstract class Prefs {
   static set biorhythms(List<Biorhythm> l) =>
       _sharedPrefs.setStringList(_biorhythmsKey, l.map((b) => b.name).toList());
 
-  // Get and set daily notification flag
-  static bool get dailyNotifications =>
-      _sharedPrefs.getBool(_dailyNotificationsKey) ?? false;
-  static set dailyNotifications(bool f) =>
-      _sharedPrefs.setBool(_dailyNotificationsKey, f);
+  // Get and set notification choice
+  static NotificationType get notifications =>
+      NotificationType.values[_sharedPrefs.getInt(_notificationsKey) ?? 0];
+  static set notifications(NotificationType n) =>
+      _sharedPrefs.setInt(_notificationsKey, n.value);
 }

@@ -11,7 +11,8 @@
 */
 
 // Biorhythmmm
-// - Daily notifications
+// - Schedule and manage biorhythm alerts
+// - Notification types
 
 import 'package:biorhythmmm/common/helpers.dart';
 import 'package:biorhythmmm/common/strings.dart';
@@ -24,7 +25,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 abstract class Notifications {
-  static final FlutterLocalNotificationsPlugin _notifications =
+  static final FlutterLocalNotificationsPlugin _notify =
       FlutterLocalNotificationsPlugin();
 
   // Notification setup
@@ -35,7 +36,7 @@ abstract class Notifications {
 
   // Initialize notifications plugin
   static Future<void> init() async {
-    await _notifications.initialize(
+    await _notify.initialize(
       const InitializationSettings(
         android: AndroidInitializationSettings(_notifyIcon),
         iOS: DarwinInitializationSettings(
@@ -48,10 +49,10 @@ abstract class Notifications {
     );
 
     // Ensure scheduled notifications are set properly
-    if (Prefs.dailyNotifications) {
-      await schedule();
-    } else {
+    if (Prefs.notifications == NotificationType.none) {
       await cancel();
+    } else {
+      await schedule();
     }
   }
 
@@ -59,7 +60,7 @@ abstract class Notifications {
   static Future<void> schedule() async {
     // Request notification permissions
     if (Platform.isIOS) {
-      await _notifications
+      await _notify
           .resolvePlatformSpecificImplementation<
               IOSFlutterLocalNotificationsPlugin>()
           ?.requestPermissions(
@@ -68,50 +69,70 @@ abstract class Notifications {
             sound: true,
           );
     } else {
-      await _notifications
+      await _notify
           .resolvePlatformSpecificImplementation<
               AndroidFlutterLocalNotificationsPlugin>()
           ?.requestNotificationsPermission();
     }
 
     // Generate upcoming notifications
-    List<(tz.TZDateTime, String)> alarms = List.generate(
-      _notifyLookAheadDays,
-      (int day) {
-        DateTime date = today.add(Duration(days: day + 1));
-        return (
-          _notifyAt(date),
-          _biorhythmSummary([
-            for (final Biorhythm b in Prefs.biorhythms)
-              (biorhythm: b, point: b.getPoint(dateDiff(Prefs.birthday, date))),
-          ])
-        );
-      },
-    );
+    List<(tz.TZDateTime, String)> alarms = [];
+    if (Prefs.notifications == NotificationType.daily) {
+      // Daily notifications
+      alarms = List.generate(
+        _notifyLookAheadDays,
+        (int day) {
+          DateTime date = today.add(Duration(days: day + 1));
+
+          // Generate biorhythm summary notification text for date
+          return (
+            _notifyAt(date),
+            _biorhythmSummary([
+              for (final Biorhythm b in Prefs.biorhythms)
+                (
+                  biorhythm: b,
+                  point: b.getPoint(dateDiff(Prefs.birthday, date))
+                ),
+            ])
+          );
+        },
+      );
+    } else {
+      // Only critical notifications
+      for (int day = 1; day <= _notifyLookAheadDays; day++) {
+        DateTime date = today.add(Duration(days: day));
+
+        // Determine if this date has any critical alerts
+        List<String> criticals = Prefs.biorhythms
+            .where(
+              (Biorhythm b) =>
+                  isCritical(b.getPoint(dateDiff(Prefs.birthday, date))),
+            )
+            .map((Biorhythm b) => b.name)
+            .toList();
+
+        // Generate critical biorhythm text for date
+        if (criticals.isNotEmpty) {
+          alarms.add(
+            (_notifyAt(date), Str.notifyCriticalPrefix + criticals.join(', ')),
+          );
+        }
+      }
+    }
+
+    // Clear existing alarms unless rescheduling all
+    if (alarms.length < _notifyLookAheadDays) {
+      await cancel();
+    }
 
     // Schedule alarms
-    for (int n = 0; n < alarms.length; n++) {
-      await _notifications.zonedSchedule(
-        n,
+    for (final (tz.TZDateTime, String) alarm in alarms) {
+      await _notify.zonedSchedule(
+        alarms.indexOf(alarm),
         Str.notifyTitle,
-        alarms[n].$2,
-        alarms[n].$1,
-        NotificationDetails(
-          android: AndroidNotificationDetails(
-            _notifyChannel,
-            Str.notifyChannelName,
-            showWhen: true,
-            visibility: NotificationVisibility.public,
-            channelShowBadge: true,
-            playSound: true,
-          ),
-          iOS: const DarwinNotificationDetails(
-            presentBadge: true,
-            presentSound: true,
-            presentBanner: true,
-            presentList: true,
-          ),
-        ),
+        alarm.$2,
+        alarm.$1,
+        _notificationDetails,
         payload: _notifyChannel,
         androidScheduleMode: AndroidScheduleMode.inexact,
       );
@@ -120,8 +141,26 @@ abstract class Notifications {
 
   // Cancel daily biorhythm notifications
   static Future<void> cancel() async {
-    await _notifications.cancelAll();
+    await _notify.cancelAll();
   }
+
+  // Notification details
+  static final NotificationDetails _notificationDetails = NotificationDetails(
+    android: AndroidNotificationDetails(
+      _notifyChannel,
+      Str.notifyChannelName,
+      showWhen: true,
+      visibility: NotificationVisibility.public,
+      channelShowBadge: true,
+      playSound: true,
+    ),
+    iOS: const DarwinNotificationDetails(
+      presentBadge: true,
+      presentSound: true,
+      presentBanner: true,
+      presentList: true,
+    ),
+  );
 
   // Calculate zoned notification time for a given date
   static tz.TZDateTime _notifyAt(DateTime date) {
@@ -141,4 +180,22 @@ abstract class Notifications {
         '${p.biorhythm.name}: ${shortPercent(p.point)}',
     ].join(', ');
   }
+}
+
+// Notification types
+enum NotificationType {
+  none(0),
+  critical(1),
+  daily(2);
+
+  const NotificationType(this.value);
+
+  final int value;
+
+  // Display names
+  String get name => switch (this) {
+        none => Str.notificationTypeNone,
+        critical => Str.notificationTypeCritical,
+        daily => Str.notificationTypeDaily,
+      };
 }

@@ -13,6 +13,7 @@
 // Biorhythmmm
 // - App settings: biorhythm selection
 
+import 'package:biorhythmmm/common/notifications.dart' show NotificationType;
 import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/data/app_state.dart';
 import 'package:biorhythmmm/data/biorhythm.dart';
@@ -80,16 +81,27 @@ Future<void> showSettings(BuildContext context) {
                       child: Text(Str.otherSettingsTitle),
                     ),
                     // Daily notifications
-                    BlocSelector<AppStateCubit, AppState, bool>(
-                      selector: (state) => state.dailyNotifications,
-                      builder: (context, dailyNotifications) =>
-                          SwitchListTile.adaptive(
-                        title: Text(Str.dailyNotificationsText),
-                        value: dailyNotifications,
-                        onChanged: (bool? value) => context
-                            .read<AppStateCubit>()
-                            .setDailyNotifications(value!),
-                        visualDensity: VisualDensity.compact,
+                    ListTile(
+                      title: Text(Str.notificationsLabel),
+                      trailing: BlocSelector<AppStateCubit, AppState,
+                          NotificationType>(
+                        selector: (state) => state.notifications,
+                        builder: (context, notifications) =>
+                            DropdownButton<NotificationType>(
+                          value: notifications,
+                          icon: const Icon(Icons.keyboard_arrow_down),
+                          items: [
+                            for (final NotificationType n
+                                in NotificationType.values)
+                              DropdownMenuItem(
+                                value: n,
+                                child: Text(n.name),
+                              ),
+                          ],
+                          onChanged: (NotificationType? newValue) => context
+                              .read<AppStateCubit>()
+                              .setNotifications(newValue!),
+                        ),
                       ),
                     ),
                   ],

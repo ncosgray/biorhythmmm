@@ -24,7 +24,7 @@ class AppState {
   AppState(
     this.birthday,
     this.biorhythms,
-    this.dailyNotifications,
+    this.notifications,
     this.showExtraPoints,
     this.showResetButton,
     this.reload,
@@ -32,7 +32,7 @@ class AppState {
 
   final DateTime birthday;
   final List<Biorhythm> biorhythms;
-  final bool dailyNotifications;
+  final NotificationType notifications;
   final bool showExtraPoints;
   final bool showResetButton;
   final bool reload;
@@ -41,7 +41,7 @@ class AppState {
   static AppState initial() => AppState(
         Prefs.birthday,
         Prefs.biorhythms,
-        Prefs.dailyNotifications,
+        Prefs.notifications,
         Prefs.biorhythms.length == allBiorhythms.length ? true : false,
         false,
         false,
@@ -54,7 +54,7 @@ class AppStateCubit extends Cubit<AppState> {
   // Getters
   DateTime get birthday => state.birthday;
   List<Biorhythm> get biorhythms => state.biorhythms;
-  bool get dailyNotifications => state.dailyNotifications;
+  NotificationType get notifications => state.notifications;
   bool get showExtraPoints => state.showExtraPoints;
   bool get showResetButton => state.showResetButton;
 
@@ -68,7 +68,7 @@ class AppStateCubit extends Cubit<AppState> {
       AppState(
         newBirthday,
         state.biorhythms,
-        state.dailyNotifications,
+        state.notifications,
         state.showExtraPoints,
         state.showResetButton,
         state.reload,
@@ -89,7 +89,7 @@ class AppStateCubit extends Cubit<AppState> {
       AppState(
         state.birthday,
         newBiorhythms,
-        state.dailyNotifications,
+        state.notifications,
         newBiorhythms.length == allBiorhythms.length ? true : false,
         state.showResetButton,
         state.reload,
@@ -106,7 +106,7 @@ class AppStateCubit extends Cubit<AppState> {
       AppState(
         state.birthday,
         newBiorhythms,
-        state.dailyNotifications,
+        state.notifications,
         false,
         state.showResetButton,
         state.reload,
@@ -117,14 +117,14 @@ class AppStateCubit extends Cubit<AppState> {
 
   bool isBiorhythmSelected(Biorhythm b) => Prefs.biorhythms.contains(b);
 
-  // Enable or disable daily notifications
-  void setDailyNotifications(bool newDailyNotifications) {
-    Prefs.dailyNotifications = newDailyNotifications;
+  // Enable or disable notifications
+  void setNotifications(NotificationType newNotifications) {
+    Prefs.notifications = newNotifications;
     emit(
       AppState(
         state.birthday,
         state.biorhythms,
-        newDailyNotifications,
+        newNotifications,
         state.showExtraPoints,
         state.showResetButton,
         state.reload,
@@ -135,10 +135,10 @@ class AppStateCubit extends Cubit<AppState> {
 
   // Schedule or cancel notifications after a settings change
   void updateNotifications() {
-    if (state.dailyNotifications) {
-      Notifications.schedule();
-    } else {
+    if (state.notifications == NotificationType.none) {
       Notifications.cancel();
+    } else {
+      Notifications.schedule();
     }
   }
 
@@ -153,7 +153,7 @@ class AppStateCubit extends Cubit<AppState> {
             : (Prefs.biorhythms.length == allBiorhythms.length
                 ? primaryBiorhythms
                 : Prefs.biorhythms),
-        state.dailyNotifications,
+        state.notifications,
         newShowExtraPoints,
         state.showResetButton,
         state.reload,
@@ -168,7 +168,7 @@ class AppStateCubit extends Cubit<AppState> {
         AppState(
           state.birthday,
           state.biorhythms,
-          state.dailyNotifications,
+          state.notifications,
           state.showExtraPoints,
           true,
           state.reload,
@@ -182,7 +182,7 @@ class AppStateCubit extends Cubit<AppState> {
         AppState(
           state.birthday,
           state.biorhythms,
-          state.dailyNotifications,
+          state.notifications,
           state.showExtraPoints,
           state.showResetButton,
           true,
@@ -193,7 +193,7 @@ class AppStateCubit extends Cubit<AppState> {
         AppState(
           state.birthday,
           state.biorhythms,
-          state.dailyNotifications,
+          state.notifications,
           state.showExtraPoints,
           false,
           false,

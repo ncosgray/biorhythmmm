@@ -60,12 +60,17 @@ String shortPercent(double x) {
   return '${roundInt(x)}%';
 }
 
+// Determine if a biorhythm value is in critical range
+bool isCritical(double x) {
+  int i = roundInt(x);
+  return (i > -15 && i < 15);
+}
+
 // Get phase icon for a value (up, down, or critical)
 IconData getPhaseIcon(double x) {
-  int i = roundInt(x);
-  if (i > -15 && i < 15) {
+  if (isCritical(x)) {
     return Icons.warning;
-  } else if (i > 0) {
+  } else if (x > 0) {
     return Icons.arrow_upward;
   } else {
     return Icons.arrow_downward;
