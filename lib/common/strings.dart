@@ -52,6 +52,7 @@ class Str {
   static String get biorhythmSpiritual => 'Spiritual';
   static String get birthdayLabel => 'DOB:';
   static String get birthdaySelectText => 'When were you born?';
+  static String get doneLabel => 'Done';
   static String get notificationsLabel => 'Notifications';
   static String get notificationTypeCritical => 'Critical';
   static String get notificationTypeDaily => 'Daily';
@@ -63,6 +64,7 @@ class Str {
   static String get otherSettingsTitle => 'Other settings';
   static String get resetLabel => 'Reset';
   static String get selectBiorhythmsTitle => 'Select biorhythms';
+  static String get settingsTitle => 'Settings';
   static String get todayLabel => 'Today';
   static String get toggleExtraLabel => 'View';
 }

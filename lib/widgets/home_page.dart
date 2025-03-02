@@ -21,7 +21,7 @@ import 'package:biorhythmmm/data/app_state.dart';
 import 'package:biorhythmmm/widgets/about_dialog.dart';
 import 'package:biorhythmmm/widgets/biorhythm_chart.dart';
 import 'package:biorhythmmm/widgets/birthday_picker.dart';
-import 'package:biorhythmmm/widgets/settings_dialog.dart';
+import 'package:biorhythmmm/widgets/settings_sheet.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -54,7 +54,7 @@ class HomePage extends StatelessWidget {
           // Settings button
           IconButton(
             icon: Icon(settingsIcon),
-            onPressed: () => showSettings(context),
+            onPressed: () => showSettingsSheet(context),
           ),
         ],
       ),

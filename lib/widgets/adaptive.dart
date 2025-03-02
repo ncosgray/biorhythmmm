@@ -1,7 +1,7 @@
 /*
  *******************************************************************************
  Package:  biorhythmmm
- Class:    dialog_action.dart
+ Class:    adaptive.dart
  Author:   Nathan Cosgray | https://www.nathanatos.com
  -------------------------------------------------------------------------------
  Copyright (c) 2024 Nathan Cosgray. All rights reserved.
@@ -11,7 +11,8 @@
 */
 
 // Biorhythmmm
-// - Platform aware dialog action
+// - Platform aware widgets
+// - Dialog action, text button, list tile
 
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
@@ -41,5 +42,42 @@ Widget adaptiveDialogAction({
             onPressed: onPressed,
             child: Text(text),
           );
+  }
+}
+
+// Button with styling appropriate to platform
+Widget adaptiveButton({
+  required Widget child,
+  required Function()? onPressed,
+}) {
+  if (Platform.isIOS) {
+    return CupertinoButton(
+      padding: EdgeInsets.zero,
+      onPressed: onPressed,
+      child: child,
+    );
+  } else {
+    return FilledButton(
+      onPressed: onPressed,
+      child: child,
+    );
+  }
+}
+
+// List tile with styling appropriate to platform
+Widget adaptiveListTile({
+  required Widget title,
+  required Widget trailing,
+}) {
+  if (Platform.isIOS) {
+    return CupertinoListTile(
+      title: title,
+      trailing: trailing,
+    );
+  } else {
+    return ListTile(
+      title: title,
+      trailing: trailing,
+    );
   }
 }
