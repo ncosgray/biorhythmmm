@@ -23,6 +23,7 @@ ThemeData lightTheme = ThemeData(
     seedColor: Colors.orange.shade300,
     brightness: Brightness.light,
   ),
+  appBarTheme: appBarTheme,
   dividerColor: Colors.black26,
   splashFactory: splashFactory,
   cupertinoOverrideTheme: cupertinoOverrideTheme,
@@ -34,12 +35,20 @@ ThemeData darkTheme = ThemeData(
     seedColor: Colors.orange,
     brightness: Brightness.dark,
   ),
+  appBarTheme: appBarTheme,
   dividerColor: Colors.white12,
   splashFactory: splashFactory,
   cupertinoOverrideTheme: cupertinoOverrideTheme,
 );
 
 // Common theme elements
+AppBarTheme get appBarTheme => AppBarTheme(
+      surfaceTintColor: Platform.isIOS ? Colors.transparent : null,
+      shadowColor: Platform.isIOS ? CupertinoColors.darkBackgroundGray : null,
+      scrolledUnderElevation: Platform.isIOS ? .1 : null,
+      toolbarHeight: Platform.isIOS ? 44 : null,
+    );
+
 InteractiveInkFeatureFactory? get splashFactory =>
     Platform.isIOS ? NoSplash.splashFactory : null;
 
