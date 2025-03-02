@@ -12,11 +12,35 @@
 
 // Biorhythmmm
 // - Platform aware widgets
-// - Dialog action, text button, list tile
+// - Sheet app bar, dialog action, text button, list tile
 
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+// Sheet app bar with behavior appropriate to platform
+PreferredSizeWidget adaptiveSheetAppBar({
+  required BuildContext context,
+  required String title,
+  required String dismissLabel,
+}) {
+  return AppBar(
+    automaticallyImplyLeading: Platform.isIOS ? false : true,
+    title: Text(title),
+    actions: Platform.isIOS
+        ? [
+            // Dismiss button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: adaptiveButton(
+                child: Text(dismissLabel),
+                onPressed: () => Navigator.of(context).maybePop(),
+              ),
+            ),
+          ]
+        : null,
+  );
+}
 
 // Dialog action button appropriate to platform
 Widget adaptiveDialogAction({
@@ -57,8 +81,8 @@ Widget adaptiveButton({
       child: child,
     );
   } else {
-    return FilledButton(
-      onPressed: onPressed,
+    return GestureDetector(
+      onTap: onPressed,
       child: child,
     );
   }

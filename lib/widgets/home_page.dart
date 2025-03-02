@@ -13,7 +13,6 @@
 // Biorhythmmm
 // - App home page
 
-import 'package:biorhythmmm/common/helpers.dart';
 import 'package:biorhythmmm/common/icons.dart';
 import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/common/styles.dart';
@@ -79,19 +78,6 @@ class HomePage extends StatelessWidget {
                       icon: Icon(todayIcon, size: labelText.fontSize),
                       iconAlignment: IconAlignment.start,
                     ),
-                  ),
-                ),
-                // Birthday setting
-                BlocSelector<AppStateCubit, AppState, DateTime>(
-                  selector: (state) => state.birthday,
-                  builder: (context, birthday) => TextButton.icon(
-                    onPressed: () => adaptiveBirthdayPicker(context),
-                    label: Text(
-                      '${Str.birthdayLabel} ${longDate(birthday)}',
-                      style: labelText,
-                    ),
-                    icon: Icon(editIcon, size: labelText.fontSize),
-                    iconAlignment: IconAlignment.end,
                   ),
                 ),
                 // Toggle extra biorhythms

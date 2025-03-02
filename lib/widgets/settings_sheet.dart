@@ -14,12 +14,14 @@
 // - Adaptive settings sheet
 // - App settings: biorhythm selection, notification type
 
+import 'package:biorhythmmm/common/helpers.dart';
 import 'package:biorhythmmm/common/notifications.dart' show NotificationType;
 import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/common/styles.dart';
 import 'package:biorhythmmm/data/app_state.dart';
 import 'package:biorhythmmm/data/biorhythm.dart';
 import 'package:biorhythmmm/widgets/adaptive.dart';
+import 'package:biorhythmmm/widgets/birthday_picker.dart';
 
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
@@ -47,19 +49,10 @@ showSettingsSheet(BuildContext context) {
 
 // Settings sheet
 Widget buildSettingsSheet(BuildContext context) => Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(Str.settingsTitle),
-        actions: [
-          // Dismiss settings button
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: adaptiveButton(
-              child: Text(Str.doneLabel),
-              onPressed: () => Navigator.of(context).maybePop(),
-            ),
-          ),
-        ],
+      appBar: adaptiveSheetAppBar(
+        context: context,
+        title: Str.settingsTitle,
+        dismissLabel: Str.doneLabel,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(8),
@@ -77,7 +70,7 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
                 children: [
                   for (final Biorhythm b in allBiorhythms)
                     adaptiveListTile(
-                      title: Text(b.name, style: labelText),
+                      title: Text(b.name, style: listTileText),
                       trailing: Checkbox.adaptive(
                         value: context
                             .read<AppStateCubit>()
@@ -107,9 +100,20 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
               padding: const EdgeInsets.all(8),
               child: Text(Str.otherSettingsTitle, style: titleText),
             ),
+            // Birthday
+            adaptiveListTile(
+              title: Text(Str.birthdayLabel, style: listTileText),
+              trailing: BlocSelector<AppStateCubit, AppState, DateTime>(
+                selector: (state) => state.birthday,
+                builder: (context, birthday) => adaptiveButton(
+                  onPressed: () => adaptiveBirthdayPicker(context),
+                  child: Text(longDate(birthday), style: listTileText),
+                ),
+              ),
+            ),
             // Select notifications
             adaptiveListTile(
-              title: Text(Str.notificationsLabel, style: labelText),
+              title: Text(Str.notificationsLabel, style: listTileText),
               trailing: BlocSelector<AppStateCubit, AppState, NotificationType>(
                 selector: (state) => state.notifications,
                 builder: (context, notifications) {
@@ -118,17 +122,7 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
                     return PullDownButton(
                       buttonBuilder: (_, showMenu) => adaptiveButton(
                         onPressed: showMenu,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          // Current selection with ellipsis indicator
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8),
-                              child: Text(notifications.name, style: labelText),
-                            ),
-                            const Icon(CupertinoIcons.ellipsis_circle),
-                          ],
-                        ),
+                        child: Text(notifications.name, style: listTileText),
                       ),
                       // Notification type options
                       itemBuilder: (_) => [

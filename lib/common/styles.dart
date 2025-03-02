@@ -57,6 +57,10 @@ const labelText = TextStyle(
   fontSize: 16,
 );
 
+const listTileText = TextStyle(
+  fontSize: 18,
+);
+
 const pointText = TextStyle(
   fontSize: 20,
   fontWeight: FontWeight.bold,
