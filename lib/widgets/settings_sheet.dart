@@ -69,28 +69,21 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   for (final Biorhythm b in allBiorhythms)
-                    adaptiveListTile(
-                      title: Text(b.name, style: listTileText),
-                      trailing: Checkbox.adaptive(
-                        value: context
-                            .read<AppStateCubit>()
-                            .isBiorhythmSelected(b),
-                        onChanged: biorhythms.length > 1 ||
-                                !context
-                                    .read<AppStateCubit>()
-                                    .isBiorhythmSelected(b)
-                            ? (bool? value) {
-                                // Add or remove selected biorhythm
-                                if (value!) {
-                                  context.read<AppStateCubit>().addBiorhythm(b);
-                                } else {
-                                  context
-                                      .read<AppStateCubit>()
-                                      .removeBiorhythm(b);
-                                }
-                              }
-                            : null,
-                      ),
+                    CheckboxListTile.adaptive(
+                      title: Text(b.name, style: listTileText(context)),
+                      value:
+                          context.read<AppStateCubit>().isBiorhythmSelected(b),
+                      onChanged: (bool? value) {
+                        // Add or remove selected biorhythm
+                        if (value!) {
+                          context.read<AppStateCubit>().addBiorhythm(b);
+                        } else {
+                          context.read<AppStateCubit>().removeBiorhythm(b);
+                        }
+                      },
+                      enabled: biorhythms.length > 1 ||
+                          !context.read<AppStateCubit>().isBiorhythmSelected(b),
+                      visualDensity: VisualDensity.compact,
                     ),
                 ],
               ),
@@ -100,20 +93,9 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
               padding: const EdgeInsets.all(8),
               child: Text(Str.otherSettingsTitle, style: titleText),
             ),
-            // Birthday
-            adaptiveListTile(
-              title: Text(Str.birthdayLabel, style: listTileText),
-              trailing: BlocSelector<AppStateCubit, AppState, DateTime>(
-                selector: (state) => state.birthday,
-                builder: (context, birthday) => adaptiveButton(
-                  onPressed: () => adaptiveBirthdayPicker(context),
-                  child: Text(longDate(birthday), style: listTileText),
-                ),
-              ),
-            ),
             // Select notifications
-            adaptiveListTile(
-              title: Text(Str.notificationsLabel, style: listTileText),
+            ListTile(
+              title: Text(Str.notificationsLabel, style: listTileText(context)),
               trailing: BlocSelector<AppStateCubit, AppState, NotificationType>(
                 selector: (state) => state.notifications,
                 builder: (context, notifications) {
@@ -122,7 +104,7 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
                     return PullDownButton(
                       buttonBuilder: (_, showMenu) => adaptiveButton(
                         onPressed: showMenu,
-                        child: Text(notifications.name, style: listTileText),
+                        child: Text(notifications.name),
                       ),
                       // Notification type options
                       itemBuilder: (_) => [
@@ -159,6 +141,17 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
                     );
                   }
                 },
+              ),
+            ),
+            // Birthday
+            ListTile(
+              title: Text(Str.birthdayLabel, style: listTileText(context)),
+              trailing: BlocSelector<AppStateCubit, AppState, DateTime>(
+                selector: (state) => state.birthday,
+                builder: (context, birthday) => adaptiveButton(
+                  onPressed: () => adaptiveBirthdayPicker(context),
+                  child: Text(longDate(birthday)),
+                ),
               ),
             ),
           ],
