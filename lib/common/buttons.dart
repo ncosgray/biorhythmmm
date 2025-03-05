@@ -1,7 +1,7 @@
 /*
  *******************************************************************************
  Package:  biorhythmmm
- Class:    adaptive.dart
+ Class:    buttons.dart
  Author:   Nathan Cosgray | https://www.nathanatos.com
  -------------------------------------------------------------------------------
  Copyright (c) 2024 Nathan Cosgray. All rights reserved.
@@ -11,38 +11,13 @@
 */
 
 // Biorhythmmm
-// - Platform aware widgets
-// - Sheet app bar, dialog action, text button
+// - Platform aware buttons
 
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-// Sheet app bar with behavior appropriate to platform
-PreferredSizeWidget adaptiveSheetAppBar({
-  required BuildContext context,
-  required String title,
-  required String dismissLabel,
-}) {
-  return AppBar(
-    automaticallyImplyLeading: Platform.isIOS ? false : true,
-    title: Text(title),
-    actions: Platform.isIOS
-        ? [
-            // Dismiss button
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: adaptiveButton(
-                child: Text(dismissLabel),
-                onPressed: () => Navigator.of(context).maybePop(),
-              ),
-            ),
-          ]
-        : null,
-  );
-}
-
-// Dialog action button appropriate to platform
+// Dialog action button with styling appropriate to platform
 Widget adaptiveDialogAction({
   bool isDefaultAction = false,
   bool isDestructiveAction = false,
@@ -69,8 +44,41 @@ Widget adaptiveDialogAction({
   }
 }
 
-// Button with styling appropriate to platform
-Widget adaptiveButton({
+// Icon button with styling appropriate to platform
+Widget adaptiveIconButton({
+  required Widget child,
+  required Widget icon,
+  bool iconAlignEnd = false,
+  required Function()? onPressed,
+}) {
+  if (Platform.isIOS) {
+    return CupertinoButton(
+      padding: EdgeInsets.zero,
+      onPressed: onPressed,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        textDirection: iconAlignEnd ? TextDirection.ltr : TextDirection.rtl,
+        children: [
+          child,
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child: icon,
+          ),
+        ],
+      ),
+    );
+  } else {
+    return TextButton.icon(
+      label: child,
+      icon: icon,
+      iconAlignment: iconAlignEnd ? IconAlignment.end : IconAlignment.start,
+      onPressed: onPressed,
+    );
+  }
+}
+
+// Setting button with styling appropriate to platform
+Widget adaptiveSettingButton({
   required Widget child,
   required Function()? onPressed,
 }) {
@@ -78,7 +86,17 @@ Widget adaptiveButton({
     return CupertinoButton(
       padding: EdgeInsets.zero,
       onPressed: onPressed,
-      child: child,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          child,
+          // Include an ellipsis icon for iOS
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child: Icon(CupertinoIcons.ellipsis_circle),
+          ),
+        ],
+      ),
     );
   } else {
     return FilledButton(

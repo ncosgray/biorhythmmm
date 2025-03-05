@@ -13,9 +13,9 @@
 // Biorhythmmm
 // - About text
 
+import 'package:biorhythmmm/common/buttons.dart';
 import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/common/styles.dart';
-import 'package:biorhythmmm/widgets/adaptive.dart';
 
 import 'package:flutter/material.dart';
 

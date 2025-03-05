@@ -13,6 +13,7 @@
 // Biorhythmmm
 // - App home page
 
+import 'package:biorhythmmm/common/buttons.dart';
 import 'package:biorhythmmm/common/icons.dart';
 import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/common/styles.dart';
@@ -69,24 +70,26 @@ class HomePage extends StatelessWidget {
                   selector: (state) => state.showResetButton,
                   builder: (context, showResetButton) => Visibility.maintain(
                     visible: showResetButton,
-                    child: TextButton.icon(
-                      onPressed: () => context.read<AppStateCubit>().reload(),
-                      label: Text(
+                    child: adaptiveIconButton(
+                      child: Text(
                         Str.resetLabel,
                         style: labelText,
                       ),
                       icon: Icon(todayIcon, size: labelText.fontSize),
-                      iconAlignment: IconAlignment.start,
+                      onPressed: () => context.read<AppStateCubit>().reload(),
                     ),
                   ),
+                ),
+                // Chart title
+                Text(
+                  Str.chartTitle,
+                  style: labelText,
                 ),
                 // Toggle extra biorhythms
                 BlocSelector<AppStateCubit, AppState, bool>(
                   selector: (state) => state.showExtraPoints,
-                  builder: (context, showExtraPoints) => TextButton.icon(
-                    onPressed: () =>
-                        context.read<AppStateCubit>().toggleExtraPoints(),
-                    label: Text(
+                  builder: (context, showExtraPoints) => adaptiveIconButton(
+                    child: Text(
                       Str.toggleExtraLabel,
                       style: labelText,
                     ),
@@ -94,7 +97,9 @@ class HomePage extends StatelessWidget {
                       showExtraPoints ? visibleIcon : invisibleIcon,
                       size: labelText.fontSize,
                     ),
-                    iconAlignment: IconAlignment.end,
+                    iconAlignEnd: true,
+                    onPressed: () =>
+                        context.read<AppStateCubit>().toggleExtraPoints(),
                   ),
                 ),
               ],

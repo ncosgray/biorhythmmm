@@ -14,13 +14,13 @@
 // - Adaptive settings sheet
 // - App settings: biorhythm selection, notification type
 
+import 'package:biorhythmmm/common/buttons.dart';
 import 'package:biorhythmmm/common/helpers.dart';
 import 'package:biorhythmmm/common/notifications.dart' show NotificationType;
 import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/common/styles.dart';
 import 'package:biorhythmmm/data/app_state.dart';
 import 'package:biorhythmmm/data/biorhythm.dart';
-import 'package:biorhythmmm/widgets/adaptive.dart';
 import 'package:biorhythmmm/widgets/birthday_picker.dart';
 
 import 'dart:io' show Platform;
@@ -49,10 +49,8 @@ showSettingsSheet(BuildContext context) {
 
 // Settings sheet
 Widget buildSettingsSheet(BuildContext context) => Scaffold(
-      appBar: adaptiveSheetAppBar(
-        context: context,
-        title: Str.settingsTitle,
-        dismissLabel: Str.doneLabel,
+      appBar: AppBar(
+        title: Text(Str.settingsTitle),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(8),
@@ -102,7 +100,7 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
                   if (Platform.isIOS) {
                     // iOS styled dropdown menu
                     return PullDownButton(
-                      buttonBuilder: (_, showMenu) => adaptiveButton(
+                      buttonBuilder: (_, showMenu) => adaptiveSettingButton(
                         onPressed: showMenu,
                         child: Text(notifications.name),
                       ),
@@ -148,7 +146,7 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
               title: Text(Str.birthdayLabel, style: listTileText(context)),
               trailing: BlocSelector<AppStateCubit, AppState, DateTime>(
                 selector: (state) => state.birthday,
-                builder: (context, birthday) => adaptiveButton(
+                builder: (context, birthday) => adaptiveSettingButton(
                   onPressed: () => adaptiveBirthdayPicker(context),
                   child: Text(longDate(birthday)),
                 ),

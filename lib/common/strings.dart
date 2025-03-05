@@ -52,7 +52,7 @@ class Str {
   static String get biorhythmSpiritual => 'Spiritual';
   static String get birthdayLabel => 'Your birthday';
   static String get birthdaySelectText => 'When were you born?';
-  static String get doneLabel => 'Done';
+  static String get chartTitle => 'Your Biorhythms';
   static String get notificationsLabel => 'Biorhythm alerts';
   static String get notificationTypeCritical => 'Critical days only';
   static String get notificationTypeDaily => 'Every day';
