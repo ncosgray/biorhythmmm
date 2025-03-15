@@ -54,7 +54,7 @@ class Str {
   static String get birthdaySelectText => 'When were you born?';
   static String get chartTitle => 'Your Biorhythms';
   static String get notificationsLabel => 'Biorhythm alerts';
-  static String get notificationTypeCritical => 'Critical days only';
+  static String get notificationTypeCritical => 'Critical days';
   static String get notificationTypeDaily => 'Every day';
   static String get notificationTypeNone => 'Never';
   static String get notifyChannelName => 'Biorhythm alerts';

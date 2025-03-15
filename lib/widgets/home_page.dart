@@ -44,7 +44,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(Str.appName),
+        title: Text(Str.chartTitle),
         actions: [
           // About button
           IconButton(
@@ -79,11 +79,6 @@ class HomePage extends StatelessWidget {
                       onPressed: () => context.read<AppStateCubit>().reload(),
                     ),
                   ),
-                ),
-                // Chart title
-                Text(
-                  Str.chartTitle,
-                  style: labelText,
                 ),
                 // Toggle extra biorhythms
                 BlocSelector<AppStateCubit, AppState, bool>(
