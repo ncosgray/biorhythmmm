@@ -26,11 +26,11 @@ DateTime get today {
 
 // Get inclusive date difference in days
 int dateDiff(DateTime f, DateTime t, {int addDays = 0}) {
-  t = t.add(Duration(days: addDays));
-
   // Use UTC to account for daylight savings
-  tz.TZDateTime from = tz.TZDateTime(tz.UTC, f.year, f.month, f.day);
-  tz.TZDateTime to = tz.TZDateTime(tz.UTC, t.year, t.month, t.day);
+  tz.TZDateTime from = tz.TZDateTime(tz.local, f.year, f.month, f.day).toUtc();
+  tz.TZDateTime to = tz.TZDateTime(tz.local, t.year, t.month, t.day)
+      .toUtc()
+      .add(Duration(days: addDays));
 
   return 1 + to.difference(from).inDays;
 }
