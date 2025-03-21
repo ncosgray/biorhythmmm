@@ -42,7 +42,8 @@ class BiorhythmChart extends StatefulWidget {
   State<StatefulWidget> createState() => _BiorhythmChartState();
 }
 
-class _BiorhythmChartState extends State<BiorhythmChart> {
+class _BiorhythmChartState extends State<BiorhythmChart>
+    with WidgetsBindingObserver {
   // State variables
   List<BiorhythmPoint> _points = [];
   Biorhythm? _highlighted;
@@ -71,6 +72,7 @@ class _BiorhythmChartState extends State<BiorhythmChart> {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
     resetChart();
     super.initState();
 
@@ -81,6 +83,7 @@ class _BiorhythmChartState extends State<BiorhythmChart> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     chartController.dispose();
     super.dispose();
   }
@@ -89,6 +92,13 @@ class _BiorhythmChartState extends State<BiorhythmChart> {
   void didUpdateWidget(BiorhythmChart oldWidget) {
     resetChart();
     super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      resetChart();
+    }
   }
 
   @override
