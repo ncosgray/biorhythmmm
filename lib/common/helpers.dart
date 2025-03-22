@@ -13,7 +13,6 @@
 // Biorhythmmm
 // - Helper functions for string formatting
 
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 // ignore: depend_on_referenced_packages
 import 'package:timezone/timezone.dart' as tz;
@@ -57,22 +56,6 @@ int roundInt(double x) {
 
 // Format number as percentage
 String shortPercent(double x) {
-  return '${roundInt(x)}%';
-}
-
-// Determine if a biorhythm value is in critical range
-bool isCritical(double x) {
-  int i = roundInt(x);
-  return (i > -15 && i < 15);
-}
-
-// Get phase icon for a value (up, down, or critical)
-IconData getPhaseIcon(double x) {
-  if (isCritical(x)) {
-    return Icons.warning;
-  } else if (x > 0) {
-    return Icons.arrow_upward;
-  } else {
-    return Icons.arrow_downward;
-  }
+  int percent = roundInt(x);
+  return '${percent < 0 ? '\u2212' : ''}${percent.abs()}%';
 }

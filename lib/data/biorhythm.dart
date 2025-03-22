@@ -13,6 +13,7 @@
 // Biorhythmmm
 // - Biorhythm definitions
 
+import 'package:biorhythmmm/common/helpers.dart';
 import 'package:biorhythmmm/common/strings.dart';
 
 import 'dart:math';
@@ -21,6 +22,7 @@ import 'package:flutter/material.dart';
 typedef BiorhythmPoint = ({
   Biorhythm biorhythm,
   double point,
+  BiorhythmTrend trend,
 });
 
 enum Biorhythm {
@@ -56,11 +58,49 @@ enum Biorhythm {
   // Calcuate biorhythm point for a given day
   double getPoint(int day) => sin(2 * pi * day / cycleDays);
 
-  BiorhythmPoint getBiorhythmPoint(int day) =>
-      (biorhythm: this, point: getPoint(day));
+  BiorhythmPoint getBiorhythmPoint(int day) => (
+        biorhythm: this,
+        point: getPoint(day),
+        trend: getTrend(getPoint(day), getPoint(day + 1))
+      );
 }
 
 // Define default biorhythm list options
 final List<Biorhythm> allBiorhythms = Biorhythm.values.toList();
 final List<Biorhythm> primaryBiorhythms =
     Biorhythm.values.where((b) => b.primary).toList();
+
+// Biorhythm trend
+enum BiorhythmTrend {
+  decreasing(0),
+  critical(1),
+  increasing(2);
+
+  const BiorhythmTrend(this.value);
+
+  final int value;
+
+  // Display icons
+  IconData get trendIcon => switch (this) {
+        decreasing => Icons.south_east,
+        critical => Icons.warning,
+        increasing => Icons.north_east,
+      };
+}
+
+// Calculate trend (increasing, critical, or decreasing)
+BiorhythmTrend getTrend(double a, double b) {
+  if (isCritical(a)) {
+    return BiorhythmTrend.critical;
+  } else if ((b - a) > 0) {
+    return BiorhythmTrend.increasing;
+  } else {
+    return BiorhythmTrend.decreasing;
+  }
+}
+
+// Determine if a biorhythm value is in critical range
+bool isCritical(double x) {
+  int i = roundInt(x);
+  return (i > -15 && i < 15);
+}

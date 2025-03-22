@@ -35,7 +35,7 @@ class Str {
   static String get aboutIntutionDays =>
       ' (${Biorhythm.intuition.cycleDays} days), ';
   static String get aboutPhases =>
-      'Each cycle moves through \u2191 high, \u2193 low, and \u26A0 critical phases. During the critical phase a cycle crosses from high to low or from low to high. It is at this time \u2014 when the body and mind are out of sync \u2014 that individuals may experience a higher likelihood of stress, accidents, or mistakes.';
+      'Each cycle moves through high, low, and \u26A0critical\u26A0 phases. During the critical phase a cycle crosses from high to low or from low to high. It is at this time \u2014 when the body and mind are out of sync \u2014 that individuals may experience a higher likelihood of stress, accidents, or mistakes.';
   static String get aboutPhysicalBullet => '\u2022 ${Str.biorhythmPhysical}';
   static String get aboutPhysicalText =>
       ' cycle affecting strength and energy (${Biorhythm.physical.cycleDays} days)';

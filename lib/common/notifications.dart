@@ -89,10 +89,7 @@ abstract class Notifications {
             _notifyAt(date),
             _biorhythmSummary([
               for (final Biorhythm b in Prefs.biorhythms)
-                (
-                  biorhythm: b,
-                  point: b.getPoint(dateDiff(Prefs.birthday, date))
-                ),
+                b.getBiorhythmPoint(dateDiff(Prefs.birthday, date)),
             ])
           );
         },

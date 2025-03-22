@@ -65,7 +65,7 @@ TextStyle listTileText(BuildContext context) => (Platform.isIOS
     .copyWith(color: Theme.of(context).colorScheme.onSurface);
 
 const pointText = TextStyle(
-  fontSize: 20,
+  fontSize: 19,
   fontWeight: FontWeight.bold,
   fontFeatures: [
     FontFeature.tabularFigures(),

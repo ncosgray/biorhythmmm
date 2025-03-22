@@ -224,11 +224,16 @@ class _BiorhythmChartState extends State<BiorhythmChart>
           setPoints(
             [
               for (final TouchLineBarSpot spot in response!.lineBarSpots!)
-                (
-                  biorhythm:
-                      context.read<AppStateCubit>().biorhythms[spot.barIndex],
-                  point: spot.y
-                ),
+                context
+                    .read<AppStateCubit>()
+                    .biorhythms[spot.barIndex]
+                    .getBiorhythmPoint(
+                      dateDiff(
+                        context.read<AppStateCubit>().birthday,
+                        today,
+                        addDays: spot.x.toInt(),
+                      ),
+                    ),
             ],
           );
         }
@@ -378,13 +383,13 @@ class _BiorhythmChartState extends State<BiorhythmChart>
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    getPhaseIcon(point.point),
-                    size: pointText.fontSize!,
-                  ),
                   Text(
                     shortPercent(point.point),
                     style: pointText,
+                  ),
+                  Icon(
+                    point.trend.trendIcon,
+                    size: pointText.fontSize!,
                   ),
                 ],
               ),
