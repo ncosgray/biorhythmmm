@@ -203,10 +203,17 @@ class _BiorhythmChartState extends State<BiorhythmChart>
             List<LineTooltipItem?> items =
                 List.filled(touchedSpots.length, null);
             if (touchedSpots.isNotEmpty) {
+              // Indicate with a symbol if this is a critical day
+              String criticalIndicator =
+                  touchedSpots.where((spot) => isCritical(spot.y)).isNotEmpty
+                      ? '\u26A0'
+                      : '';
               items[0] = LineTooltipItem(
-                dateAndDay(
-                  today.add(Duration(days: touchedSpots[0].x.toInt())),
-                ),
+                criticalIndicator +
+                    dateAndDay(
+                      today.add(Duration(days: touchedSpots[0].x.toInt())),
+                    ) +
+                    criticalIndicator,
                 titleText,
               );
             }
@@ -376,7 +383,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
             // Point percentage with phase icon
             SizedBox.fromSize(
               size: Size(
-                pointText.fontSize! * 4.8,
+                pointText.fontSize! * 5,
                 pointText.fontSize! * 1.8,
               ),
               child: Row(

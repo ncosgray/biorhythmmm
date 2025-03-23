@@ -82,9 +82,9 @@ enum BiorhythmTrend {
 
   // Display icons
   IconData get trendIcon => switch (this) {
-        decreasing => Icons.south_east,
+        decreasing => Icons.trending_down,
         critical => Icons.warning,
-        increasing => Icons.north_east,
+        increasing => Icons.trending_up,
       };
 }
 
