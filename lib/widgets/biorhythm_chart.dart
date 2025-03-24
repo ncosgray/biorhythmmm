@@ -42,7 +42,8 @@ class BiorhythmChart extends StatefulWidget {
   State<StatefulWidget> createState() => _BiorhythmChartState();
 }
 
-class _BiorhythmChartState extends State<BiorhythmChart> {
+class _BiorhythmChartState extends State<BiorhythmChart>
+    with WidgetsBindingObserver {
   // State variables
   List<BiorhythmPoint> _points = [];
   Biorhythm? _highlighted;
@@ -71,6 +72,7 @@ class _BiorhythmChartState extends State<BiorhythmChart> {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
     resetChart();
     super.initState();
 
@@ -81,6 +83,7 @@ class _BiorhythmChartState extends State<BiorhythmChart> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     chartController.dispose();
     super.dispose();
   }
@@ -89,6 +92,13 @@ class _BiorhythmChartState extends State<BiorhythmChart> {
   void didUpdateWidget(BiorhythmChart oldWidget) {
     resetChart();
     super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      resetChart();
+    }
   }
 
   @override
@@ -193,10 +203,17 @@ class _BiorhythmChartState extends State<BiorhythmChart> {
             List<LineTooltipItem?> items =
                 List.filled(touchedSpots.length, null);
             if (touchedSpots.isNotEmpty) {
+              // Indicate with a symbol if this is a critical day
+              String criticalIndicator =
+                  touchedSpots.where((spot) => isCritical(spot.y)).isNotEmpty
+                      ? '\u26A0'
+                      : '';
               items[0] = LineTooltipItem(
-                dateAndDay(
-                  today.add(Duration(days: touchedSpots[0].x.toInt())),
-                ),
+                criticalIndicator +
+                    dateAndDay(
+                      today.add(Duration(days: touchedSpots[0].x.toInt())),
+                    ) +
+                    criticalIndicator,
                 titleText,
               );
             }
@@ -214,11 +231,16 @@ class _BiorhythmChartState extends State<BiorhythmChart> {
           setPoints(
             [
               for (final TouchLineBarSpot spot in response!.lineBarSpots!)
-                (
-                  biorhythm:
-                      context.read<AppStateCubit>().biorhythms[spot.barIndex],
-                  point: spot.y
-                ),
+                context
+                    .read<AppStateCubit>()
+                    .biorhythms[spot.barIndex]
+                    .getBiorhythmPoint(
+                      dateDiff(
+                        context.read<AppStateCubit>().birthday,
+                        today,
+                        addDays: spot.x.toInt(),
+                      ),
+                    ),
             ],
           );
         }
@@ -361,20 +383,20 @@ class _BiorhythmChartState extends State<BiorhythmChart> {
             // Point percentage with phase icon
             SizedBox.fromSize(
               size: Size(
-                pointText.fontSize! * 4.8,
+                pointText.fontSize! * 5,
                 pointText.fontSize! * 1.8,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    getPhaseIcon(point.point),
-                    size: pointText.fontSize!,
-                  ),
                   Text(
                     shortPercent(point.point),
                     style: pointText,
+                  ),
+                  Icon(
+                    point.trend.trendIcon,
+                    size: pointText.fontSize!,
                   ),
                 ],
               ),

@@ -49,6 +49,7 @@ buildMaterialDatePicker(BuildContext context) async {
 buildCupertinoDatePicker(BuildContext context) {
   showModalBottomSheet(
     context: context,
+    backgroundColor: Theme.of(context).canvasColor,
     builder: (_) {
       return SizedBox(
         height: MediaQuery.of(context).size.height / 3,

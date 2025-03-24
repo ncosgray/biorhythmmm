@@ -13,7 +13,7 @@
 // Biorhythmmm
 // - App home page
 
-import 'package:biorhythmmm/common/helpers.dart';
+import 'package:biorhythmmm/common/buttons.dart';
 import 'package:biorhythmmm/common/icons.dart';
 import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/common/styles.dart';
@@ -21,7 +21,7 @@ import 'package:biorhythmmm/data/app_state.dart';
 import 'package:biorhythmmm/widgets/about_dialog.dart';
 import 'package:biorhythmmm/widgets/biorhythm_chart.dart';
 import 'package:biorhythmmm/widgets/birthday_picker.dart';
-import 'package:biorhythmmm/widgets/settings_dialog.dart';
+import 'package:biorhythmmm/widgets/settings_sheet.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -44,7 +44,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(Str.appName),
+        title: Text(Str.chartTitle),
         actions: [
           // About button
           IconButton(
@@ -54,7 +54,7 @@ class HomePage extends StatelessWidget {
           // Settings button
           IconButton(
             icon: Icon(settingsIcon),
-            onPressed: () => showSettings(context),
+            onPressed: () => showSettingsSheet(context),
           ),
         ],
       ),
@@ -70,37 +70,21 @@ class HomePage extends StatelessWidget {
                   selector: (state) => state.showResetButton,
                   builder: (context, showResetButton) => Visibility.maintain(
                     visible: showResetButton,
-                    child: TextButton.icon(
-                      onPressed: () => context.read<AppStateCubit>().reload(),
-                      label: Text(
+                    child: adaptiveIconButton(
+                      child: Text(
                         Str.resetLabel,
                         style: labelText,
                       ),
                       icon: Icon(todayIcon, size: labelText.fontSize),
-                      iconAlignment: IconAlignment.start,
+                      onPressed: () => context.read<AppStateCubit>().reload(),
                     ),
-                  ),
-                ),
-                // Birthday setting
-                BlocSelector<AppStateCubit, AppState, DateTime>(
-                  selector: (state) => state.birthday,
-                  builder: (context, birthday) => TextButton.icon(
-                    onPressed: () => adaptiveBirthdayPicker(context),
-                    label: Text(
-                      '${Str.birthdayLabel} ${longDate(birthday)}',
-                      style: labelText,
-                    ),
-                    icon: Icon(editIcon, size: labelText.fontSize),
-                    iconAlignment: IconAlignment.end,
                   ),
                 ),
                 // Toggle extra biorhythms
                 BlocSelector<AppStateCubit, AppState, bool>(
                   selector: (state) => state.showExtraPoints,
-                  builder: (context, showExtraPoints) => TextButton.icon(
-                    onPressed: () =>
-                        context.read<AppStateCubit>().toggleExtraPoints(),
-                    label: Text(
+                  builder: (context, showExtraPoints) => adaptiveIconButton(
+                    child: Text(
                       Str.toggleExtraLabel,
                       style: labelText,
                     ),
@@ -108,7 +92,9 @@ class HomePage extends StatelessWidget {
                       showExtraPoints ? visibleIcon : invisibleIcon,
                       size: labelText.fontSize,
                     ),
-                    iconAlignment: IconAlignment.end,
+                    iconAlignEnd: true,
+                    onPressed: () =>
+                        context.read<AppStateCubit>().toggleExtraPoints(),
                   ),
                 ),
               ],

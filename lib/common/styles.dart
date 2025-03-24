@@ -13,6 +13,8 @@
 // Biorhythmmm
 // - Text styles
 
+import 'dart:io' show Platform;
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 const bodyText = TextStyle(
@@ -57,8 +59,13 @@ const labelText = TextStyle(
   fontSize: 16,
 );
 
+TextStyle listTileText(BuildContext context) => (Platform.isIOS
+        ? CupertinoTheme.of(context).textTheme.textStyle
+        : Theme.of(context).textTheme.bodyMedium!)
+    .copyWith(color: Theme.of(context).colorScheme.onSurface);
+
 const pointText = TextStyle(
-  fontSize: 20,
+  fontSize: 19,
   fontWeight: FontWeight.bold,
   fontFeatures: [
     FontFeature.tabularFigures(),

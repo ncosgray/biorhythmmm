@@ -1,0 +1,2 @@
+* Enable notifications to make sure you don't miss a critical day in your biorhythms.
+* Bug fixes and UI improvements.

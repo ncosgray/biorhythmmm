@@ -14,6 +14,7 @@
 // - App state
 // - Manage preferences
 
+import 'package:biorhythmmm/common/notifications.dart';
 import 'package:biorhythmmm/data/biorhythm.dart';
 import 'package:biorhythmmm/data/prefs.dart';
 
@@ -23,6 +24,7 @@ class AppState {
   AppState(
     this.birthday,
     this.biorhythms,
+    this.notifications,
     this.showExtraPoints,
     this.showResetButton,
     this.reload,
@@ -30,6 +32,7 @@ class AppState {
 
   final DateTime birthday;
   final List<Biorhythm> biorhythms;
+  final NotificationType notifications;
   final bool showExtraPoints;
   final bool showResetButton;
   final bool reload;
@@ -38,6 +41,7 @@ class AppState {
   static AppState initial() => AppState(
         Prefs.birthday,
         Prefs.biorhythms,
+        Prefs.notifications,
         Prefs.biorhythms.length == allBiorhythms.length ? true : false,
         false,
         false,
@@ -50,6 +54,7 @@ class AppStateCubit extends Cubit<AppState> {
   // Getters
   DateTime get birthday => state.birthday;
   List<Biorhythm> get biorhythms => state.biorhythms;
+  NotificationType get notifications => state.notifications;
   bool get showExtraPoints => state.showExtraPoints;
   bool get showResetButton => state.showResetButton;
 
@@ -63,11 +68,13 @@ class AppStateCubit extends Cubit<AppState> {
       AppState(
         newBirthday,
         state.biorhythms,
+        state.notifications,
         state.showExtraPoints,
         state.showResetButton,
         state.reload,
       ),
     );
+    updateNotifications();
   }
 
   // Manage biorhythms
@@ -82,11 +89,13 @@ class AppStateCubit extends Cubit<AppState> {
       AppState(
         state.birthday,
         newBiorhythms,
+        state.notifications,
         newBiorhythms.length == allBiorhythms.length ? true : false,
         state.showResetButton,
         state.reload,
       ),
     );
+    updateNotifications();
   }
 
   void removeBiorhythm(Biorhythm oldBiorhythm) {
@@ -97,14 +106,41 @@ class AppStateCubit extends Cubit<AppState> {
       AppState(
         state.birthday,
         newBiorhythms,
+        state.notifications,
         false,
         state.showResetButton,
         state.reload,
       ),
     );
+    updateNotifications();
   }
 
   bool isBiorhythmSelected(Biorhythm b) => Prefs.biorhythms.contains(b);
+
+  // Enable or disable notifications
+  void setNotifications(NotificationType newNotifications) {
+    Prefs.notifications = newNotifications;
+    emit(
+      AppState(
+        state.birthday,
+        state.biorhythms,
+        newNotifications,
+        state.showExtraPoints,
+        state.showResetButton,
+        state.reload,
+      ),
+    );
+    updateNotifications();
+  }
+
+  // Schedule or cancel notifications after a settings change
+  void updateNotifications() {
+    if (state.notifications == NotificationType.none) {
+      Notifications.cancel();
+    } else {
+      Notifications.schedule();
+    }
+  }
 
   // Toggle extra biorhythms display
   void toggleExtraPoints() {
@@ -117,6 +153,7 @@ class AppStateCubit extends Cubit<AppState> {
             : (Prefs.biorhythms.length == allBiorhythms.length
                 ? primaryBiorhythms
                 : Prefs.biorhythms),
+        state.notifications,
         newShowExtraPoints,
         state.showResetButton,
         state.reload,
@@ -131,6 +168,7 @@ class AppStateCubit extends Cubit<AppState> {
         AppState(
           state.birthday,
           state.biorhythms,
+          state.notifications,
           state.showExtraPoints,
           true,
           state.reload,
@@ -144,6 +182,7 @@ class AppStateCubit extends Cubit<AppState> {
         AppState(
           state.birthday,
           state.biorhythms,
+          state.notifications,
           state.showExtraPoints,
           state.showResetButton,
           true,
@@ -154,6 +193,7 @@ class AppStateCubit extends Cubit<AppState> {
         AppState(
           state.birthday,
           state.biorhythms,
+          state.notifications,
           state.showExtraPoints,
           false,
           false,
