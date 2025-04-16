@@ -33,9 +33,7 @@ import 'package:pull_down_button/pull_down_button.dart';
 showSettingsSheet(BuildContext context) {
   if (Platform.isIOS) {
     Navigator.of(context).push(
-      CupertinoSheetRoute<void>(
-        builder: (_) => buildSettingsSheet(context),
-      ),
+      CupertinoSheetRoute<void>(builder: (_) => buildSettingsSheet(context)),
     );
   } else {
     Navigator.of(context).push(
@@ -49,28 +47,28 @@ showSettingsSheet(BuildContext context) {
 
 // Settings sheet
 Widget buildSettingsSheet(BuildContext context) => Scaffold(
-      appBar: AppBar(
-        title: Text(Str.settingsTitle),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          children: [
-            // Select biorhythms
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: Text(Str.selectBiorhythmsTitle, style: titleText),
-            ),
-            BlocSelector<AppStateCubit, AppState, List<Biorhythm>>(
-              selector: (state) => state.biorhythms,
-              builder: (context, biorhythms) => Column(
+  appBar: AppBar(title: Text(Str.settingsTitle)),
+  body: SingleChildScrollView(
+    padding: const EdgeInsets.all(8),
+    child: Column(
+      children: [
+        // Select biorhythms
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Text(Str.selectBiorhythmsTitle, style: titleText),
+        ),
+        BlocSelector<AppStateCubit, AppState, List<Biorhythm>>(
+          selector: (state) => state.biorhythms,
+          builder:
+              (context, biorhythms) => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   for (final Biorhythm b in allBiorhythms)
                     CheckboxListTile.adaptive(
                       title: Text(b.name, style: listTileText(context)),
-                      value:
-                          context.read<AppStateCubit>().isBiorhythmSelected(b),
+                      value: context.read<AppStateCubit>().isBiorhythmSelected(
+                        b,
+                      ),
                       onChanged: (bool? value) {
                         // Add or remove selected biorhythm
                         if (value!) {
@@ -79,80 +77,82 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
                           context.read<AppStateCubit>().removeBiorhythm(b);
                         }
                       },
-                      enabled: biorhythms.length > 1 ||
+                      enabled:
+                          biorhythms.length > 1 ||
                           !context.read<AppStateCubit>().isBiorhythmSelected(b),
                       visualDensity: VisualDensity.compact,
                     ),
                 ],
               ),
-            ),
-            // Other settings
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: Text(Str.otherSettingsTitle, style: titleText),
-            ),
-            // Select notifications
-            ListTile(
-              title: Text(Str.notificationsLabel, style: listTileText(context)),
-              trailing: BlocSelector<AppStateCubit, AppState, NotificationType>(
-                selector: (state) => state.notifications,
-                builder: (context, notifications) {
-                  if (Platform.isIOS) {
-                    // iOS styled dropdown menu
-                    return PullDownButton(
-                      buttonBuilder: (_, showMenu) => adaptiveSettingButton(
+        ),
+        // Other settings
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Text(Str.otherSettingsTitle, style: titleText),
+        ),
+        // Select notifications
+        ListTile(
+          title: Text(Str.notificationsLabel, style: listTileText(context)),
+          trailing: BlocSelector<AppStateCubit, AppState, NotificationType>(
+            selector: (state) => state.notifications,
+            builder: (context, notifications) {
+              if (Platform.isIOS) {
+                // iOS styled dropdown menu
+                return PullDownButton(
+                  buttonBuilder:
+                      (_, showMenu) => adaptiveSettingButton(
                         onPressed: showMenu,
                         child: Text(notifications.name),
                       ),
-                      // Notification type options
-                      itemBuilder: (_) => [
+                  // Notification type options
+                  itemBuilder:
+                      (_) => [
                         for (final NotificationType n
                             in NotificationType.values)
                           PullDownMenuItem.selectable(
                             selected: n == notifications,
                             title: n.name,
                             // Set selected notification type
-                            onTap: () => context
-                                .read<AppStateCubit>()
-                                .setNotifications(n),
+                            onTap:
+                                () => context
+                                    .read<AppStateCubit>()
+                                    .setNotifications(n),
                           ),
                       ],
-                    );
-                  } else {
-                    // Material dropdown menu
-                    return DropdownButton<NotificationType>(
-                      value: notifications,
-                      icon: const Icon(Icons.keyboard_arrow_down),
-                      // Notification type options
-                      items: [
-                        for (final NotificationType n
-                            in NotificationType.values)
-                          DropdownMenuItem(
-                            value: n,
-                            child: Text(n.name),
-                          ),
-                      ],
-                      // Set selected notification type
-                      onChanged: (NotificationType? newValue) => context
+                );
+              } else {
+                // Material dropdown menu
+                return DropdownButton<NotificationType>(
+                  value: notifications,
+                  icon: const Icon(Icons.keyboard_arrow_down),
+                  // Notification type options
+                  items: [
+                    for (final NotificationType n in NotificationType.values)
+                      DropdownMenuItem(value: n, child: Text(n.name)),
+                  ],
+                  // Set selected notification type
+                  onChanged:
+                      (NotificationType? newValue) => context
                           .read<AppStateCubit>()
                           .setNotifications(newValue!),
-                    );
-                  }
-                },
-              ),
-            ),
-            // Birthday
-            ListTile(
-              title: Text(Str.birthdayLabel, style: listTileText(context)),
-              trailing: BlocSelector<AppStateCubit, AppState, DateTime>(
-                selector: (state) => state.birthday,
-                builder: (context, birthday) => adaptiveSettingButton(
+                );
+              }
+            },
+          ),
+        ),
+        // Birthday
+        ListTile(
+          title: Text(Str.birthdayLabel, style: listTileText(context)),
+          trailing: BlocSelector<AppStateCubit, AppState, DateTime>(
+            selector: (state) => state.birthday,
+            builder:
+                (context, birthday) => adaptiveSettingButton(
                   onPressed: () => adaptiveBirthdayPicker(context),
                   child: Text(longDate(birthday)),
                 ),
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
-    );
+      ],
+    ),
+  ),
+);

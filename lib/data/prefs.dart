@@ -49,8 +49,8 @@ abstract class Prefs {
 
   // Get and set birthday
   static DateTime get birthday => DateTime.fromMillisecondsSinceEpoch(
-        _sharedPrefs.getInt(_birthdayKey) ?? 0,
-      );
+    _sharedPrefs.getInt(_birthdayKey) ?? 0,
+  );
   static set birthday(DateTime d) =>
       _sharedPrefs.setInt(_birthdayKey, d.millisecondsSinceEpoch);
   static bool get isBirthdaySet => _sharedPrefs.containsKey(_birthdayKey);

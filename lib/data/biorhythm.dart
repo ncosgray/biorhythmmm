@@ -19,11 +19,8 @@ import 'package:biorhythmmm/common/strings.dart';
 import 'dart:math';
 import 'package:flutter/material.dart';
 
-typedef BiorhythmPoint = ({
-  Biorhythm biorhythm,
-  double point,
-  BiorhythmTrend trend,
-});
+typedef BiorhythmPoint =
+    ({Biorhythm biorhythm, double point, BiorhythmTrend trend});
 
 enum Biorhythm {
   intellectual(Colors.lightGreen, 33, true),
@@ -42,14 +39,14 @@ enum Biorhythm {
 
   // Biorhythm names
   String get name => switch (this) {
-        intellectual => Str.biorhythmIntellectual,
-        emotional => Str.biorhythmEmotional,
-        physical => Str.biorhythmPhysical,
-        intuition => Str.biorhythmIntuition,
-        aesthetic => Str.biorhythmAesthetic,
-        awareness => Str.biorhythmAwareness,
-        spiritual => Str.biorhythmSpiritual,
-      };
+    intellectual => Str.biorhythmIntellectual,
+    emotional => Str.biorhythmEmotional,
+    physical => Str.biorhythmPhysical,
+    intuition => Str.biorhythmIntuition,
+    aesthetic => Str.biorhythmAesthetic,
+    awareness => Str.biorhythmAwareness,
+    spiritual => Str.biorhythmSpiritual,
+  };
 
   // Biorhythm colors
   Color get graphColor => color.withValues(alpha: 0.6);
@@ -59,10 +56,10 @@ enum Biorhythm {
   double getPoint(int day) => sin(2 * pi * day / cycleDays);
 
   BiorhythmPoint getBiorhythmPoint(int day) => (
-        biorhythm: this,
-        point: getPoint(day),
-        trend: getTrend(getPoint(day), getPoint(day + 1))
-      );
+    biorhythm: this,
+    point: getPoint(day),
+    trend: getTrend(getPoint(day), getPoint(day + 1)),
+  );
 }
 
 // Define default biorhythm list options
@@ -82,10 +79,10 @@ enum BiorhythmTrend {
 
   // Display icons
   IconData get trendIcon => switch (this) {
-        decreasing => Icons.trending_down,
-        critical => Icons.warning,
-        increasing => Icons.trending_up,
-      };
+    decreasing => Icons.trending_down,
+    critical => Icons.warning,
+    increasing => Icons.trending_up,
+  };
 }
 
 // Calculate trend (increasing, critical, or decreasing)
