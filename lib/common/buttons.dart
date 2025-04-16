@@ -33,14 +33,8 @@ Widget adaptiveDialogAction({
     );
   } else {
     return isDestructiveAction
-        ? TextButton(
-            onPressed: onPressed,
-            child: Text(text),
-          )
-        : FilledButton.tonal(
-            onPressed: onPressed,
-            child: Text(text),
-          );
+        ? TextButton(onPressed: onPressed, child: Text(text))
+        : FilledButton.tonal(onPressed: onPressed, child: Text(text));
   }
 }
 
@@ -60,10 +54,7 @@ Widget adaptiveIconButton({
         textDirection: iconAlignEnd ? TextDirection.ltr : TextDirection.rtl,
         children: [
           child,
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8),
-            child: icon,
-          ),
+          Padding(padding: EdgeInsets.symmetric(horizontal: 8), child: icon),
         ],
       ),
     );
@@ -99,9 +90,6 @@ Widget adaptiveSettingButton({
       ),
     );
   } else {
-    return FilledButton(
-      onPressed: onPressed,
-      child: child,
-    );
+    return FilledButton(onPressed: onPressed, child: child);
   }
 }

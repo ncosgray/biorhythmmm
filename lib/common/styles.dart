@@ -17,47 +17,28 @@ import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-const bodyText = TextStyle(
-  fontSize: 14,
-);
+const bodyText = TextStyle(fontSize: 14);
 
-const bodyBoldText = TextStyle(
-  fontSize: 14,
-  fontWeight: FontWeight.bold,
-);
+const bodyBoldText = TextStyle(fontSize: 14, fontWeight: FontWeight.bold);
 
-const footerText = TextStyle(
-  fontSize: 12,
-  color: Colors.grey,
-);
+const footerText = TextStyle(fontSize: 12, color: Colors.grey);
 
-const titleText = TextStyle(
-  fontSize: 14,
-  fontWeight: FontWeight.bold,
-);
+const titleText = TextStyle(fontSize: 14, fontWeight: FontWeight.bold);
 
 const titleDateText = TextStyle(
   fontSize: 14,
-  fontFeatures: [
-    FontFeature.tabularFigures(),
-  ],
+  fontFeatures: [FontFeature.tabularFigures()],
 );
 
 const titleTodayText = TextStyle(
   fontSize: 14,
   fontWeight: FontWeight.bold,
-  fontFeatures: [
-    FontFeature.tabularFigures(),
-  ],
+  fontFeatures: [FontFeature.tabularFigures()],
 );
 
-const buttonText = TextStyle(
-  fontSize: 14,
-);
+const buttonText = TextStyle(fontSize: 14);
 
-const labelText = TextStyle(
-  fontSize: 16,
-);
+const labelText = TextStyle(fontSize: 16);
 
 TextStyle listTileText(BuildContext context) => (Platform.isIOS
         ? CupertinoTheme.of(context).textTheme.textStyle
@@ -67,7 +48,5 @@ TextStyle listTileText(BuildContext context) => (Platform.isIOS
 const pointText = TextStyle(
   fontSize: 19,
   fontWeight: FontWeight.bold,
-  fontFeatures: [
-    FontFeature.tabularFigures(),
-  ],
+  fontFeatures: [FontFeature.tabularFigures()],
 );

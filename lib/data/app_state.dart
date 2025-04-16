@@ -39,13 +39,13 @@ class AppState {
 
   // Populate state with initial values from shared preferences
   static AppState initial() => AppState(
-        Prefs.birthday,
-        Prefs.biorhythms,
-        Prefs.notifications,
-        Prefs.biorhythms.length == allBiorhythms.length ? true : false,
-        false,
-        false,
-      );
+    Prefs.birthday,
+    Prefs.biorhythms,
+    Prefs.notifications,
+    Prefs.biorhythms.length == allBiorhythms.length ? true : false,
+    false,
+    false,
+  );
 }
 
 class AppStateCubit extends Cubit<AppState> {
@@ -82,8 +82,9 @@ class AppStateCubit extends Cubit<AppState> {
     // Add biorthyhm maintaining correct sort order
     Set<Biorhythm> selectedBiorhythms = Set.from(Prefs.biorhythms)
       ..add(newBiorhythm);
-    List<Biorhythm> newBiorhythms =
-        List.from(allBiorhythms.where((b) => selectedBiorhythms.contains(b)));
+    List<Biorhythm> newBiorhythms = List.from(
+      allBiorhythms.where((b) => selectedBiorhythms.contains(b)),
+    );
     Prefs.biorhythms = newBiorhythms;
     emit(
       AppState(
@@ -179,24 +180,24 @@ class AppStateCubit extends Cubit<AppState> {
 
   // Reload request
   void reload() => emit(
-        AppState(
-          state.birthday,
-          state.biorhythms,
-          state.notifications,
-          state.showExtraPoints,
-          state.showResetButton,
-          true,
-        ),
-      );
+    AppState(
+      state.birthday,
+      state.biorhythms,
+      state.notifications,
+      state.showExtraPoints,
+      state.showResetButton,
+      true,
+    ),
+  );
 
   void resetReload() => emit(
-        AppState(
-          state.birthday,
-          state.biorhythms,
-          state.notifications,
-          state.showExtraPoints,
-          false,
-          false,
-        ),
-      );
+    AppState(
+      state.birthday,
+      state.biorhythms,
+      state.notifications,
+      state.showExtraPoints,
+      false,
+      false,
+    ),
+  );
 }

@@ -62,16 +62,14 @@ abstract class Notifications {
     if (Platform.isIOS) {
       await _notify
           .resolvePlatformSpecificImplementation<
-              IOSFlutterLocalNotificationsPlugin>()
-          ?.requestPermissions(
-            alert: true,
-            badge: true,
-            sound: true,
-          );
+            IOSFlutterLocalNotificationsPlugin
+          >()
+          ?.requestPermissions(alert: true, badge: true, sound: true);
     } else {
       await _notify
           .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.requestNotificationsPermission();
     }
 
@@ -79,40 +77,39 @@ abstract class Notifications {
     List<(tz.TZDateTime, String)> alarms = [];
     if (Prefs.notifications == NotificationType.daily) {
       // Daily notifications
-      alarms = List.generate(
-        _notifyLookAheadDays,
-        (int day) {
-          DateTime date = today.add(Duration(days: day + 1));
+      alarms = List.generate(_notifyLookAheadDays, (int day) {
+        DateTime date = today.add(Duration(days: day + 1));
 
-          // Generate biorhythm summary notification text for date
-          return (
-            _notifyAt(date),
-            _biorhythmSummary([
-              for (final Biorhythm b in Prefs.biorhythms)
-                b.getBiorhythmPoint(dateDiff(Prefs.birthday, date)),
-            ])
-          );
-        },
-      );
+        // Generate biorhythm summary notification text for date
+        return (
+          _notifyAt(date),
+          _biorhythmSummary([
+            for (final Biorhythm b in Prefs.biorhythms)
+              b.getBiorhythmPoint(dateDiff(Prefs.birthday, date)),
+          ]),
+        );
+      });
     } else {
       // Only critical notifications
       for (int day = 1; day <= _notifyLookAheadDays; day++) {
         DateTime date = today.add(Duration(days: day));
 
         // Determine if this date has any critical alerts
-        List<String> criticals = Prefs.biorhythms
-            .where(
-              (Biorhythm b) =>
-                  isCritical(b.getPoint(dateDiff(Prefs.birthday, date))),
-            )
-            .map((Biorhythm b) => b.name)
-            .toList();
+        List<String> criticals =
+            Prefs.biorhythms
+                .where(
+                  (Biorhythm b) =>
+                      isCritical(b.getPoint(dateDiff(Prefs.birthday, date))),
+                )
+                .map((Biorhythm b) => b.name)
+                .toList();
 
         // Generate critical biorhythm text for date
         if (criticals.isNotEmpty) {
-          alarms.add(
-            (_notifyAt(date), Str.notifyCriticalPrefix + criticals.join(', ')),
-          );
+          alarms.add((
+            _notifyAt(date),
+            Str.notifyCriticalPrefix + criticals.join(', '),
+          ));
         }
       }
     }
@@ -162,8 +159,13 @@ abstract class Notifications {
   // Calculate zoned notification time for a given date
   static tz.TZDateTime _notifyAt(DateTime date) {
     tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-    tz.TZDateTime scheduleTime =
-        tz.TZDateTime(tz.local, date.year, date.month, date.day, _notifyAtHour);
+    tz.TZDateTime scheduleTime = tz.TZDateTime(
+      tz.local,
+      date.year,
+      date.month,
+      date.day,
+      _notifyAtHour,
+    );
     if (scheduleTime.isBefore(now)) {
       scheduleTime = now.add(const Duration(minutes: 1));
     }
@@ -191,8 +193,8 @@ enum NotificationType {
 
   // Display names
   String get name => switch (this) {
-        none => Str.notificationTypeNone,
-        critical => Str.notificationTypeCritical,
-        daily => Str.notificationTypeDaily,
-      };
+    none => Str.notificationTypeNone,
+    critical => Str.notificationTypeCritical,
+    daily => Str.notificationTypeDaily,
+  };
 }

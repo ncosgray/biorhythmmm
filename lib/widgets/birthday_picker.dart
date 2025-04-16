@@ -60,10 +60,7 @@ buildCupertinoDatePicker(BuildContext context) {
               padding: EdgeInsets.all(8),
               child: Align(
                 alignment: Alignment.topCenter,
-                child: Text(
-                  Str.birthdaySelectText,
-                  style: titleText,
-                ),
+                child: Text(Str.birthdaySelectText, style: titleText),
               ),
             ),
             // Date picker
@@ -71,8 +68,9 @@ buildCupertinoDatePicker(BuildContext context) {
               padding: EdgeInsets.only(top: 16),
               child: CupertinoDatePicker(
                 mode: CupertinoDatePickerMode.date,
-                onDateTimeChanged: (picked) =>
-                    context.read<AppStateCubit>().setBirthday(picked),
+                onDateTimeChanged:
+                    (picked) =>
+                        context.read<AppStateCubit>().setBirthday(picked),
                 initialDateTime: context.read<AppStateCubit>().birthday,
                 maximumYear: DateTime.now().year,
               ),

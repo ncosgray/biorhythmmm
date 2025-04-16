@@ -43,11 +43,11 @@ ThemeData darkTheme = ThemeData(
 
 // Common theme elements
 AppBarTheme get appBarTheme => AppBarTheme(
-      surfaceTintColor: Platform.isIOS ? Colors.transparent : null,
-      shadowColor: Platform.isIOS ? CupertinoColors.darkBackgroundGray : null,
-      scrolledUnderElevation: Platform.isIOS ? .1 : null,
-      toolbarHeight: Platform.isIOS ? 44 : null,
-    );
+  surfaceTintColor: Platform.isIOS ? Colors.transparent : null,
+  shadowColor: Platform.isIOS ? CupertinoColors.darkBackgroundGray : null,
+  scrolledUnderElevation: Platform.isIOS ? .1 : null,
+  toolbarHeight: Platform.isIOS ? 44 : null,
+);
 
 InteractiveInkFeatureFactory? get splashFactory =>
     Platform.isIOS ? NoSplash.splashFactory : null;

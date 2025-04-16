@@ -77,8 +77,9 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     super.initState();
 
     // Show the reset button when the chart gets transformed
-    chartController
-        .addListener(() => context.read<AppStateCubit>().enableResetButton());
+    chartController.addListener(
+      () => context.read<AppStateCubit>().enableResetButton(),
+    );
   }
 
   @override
@@ -111,9 +112,10 @@ class _BiorhythmChartState extends State<BiorhythmChart>
             // Scale chart to show default range
             double scaleFactor = chartRangeSplit / chartWindow;
             double chartWidth = chartKey.currentContext!.size!.width;
-            chartController.value = Matrix4.identity()
-              ..scale(scaleFactor)
-              ..translate(-((chartWidth - chartWindow) / 2));
+            chartController.value =
+                Matrix4.identity()
+                  ..scale(scaleFactor)
+                  ..translate(-((chartWidth - chartWindow) / 2));
             context.read<AppStateCubit>().resetReload();
           }
         });
@@ -135,31 +137,31 @@ class _BiorhythmChartState extends State<BiorhythmChart>
 
   // Create a line chart graphing biorhythm data
   LineChart get biorhythmChart => LineChart(
-        chartData,
-        chartRendererKey: chartKey,
-        duration: Duration.zero,
-        transformationConfig: chartTransformation,
-      );
+    chartData,
+    chartRendererKey: chartKey,
+    duration: Duration.zero,
+    transformationConfig: chartTransformation,
+  );
 
   // Define chart data
   LineChartData get chartData => LineChartData(
-        lineBarsData: lineBarsData,
-        lineTouchData: lineTouchData,
-        gridData: gridData,
-        titlesData: titlesData,
-        borderData: borderData,
-        maxY: 1,
-        minY: -1,
-      );
+    lineBarsData: lineBarsData,
+    lineTouchData: lineTouchData,
+    gridData: gridData,
+    titlesData: titlesData,
+    borderData: borderData,
+    maxY: 1,
+    minY: -1,
+  );
 
   List<LineChartBarData> get lineBarsData => [
-        for (final Biorhythm b in context.read<AppStateCubit>().biorhythms)
-          biorhythmLineData(
-            color: _highlighted == b ? b.highlightColor : b.graphColor,
-            pointCount: chartRange,
-            pointGenerator: b.getPoint,
-          ),
-      ];
+    for (final Biorhythm b in context.read<AppStateCubit>().biorhythms)
+      biorhythmLineData(
+        color: _highlighted == b ? b.highlightColor : b.graphColor,
+        pointCount: chartRange,
+        pointGenerator: b.getPoint,
+      ),
+  ];
 
   LineChartBarData biorhythmLineData({
     required Color color,
@@ -192,57 +194,54 @@ class _BiorhythmChartState extends State<BiorhythmChart>
 
   // Chart interactivity
   LineTouchData get lineTouchData => LineTouchData(
-        handleBuiltInTouches: true,
-        touchCallback: touchCallback,
-        touchTooltipData: LineTouchTooltipData(
-          showOnTopOfTheChartBoxArea: true,
-          fitInsideHorizontally: true,
-          fitInsideVertically: true,
-          getTooltipItems: (List<LineBarSpot> touchedSpots) {
-            // Show date on tooltip with no other items
-            List<LineTooltipItem?> items =
-                List.filled(touchedSpots.length, null);
-            if (touchedSpots.isNotEmpty) {
-              // Indicate with a symbol if this is a critical day
-              String criticalIndicator =
-                  touchedSpots.where((spot) => isCritical(spot.y)).isNotEmpty
-                      ? '\u26A0'
-                      : '';
-              items[0] = LineTooltipItem(
-                criticalIndicator +
-                    dateAndDay(
-                      today.add(Duration(days: touchedSpots[0].x.toInt())),
-                    ) +
-                    criticalIndicator,
-                titleText,
-              );
-            }
-            return items;
-          },
-          getTooltipColor: (touchedSpot) => Theme.of(context).dividerColor,
-        ),
-      );
+    handleBuiltInTouches: true,
+    touchCallback: touchCallback,
+    touchTooltipData: LineTouchTooltipData(
+      showOnTopOfTheChartBoxArea: true,
+      fitInsideHorizontally: true,
+      fitInsideVertically: true,
+      getTooltipItems: (List<LineBarSpot> touchedSpots) {
+        // Show date on tooltip with no other items
+        List<LineTooltipItem?> items = List.filled(touchedSpots.length, null);
+        if (touchedSpots.isNotEmpty) {
+          // Indicate with a symbol if this is a critical day
+          String criticalIndicator =
+              touchedSpots.where((spot) => isCritical(spot.y)).isNotEmpty
+                  ? '\u26A0'
+                  : '';
+          items[0] = LineTooltipItem(
+            criticalIndicator +
+                dateAndDay(
+                  today.add(Duration(days: touchedSpots[0].x.toInt())),
+                ) +
+                criticalIndicator,
+            titleText,
+          );
+        }
+        return items;
+      },
+      getTooltipColor: (touchedSpot) => Theme.of(context).dividerColor,
+    ),
+  );
 
   void touchCallback(FlTouchEvent event, LineTouchResponse? response) {
     setState(() {
       if (event.isInterestedForInteractions) {
         if (response?.lineBarSpots != null) {
           // Update points for percent displays
-          setPoints(
-            [
-              for (final TouchLineBarSpot spot in response!.lineBarSpots!)
-                context
-                    .read<AppStateCubit>()
-                    .biorhythms[spot.barIndex]
-                    .getBiorhythmPoint(
-                      dateDiff(
-                        context.read<AppStateCubit>().birthday,
-                        today,
-                        addDays: spot.x.toInt(),
-                      ),
+          setPoints([
+            for (final TouchLineBarSpot spot in response!.lineBarSpots!)
+              context
+                  .read<AppStateCubit>()
+                  .biorhythms[spot.barIndex]
+                  .getBiorhythmPoint(
+                    dateDiff(
+                      context.read<AppStateCubit>().birthday,
+                      today,
+                      addDays: spot.x.toInt(),
                     ),
-            ],
-          );
+                  ),
+          ]);
         }
       } else {
         // Reset points to today
@@ -253,26 +252,23 @@ class _BiorhythmChartState extends State<BiorhythmChart>
 
   // Chart grids
   FlGridData get gridData => FlGridData(
-        show: true,
-        drawHorizontalLine: true,
-        drawVerticalLine: true,
-        horizontalInterval: 0.25,
-        verticalInterval: 1,
-        getDrawingHorizontalLine: getDrawingHorizontalLine,
-        getDrawingVerticalLine: getDrawingVerticalLine,
-      );
+    show: true,
+    drawHorizontalLine: true,
+    drawVerticalLine: true,
+    horizontalInterval: 0.25,
+    verticalInterval: 1,
+    getDrawingHorizontalLine: getDrawingHorizontalLine,
+    getDrawingVerticalLine: getDrawingVerticalLine,
+  );
 
   FlLine getDrawingHorizontalLine(double value) {
     return value == 0
-        ? FlLine(
-            color: Colors.amber,
-            strokeWidth: 2,
-          )
+        ? FlLine(color: Colors.amber, strokeWidth: 2)
         : FlLine(
-            color: value > 0 ? Colors.green : Colors.red,
-            strokeWidth: 1,
-            dashArray: [2, 2],
-          );
+          color: value > 0 ? Colors.green : Colors.red,
+          strokeWidth: 1,
+          dashArray: [2, 2],
+        );
   }
 
   FlLine getDrawingVerticalLine(double value) {
@@ -284,31 +280,27 @@ class _BiorhythmChartState extends State<BiorhythmChart>
 
   // Chart titles
   FlTitlesData get titlesData => FlTitlesData(
-        bottomTitles: AxisTitles(sideTitles: bottomTitles),
-        rightTitles: noTitles,
-        topTitles: noTitles,
-        leftTitles: noTitles,
-      );
+    bottomTitles: AxisTitles(sideTitles: bottomTitles),
+    rightTitles: noTitles,
+    topTitles: noTitles,
+    leftTitles: noTitles,
+  );
 
-  AxisTitles get noTitles => const AxisTitles(
-        sideTitles: SideTitles(showTitles: false),
-      );
+  AxisTitles get noTitles =>
+      const AxisTitles(sideTitles: SideTitles(showTitles: false));
 
   SideTitles get bottomTitles => SideTitles(
-        showTitles: true,
-        reservedSize: titleText.fontSize! * 2,
-        interval: 1,
-        getTitlesWidget: bottomTitleWidgets,
-      );
+    showTitles: true,
+    reservedSize: titleText.fontSize! * 2,
+    interval: 1,
+    getTitlesWidget: bottomTitleWidgets,
+  );
 
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
     Widget title = Container();
 
     if (value == 0) {
-      title = Text(
-        Str.todayLabel,
-        style: titleTodayText,
-      );
+      title = Text(Str.todayLabel, style: titleTodayText);
     } else if (value.abs() % (chartWindow / 2) == 0) {
       title = Text(
         shortDate(today.add(Duration(days: value.toInt()))),
@@ -324,42 +316,43 @@ class _BiorhythmChartState extends State<BiorhythmChart>
       BorderSide(color: color ?? Theme.of(context).dividerColor, width: 2);
 
   FlBorderData get borderData => FlBorderData(
-        show: true,
-        border: Border(
-          bottom: borderSideData(Colors.pink),
-          left: borderSideData(),
-          right: borderSideData(),
-          top: borderSideData(Colors.green),
-        ),
-      );
+    show: true,
+    border: Border(
+      bottom: borderSideData(Colors.pink),
+      left: borderSideData(),
+      right: borderSideData(),
+      top: borderSideData(Colors.green),
+    ),
+  );
 
   // Chart tranformation
   FlTransformationConfig get chartTransformation => FlTransformationConfig(
-        scaleAxis: FlScaleAxis.horizontal,
-        minScale: chartWindow / 4,
-        maxScale: chartWindow.toDouble(),
-        scaleEnabled: true,
-        panEnabled: true,
-        transformationController: chartController,
-      );
+    scaleAxis: FlScaleAxis.horizontal,
+    minScale: chartWindow / 4,
+    maxScale: chartWindow.toDouble(),
+    scaleEnabled: true,
+    panEnabled: true,
+    transformationController: chartController,
+  );
 
   // Wrapping list of current biorhythm point data
   Widget get biorhythmPoints => BlocListener<AppStateCubit, AppState>(
-        listener: (context, state) {
-          // Redraw points if birthday or biorhythm selection changes
-          setPoints();
-        },
-        listenWhen: (previous, current) =>
+    listener: (context, state) {
+      // Redraw points if birthday or biorhythm selection changes
+      setPoints();
+    },
+    listenWhen:
+        (previous, current) =>
             previous.birthday != current.birthday ||
             previous.biorhythms != current.biorhythms,
-        child: Wrap(
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            for (int i = 0; i < _points.length; i++)
-              biorhythmPercentBox(_points[i]),
-          ],
-        ),
-      );
+    child: Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        for (int i = 0; i < _points.length; i++)
+          biorhythmPercentBox(_points[i]),
+      ],
+    ),
+  );
 
   // Display a biorhythm point as a percentage with label
   Widget biorhythmPercentBox(BiorhythmPoint point) {
@@ -367,9 +360,10 @@ class _BiorhythmChartState extends State<BiorhythmChart>
       child: Container(
         padding: EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: _highlighted == point.biorhythm
-              ? point.biorhythm.highlightColor
-              : point.biorhythm.graphColor,
+          color:
+              _highlighted == point.biorhythm
+                  ? point.biorhythm.highlightColor
+                  : point.biorhythm.graphColor,
         ),
         child: Column(
           children: [
@@ -382,22 +376,13 @@ class _BiorhythmChartState extends State<BiorhythmChart>
             ),
             // Point percentage with phase icon
             SizedBox.fromSize(
-              size: Size(
-                pointText.fontSize! * 5,
-                pointText.fontSize! * 1.8,
-              ),
+              size: Size(pointText.fontSize! * 5, pointText.fontSize! * 1.8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    shortPercent(point.point),
-                    style: pointText,
-                  ),
-                  Icon(
-                    point.trend.trendIcon,
-                    size: pointText.fontSize!,
-                  ),
+                  Text(shortPercent(point.point), style: pointText),
+                  Icon(point.trend.trendIcon, size: pointText.fontSize!),
                 ],
               ),
             ),
