@@ -46,6 +46,7 @@ abstract class Prefs {
   static String get _birthdayKey => 'birthday';
   static String get _biorhythmsKey => 'biorhythms';
   static String get _notificationsKey => 'notifications';
+  static String get _showCriticalZoneKey => 'showCriticalZone';
 
   // Get and set birthday
   static DateTime get birthday => DateTime.fromMillisecondsSinceEpoch(
@@ -75,4 +76,10 @@ abstract class Prefs {
       NotificationType.values[_sharedPrefs.getInt(_notificationsKey) ?? 0];
   static set notifications(NotificationType n) =>
       _sharedPrefs.setInt(_notificationsKey, n.value);
+
+  // Get and set critical zone choice
+  static bool get showCriticalZone =>
+      _sharedPrefs.getBool(_showCriticalZoneKey) ?? true;
+  static set showCriticalZone(bool s) =>
+      _sharedPrefs.setBool(_showCriticalZoneKey, s);
 }

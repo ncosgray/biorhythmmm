@@ -152,6 +152,20 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
                 ),
           ),
         ),
+        // Show critical zone
+        ListTile(
+          title: Text(Str.showCriticalZoneLabel, style: listTileText(context)),
+          trailing: BlocSelector<AppStateCubit, AppState, bool>(
+            selector: (state) => state.showCriticalZone,
+            builder:
+                (context, showCriticalZone) => Switch.adaptive(
+                  value: showCriticalZone,
+                  onChanged: (bool value) {
+                    context.read<AppStateCubit>().setCriticalZone(value);
+                  },
+                ),
+          ),
+        ),
       ],
     ),
   ),

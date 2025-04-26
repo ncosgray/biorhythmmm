@@ -159,7 +159,10 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     gridData: gridData,
     titlesData: titlesData,
     borderData: borderData,
-    rangeAnnotations: rangeAnnotations,
+    rangeAnnotations:
+        context.read<AppStateCubit>().showCriticalZone
+            ? criticalZoneAnnotation
+            : null,
     lineBarsData: lineBarsData,
     lineTouchData: lineTouchData,
     maxY: 1,
@@ -383,8 +386,8 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     ),
   );
 
-  // Chart annotation for critical periods
-  RangeAnnotations get rangeAnnotations => RangeAnnotations(
+  // Chart annotation for critical zone
+  RangeAnnotations get criticalZoneAnnotation => RangeAnnotations(
     horizontalRangeAnnotations: [
       HorizontalRangeAnnotation(
         y1: -criticalThreshold / 100,
