@@ -47,6 +47,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
   // State variables
   List<BiorhythmPoint> _points = [];
   Biorhythm? _highlighted;
+  double? _touched;
 
   // Populate data points
   void setPoints([List<BiorhythmPoint>? newPoints]) {
@@ -145,11 +146,11 @@ class _BiorhythmChartState extends State<BiorhythmChart>
 
   // Define chart data
   LineChartData get chartData => LineChartData(
-    lineBarsData: lineBarsData,
-    lineTouchData: lineTouchData,
     gridData: gridData,
     titlesData: titlesData,
     borderData: borderData,
+    lineBarsData: lineBarsData,
+    lineTouchData: lineTouchData,
     maxY: 1,
     minY: -1,
   );
@@ -173,7 +174,11 @@ class _BiorhythmChartState extends State<BiorhythmChart>
       color: color,
       barWidth: 4,
       isStrokeCapRound: true,
-      dotData: FlDotData(show: false),
+      dotData: FlDotData(
+        getDotPainter: dotPainter,
+        // Always show dots for today unless user is touching elsewhere
+        checkToShowDot: (spot, _) => spot.x == 0 && _touched == null,
+      ),
       belowBarData: BarAreaData(show: false),
       // Graph a range of biorhythm points
       spots: List.generate(
@@ -196,6 +201,15 @@ class _BiorhythmChartState extends State<BiorhythmChart>
   LineTouchData get lineTouchData => LineTouchData(
     handleBuiltInTouches: true,
     touchCallback: touchCallback,
+    // Draw a spot indicator with vertical line extending to the top
+    getTouchedSpotIndicator: (barData, spotIndexes) {
+      return spotIndexes.map((spotIndex) {
+        return TouchedSpotIndicatorData(
+          FlLine(color: Colors.transparent),
+          FlDotData(getDotPainter: dotPainter),
+        );
+      }).toList();
+    },
     touchTooltipData: LineTouchTooltipData(
       showOnTopOfTheChartBoxArea: true,
       fitInsideHorizontally: true,
@@ -242,15 +256,19 @@ class _BiorhythmChartState extends State<BiorhythmChart>
                     ),
                   ),
           ]);
+
+          // Update the touched position
+          _touched = response.lineBarSpots![0].x;
         }
       } else {
         // Reset points to today
         setPoints();
+        _touched = null;
       }
     });
   }
 
-  // Chart grids
+  // Chart grids and dots
   FlGridData get gridData => FlGridData(
     show: true,
     drawHorizontalLine: true,
@@ -263,7 +281,9 @@ class _BiorhythmChartState extends State<BiorhythmChart>
 
   FlLine getDrawingHorizontalLine(double value) {
     return value == 0
+        // Critical
         ? FlLine(color: Colors.amber, strokeWidth: 2)
+        // Indicate positive and negative cycles with color coding
         : FlLine(
           color: value > 0 ? Colors.green : Colors.red,
           strokeWidth: 1,
@@ -271,10 +291,37 @@ class _BiorhythmChartState extends State<BiorhythmChart>
         );
   }
 
-  FlLine getDrawingVerticalLine(double value) {
-    return FlLine(
-      color: Theme.of(context).dividerColor,
-      strokeWidth: value == 0 ? 8 : 1,
+  FlLine getDrawingVerticalLine(double value) => FlLine(
+    color: Theme.of(context).dividerColor,
+    strokeWidth:
+        // Center line and touched position are more prominent
+        value == 0
+            ? value == _touched
+                ? 9
+                : 8
+            : value == _touched
+            ? 3
+            : 1,
+  );
+
+  FlDotPainter dotPainter(
+    FlSpot spot,
+    double percent,
+    LineChartBarData barData,
+    int index,
+  ) {
+    // Look up the biorhythm highlight color for this line
+    Color? highlightColor =
+        allBiorhythms
+            .where((b) => b.graphColor == barData.color)
+            .firstOrNull
+            ?.highlightColor;
+
+    return FlDotCirclePainter(
+      radius: 8,
+      color:
+          (_touched != null ? highlightColor : barData.color) ??
+          Colors.transparent,
     );
   }
 
