@@ -298,8 +298,8 @@ class _BiorhythmChartState extends State<BiorhythmChart>
         // Center line and touched position are more prominent
         value == 0
             ? value == _touched
-                ? 9
-                : 8
+                ? 7
+                : 6
             : value == _touched
             ? 3
             : 1,
@@ -319,7 +319,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
             ?.highlightColor;
 
     return FlDotCirclePainter(
-      radius: 8,
+      radius: 6,
       color:
           (_touched != null ? highlightColor : barData.color) ??
           Colors.transparent,
