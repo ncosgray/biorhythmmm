@@ -66,9 +66,11 @@ class _BiorhythmChartState extends State<BiorhythmChart>
 
   // Reset biorhythm chart and points to today
   void resetChart() {
-    setPoints();
-    _highlighted = null;
-    context.read<AppStateCubit>().reload();
+    if (mounted) {
+      setPoints();
+      _highlighted = null;
+      context.read<AppStateCubit>().reload();
+    }
   }
 
   @override
@@ -101,6 +103,14 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     if (state == AppLifecycleState.resumed) {
       resetChart();
     }
+    super.didChangeAppLifecycleState(state);
+  }
+
+  @override
+  void didChangeMetrics() {
+    // Add a small delay to allow the new layout to be calculated
+    Future.delayed(const Duration(milliseconds: 100), () => resetChart());
+    super.didChangeMetrics();
   }
 
   @override
@@ -116,7 +126,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
             chartController.value =
                 Matrix4.identity()
                   ..scale(scaleFactor)
-                  ..translate(-((chartWidth - chartWindow) / 2));
+                  ..translate(-((chartWidth - chartWindow) / 2.1));
             context.read<AppStateCubit>().resetReload();
           }
         });
