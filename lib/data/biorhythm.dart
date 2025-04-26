@@ -28,7 +28,7 @@ enum Biorhythm {
   physical(Colors.cyan, 23, true),
   intuition(Colors.purple, 38, false),
   aesthetic(Colors.indigoAccent, 43, false),
-  awareness(Colors.orange, 48, false),
+  awareness(Colors.deepOrange, 48, false),
   spiritual(Colors.blueGrey, 53, false);
 
   const Biorhythm(this.color, this.cycleDays, this.primary);
@@ -97,7 +97,8 @@ BiorhythmTrend getTrend(double a, double b) {
 }
 
 // Determine if a biorhythm value is in critical range
+const double criticalThreshold = 15;
 bool isCritical(double x) {
   int i = roundInt(x);
-  return (i > -15 && i < 15);
+  return (i > -criticalThreshold && i < criticalThreshold);
 }

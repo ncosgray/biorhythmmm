@@ -149,6 +149,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     gridData: gridData,
     titlesData: titlesData,
     borderData: borderData,
+    rangeAnnotations: rangeAnnotations,
     lineBarsData: lineBarsData,
     lineTouchData: lineTouchData,
     maxY: 1,
@@ -370,6 +371,25 @@ class _BiorhythmChartState extends State<BiorhythmChart>
       right: borderSideData(),
       top: borderSideData(Colors.green),
     ),
+  );
+
+  // Chart annotation for critical periods
+  RangeAnnotations get rangeAnnotations => RangeAnnotations(
+    horizontalRangeAnnotations: [
+      HorizontalRangeAnnotation(
+        y1: -criticalThreshold / 100,
+        y2: criticalThreshold / 100,
+        gradient: LinearGradient(
+          begin: Alignment.bottomCenter,
+          end: Alignment.topCenter,
+          colors: [
+            Colors.amberAccent.withValues(alpha: 0.01),
+            Colors.amberAccent.withValues(alpha: 0.65),
+            Colors.amberAccent.withValues(alpha: 0.01),
+          ],
+        ),
+      ),
+    ],
   );
 
   // Chart tranformation
