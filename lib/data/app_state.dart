@@ -26,6 +26,7 @@ class AppState {
     this.biorhythms,
     this.notifications,
     this.showExtraPoints,
+    this.showCriticalZone,
     this.showResetButton,
     this.reload,
   );
@@ -34,6 +35,7 @@ class AppState {
   final List<Biorhythm> biorhythms;
   final NotificationType notifications;
   final bool showExtraPoints;
+  final bool showCriticalZone;
   final bool showResetButton;
   final bool reload;
 
@@ -43,6 +45,7 @@ class AppState {
     Prefs.biorhythms,
     Prefs.notifications,
     Prefs.biorhythms.length == allBiorhythms.length ? true : false,
+    Prefs.showCriticalZone,
     false,
     false,
   );
@@ -56,6 +59,7 @@ class AppStateCubit extends Cubit<AppState> {
   List<Biorhythm> get biorhythms => state.biorhythms;
   NotificationType get notifications => state.notifications;
   bool get showExtraPoints => state.showExtraPoints;
+  bool get showCriticalZone => state.showCriticalZone;
   bool get showResetButton => state.showResetButton;
 
   // Manage birthday
@@ -70,6 +74,7 @@ class AppStateCubit extends Cubit<AppState> {
         state.biorhythms,
         state.notifications,
         state.showExtraPoints,
+        state.showCriticalZone,
         state.showResetButton,
         state.reload,
       ),
@@ -92,6 +97,7 @@ class AppStateCubit extends Cubit<AppState> {
         newBiorhythms,
         state.notifications,
         newBiorhythms.length == allBiorhythms.length ? true : false,
+        state.showCriticalZone,
         state.showResetButton,
         state.reload,
       ),
@@ -109,6 +115,7 @@ class AppStateCubit extends Cubit<AppState> {
         newBiorhythms,
         state.notifications,
         false,
+        state.showCriticalZone,
         state.showResetButton,
         state.reload,
       ),
@@ -127,6 +134,7 @@ class AppStateCubit extends Cubit<AppState> {
         state.biorhythms,
         newNotifications,
         state.showExtraPoints,
+        state.showCriticalZone,
         state.showResetButton,
         state.reload,
       ),
@@ -156,6 +164,23 @@ class AppStateCubit extends Cubit<AppState> {
                 : Prefs.biorhythms),
         state.notifications,
         newShowExtraPoints,
+        state.showCriticalZone,
+        state.showResetButton,
+        state.reload,
+      ),
+    );
+  }
+
+  // Enable or disable critical zone display
+  void setCriticalZone(bool newShowCriticalZone) {
+    Prefs.showCriticalZone = newShowCriticalZone;
+    emit(
+      AppState(
+        state.birthday,
+        state.biorhythms,
+        state.notifications,
+        state.showExtraPoints,
+        newShowCriticalZone,
         state.showResetButton,
         state.reload,
       ),
@@ -171,6 +196,7 @@ class AppStateCubit extends Cubit<AppState> {
           state.biorhythms,
           state.notifications,
           state.showExtraPoints,
+          state.showCriticalZone,
           true,
           state.reload,
         ),
@@ -185,6 +211,7 @@ class AppStateCubit extends Cubit<AppState> {
       state.biorhythms,
       state.notifications,
       state.showExtraPoints,
+      state.showCriticalZone,
       state.showResetButton,
       true,
     ),
@@ -196,6 +223,7 @@ class AppStateCubit extends Cubit<AppState> {
       state.biorhythms,
       state.notifications,
       state.showExtraPoints,
+      state.showCriticalZone,
       false,
       false,
     ),
