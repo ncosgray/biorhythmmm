@@ -28,7 +28,7 @@ enum Biorhythm {
   physical(Colors.cyan, 23, true),
   intuition(Colors.purple, 38, false),
   aesthetic(Colors.indigoAccent, 43, false),
-  awareness(Colors.deepOrange, 48, false),
+  awareness(Colors.orangeAccent, 48, false),
   spiritual(Colors.blueGrey, 53, false);
 
   const Biorhythm(this.color, this.cycleDays, this.primary);
