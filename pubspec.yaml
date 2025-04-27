@@ -31,7 +31,7 @@ environment:
 dependencies:
   bloc: ^9.0.0
   cupertino_icons: ^1.0.8
-  fl_chart: ^0.70.2
+  fl_chart: ^0.71.0
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.0
