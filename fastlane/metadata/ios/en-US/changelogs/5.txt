@@ -1,0 +1,2 @@
+* Lots of improvements to the biorhythm graph visuals.
+* New setting: show the critical zone on the graph.
