@@ -324,19 +324,18 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     LineChartBarData barData,
     int index,
   ) {
-    // Look up the biorhythm highlight color for this line
+    // Use the highlight color if touched or fallback to the bar color
     Color? highlightColor =
         allBiorhythms
             .where((b) => b.graphColor == barData.color)
             .firstOrNull
             ?.highlightColor;
+    final Color dotColor =
+        (_touched != null ? highlightColor : barData.color) ??
+        barData.color ??
+        Colors.transparent;
 
-    return FlDotCirclePainter(
-      radius: 6,
-      color:
-          (_touched != null ? highlightColor : barData.color) ??
-          Colors.transparent,
-    );
+    return FlDotCirclePainter(radius: 6, color: dotColor);
   }
 
   // Chart titles
