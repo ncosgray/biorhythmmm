@@ -31,11 +31,11 @@ environment:
 dependencies:
   bloc: ^9.0.0
   cupertino_icons: ^1.0.8
-  fl_chart: ^0.71.0
+  fl_chart: ^1.0.0
   flutter:
     sdk: flutter
-  flutter_bloc: ^9.1.0
-  flutter_local_notifications: ^19.1.0
+  flutter_bloc: ^9.1.1
+  flutter_local_notifications: ^19.2.1
   flutter_timezone: ^4.0.0
   intl: ^0.20.2
   pull_down_button: ^0.10.2
