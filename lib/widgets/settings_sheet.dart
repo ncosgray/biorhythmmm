@@ -152,6 +152,23 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
                 ),
           ),
         ),
+        // Use accessible color palette
+        ListTile(
+          title: Text(
+            Str.useAccessibleColorsLabel,
+            style: listTileText(context),
+          ),
+          trailing: BlocSelector<AppStateCubit, AppState, bool>(
+            selector: (state) => state.useAccessibleColors,
+            builder:
+                (context, useAccessibleColors) => Switch.adaptive(
+                  value: useAccessibleColors,
+                  onChanged: (bool value) {
+                    context.read<AppStateCubit>().setAccessibleColors(value);
+                  },
+                ),
+          ),
+        ),
         // Show critical zone
         ListTile(
           title: Text(Str.showCriticalZoneLabel, style: listTileText(context)),

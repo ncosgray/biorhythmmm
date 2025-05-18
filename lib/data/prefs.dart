@@ -46,6 +46,7 @@ abstract class Prefs {
   static String get _birthdayKey => 'birthday';
   static String get _biorhythmsKey => 'biorhythms';
   static String get _notificationsKey => 'notifications';
+  static String get _useAccessibleColorsKey => 'useAccessibleColors';
   static String get _showCriticalZoneKey => 'showCriticalZone';
 
   // Get and set birthday
@@ -76,6 +77,12 @@ abstract class Prefs {
       NotificationType.values[_sharedPrefs.getInt(_notificationsKey) ?? 0];
   static set notifications(NotificationType n) =>
       _sharedPrefs.setInt(_notificationsKey, n.value);
+
+  // Get and set accessible color palette choice
+  static bool get useAccessibleColors =>
+      _sharedPrefs.getBool(_useAccessibleColorsKey) ?? false;
+  static set useAccessibleColors(bool u) =>
+      _sharedPrefs.setBool(_useAccessibleColorsKey, u);
 
   // Get and set critical zone choice
   static bool get showCriticalZone =>

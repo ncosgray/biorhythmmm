@@ -25,6 +25,7 @@ class AppState {
     this.birthday,
     this.biorhythms,
     this.notifications,
+    this.useAccessibleColors,
     this.showExtraPoints,
     this.showCriticalZone,
     this.showResetButton,
@@ -34,6 +35,7 @@ class AppState {
   final DateTime birthday;
   final List<Biorhythm> biorhythms;
   final NotificationType notifications;
+  final bool useAccessibleColors;
   final bool showExtraPoints;
   final bool showCriticalZone;
   final bool showResetButton;
@@ -44,6 +46,7 @@ class AppState {
     Prefs.birthday,
     Prefs.biorhythms,
     Prefs.notifications,
+    Prefs.useAccessibleColors,
     Prefs.biorhythms.length == allBiorhythms.length ? true : false,
     Prefs.showCriticalZone,
     false,
@@ -58,6 +61,7 @@ class AppStateCubit extends Cubit<AppState> {
   DateTime get birthday => state.birthday;
   List<Biorhythm> get biorhythms => state.biorhythms;
   NotificationType get notifications => state.notifications;
+  bool get useAccessibleColors => state.useAccessibleColors;
   bool get showExtraPoints => state.showExtraPoints;
   bool get showCriticalZone => state.showCriticalZone;
   bool get showResetButton => state.showResetButton;
@@ -73,6 +77,7 @@ class AppStateCubit extends Cubit<AppState> {
         newBirthday,
         state.biorhythms,
         state.notifications,
+        state.useAccessibleColors,
         state.showExtraPoints,
         state.showCriticalZone,
         state.showResetButton,
@@ -96,6 +101,7 @@ class AppStateCubit extends Cubit<AppState> {
         state.birthday,
         newBiorhythms,
         state.notifications,
+        state.useAccessibleColors,
         newBiorhythms.length == allBiorhythms.length ? true : false,
         state.showCriticalZone,
         state.showResetButton,
@@ -114,6 +120,7 @@ class AppStateCubit extends Cubit<AppState> {
         state.birthday,
         newBiorhythms,
         state.notifications,
+        state.useAccessibleColors,
         false,
         state.showCriticalZone,
         state.showResetButton,
@@ -133,6 +140,7 @@ class AppStateCubit extends Cubit<AppState> {
         state.birthday,
         state.biorhythms,
         newNotifications,
+        state.useAccessibleColors,
         state.showExtraPoints,
         state.showCriticalZone,
         state.showResetButton,
@@ -151,6 +159,23 @@ class AppStateCubit extends Cubit<AppState> {
     }
   }
 
+  // Enable or disable accessible color palette
+  void setAccessibleColors(bool newUseAccessibleColors) {
+    Prefs.useAccessibleColors = newUseAccessibleColors;
+    emit(
+      AppState(
+        state.birthday,
+        state.biorhythms,
+        state.notifications,
+        newUseAccessibleColors,
+        state.showExtraPoints,
+        state.showCriticalZone,
+        state.showResetButton,
+        state.reload,
+      ),
+    );
+  }
+
   // Toggle extra biorhythms display
   void toggleExtraPoints() {
     bool newShowExtraPoints = !state.showExtraPoints;
@@ -163,6 +188,7 @@ class AppStateCubit extends Cubit<AppState> {
                 ? primaryBiorhythms
                 : Prefs.biorhythms),
         state.notifications,
+        state.useAccessibleColors,
         newShowExtraPoints,
         state.showCriticalZone,
         state.showResetButton,
@@ -179,6 +205,7 @@ class AppStateCubit extends Cubit<AppState> {
         state.birthday,
         state.biorhythms,
         state.notifications,
+        state.useAccessibleColors,
         state.showExtraPoints,
         newShowCriticalZone,
         state.showResetButton,
@@ -195,6 +222,7 @@ class AppStateCubit extends Cubit<AppState> {
           state.birthday,
           state.biorhythms,
           state.notifications,
+          state.useAccessibleColors,
           state.showExtraPoints,
           state.showCriticalZone,
           true,
@@ -210,6 +238,7 @@ class AppStateCubit extends Cubit<AppState> {
       state.birthday,
       state.biorhythms,
       state.notifications,
+      state.useAccessibleColors,
       state.showExtraPoints,
       state.showCriticalZone,
       state.showResetButton,
@@ -222,6 +251,7 @@ class AppStateCubit extends Cubit<AppState> {
       state.birthday,
       state.biorhythms,
       state.notifications,
+      state.useAccessibleColors,
       state.showExtraPoints,
       state.showCriticalZone,
       false,

@@ -172,7 +172,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
   List<LineChartBarData> get lineBarsData => [
     for (final Biorhythm b in context.read<AppStateCubit>().biorhythms)
       biorhythmLineData(
-        color: _highlighted == b ? b.highlightColor : b.graphColor,
+        color: getBiorhythmColor(b, isHighlighted: _highlighted == b),
         pointCount: chartRange,
         pointGenerator: b.getPoint,
       ),
@@ -324,19 +324,26 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     LineChartBarData barData,
     int index,
   ) {
-    // Use the highlight color if touched or fallback to the bar color
-    Color? highlightColor =
+    Biorhythm? biorhythm =
         allBiorhythms
-            .where((b) => b.graphColor == barData.color)
-            .firstOrNull
-            ?.highlightColor;
+            .where((b) => getBiorhythmColor(b) == barData.color)
+            .firstOrNull;
+
+    // Use the highlight color if touched or fallback to the bar color
     final Color dotColor =
-        (_touched != null ? highlightColor : barData.color) ??
-        barData.color ??
-        Colors.transparent;
+        biorhythm != null && _touched != null
+            ? getBiorhythmColor(biorhythm, isHighlighted: true)
+            : barData.color ?? Colors.transparent;
 
     return FlDotCirclePainter(radius: 6, color: dotColor);
   }
+
+  // Chart colors
+  Color getBiorhythmColor(Biorhythm biorhythm, {bool isHighlighted = false}) =>
+      biorhythm.getChartColor(
+        isHighlighted: isHighlighted,
+        useAccessibleColors: context.read<AppStateCubit>().useAccessibleColors,
+      );
 
   // Chart titles
   FlTitlesData get titlesData => FlTitlesData(
@@ -439,10 +446,10 @@ class _BiorhythmChartState extends State<BiorhythmChart>
       child: Container(
         padding: EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color:
-              _highlighted == point.biorhythm
-                  ? point.biorhythm.highlightColor
-                  : point.biorhythm.graphColor,
+          color: getBiorhythmColor(
+            point.biorhythm,
+            isHighlighted: _highlighted == point.biorhythm,
+          ),
         ),
         child: Column(
           children: [

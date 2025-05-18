@@ -68,4 +68,5 @@ class Str {
   static String get showCriticalZoneLabel => 'Show critical zone on graph';
   static String get todayLabel => 'Today';
   static String get toggleExtraLabel => 'View';
+  static String get useAccessibleColorsLabel => 'Colorblind safe palette';
 }
