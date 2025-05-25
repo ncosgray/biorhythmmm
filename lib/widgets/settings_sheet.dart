@@ -47,7 +47,7 @@ showSettingsSheet(BuildContext context) {
 
 // Settings sheet
 Widget buildSettingsSheet(BuildContext context) => Scaffold(
-  appBar: AppBar(title: Text(Str.settingsTitle)),
+  appBar: AppBar(title: Text(Str.settingsTitle), toolbarHeight: 56),
   body: SingleChildScrollView(
     padding: const EdgeInsets.all(8),
     child: Column(
