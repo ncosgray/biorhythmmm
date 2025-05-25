@@ -40,10 +40,11 @@ const buttonText = TextStyle(fontSize: 14);
 
 const labelText = TextStyle(fontSize: 16);
 
-TextStyle listTileText(BuildContext context) => (Platform.isIOS
-        ? CupertinoTheme.of(context).textTheme.textStyle
-        : Theme.of(context).textTheme.bodyMedium!)
-    .copyWith(color: Theme.of(context).colorScheme.onSurface);
+TextStyle listTileText(BuildContext context) =>
+    (Platform.isIOS
+            ? CupertinoTheme.of(context).textTheme.textStyle
+            : Theme.of(context).textTheme.bodyMedium!)
+        .copyWith(color: Theme.of(context).colorScheme.onSurface);
 
 const pointText = TextStyle(
   fontSize: 19,

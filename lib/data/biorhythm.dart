@@ -19,8 +19,11 @@ import 'package:biorhythmmm/common/strings.dart';
 import 'dart:math';
 import 'package:flutter/material.dart';
 
-typedef BiorhythmPoint =
-    ({Biorhythm biorhythm, double point, BiorhythmTrend trend});
+typedef BiorhythmPoint = ({
+  Biorhythm biorhythm,
+  double point,
+  BiorhythmTrend trend,
+});
 
 enum Biorhythm {
   intellectual(Colors.lightGreen, Color(0xFF00A896), 33, true),
@@ -58,14 +61,13 @@ enum Biorhythm {
   Color getChartColor({
     bool isHighlighted = false,
     bool useAccessibleColors = false,
-  }) =>
-      isHighlighted
-          ? useAccessibleColors
-              ? accessibleColor
-              : color
-          : useAccessibleColors
-          ? accessibleColor.withValues(alpha: 0.6)
-          : color.withValues(alpha: 0.6);
+  }) => isHighlighted
+      ? useAccessibleColors
+            ? accessibleColor
+            : color
+      : useAccessibleColors
+      ? accessibleColor.withValues(alpha: 0.6)
+      : color.withValues(alpha: 0.6);
 
   // Calcuate biorhythm point for a given day
   double getPoint(int day) => sin(2 * pi * day / cycleDays);
@@ -79,8 +81,9 @@ enum Biorhythm {
 
 // Define default biorhythm list options
 final List<Biorhythm> allBiorhythms = Biorhythm.values.toList();
-final List<Biorhythm> primaryBiorhythms =
-    Biorhythm.values.where((b) => b.primary).toList();
+final List<Biorhythm> primaryBiorhythms = Biorhythm.values
+    .where((b) => b.primary)
+    .toList();
 
 // Biorhythm trend
 enum BiorhythmTrend {

@@ -185,8 +185,8 @@ class AppStateCubit extends Cubit<AppState> {
         newShowExtraPoints
             ? allBiorhythms
             : (Prefs.biorhythms.length == allBiorhythms.length
-                ? primaryBiorhythms
-                : Prefs.biorhythms),
+                  ? primaryBiorhythms
+                  : Prefs.biorhythms),
         state.notifications,
         state.useAccessibleColors,
         newShowExtraPoints,

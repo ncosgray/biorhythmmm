@@ -123,10 +123,9 @@ class _BiorhythmChartState extends State<BiorhythmChart>
             // Scale chart to show default range
             double scaleFactor = chartRangeSplit / chartWindow;
             double chartWidth = chartKey.currentContext!.size!.width;
-            chartController.value =
-                Matrix4.identity()
-                  ..scale(scaleFactor)
-                  ..translate(-((chartWidth - chartWindow) / 2.1));
+            chartController.value = Matrix4.identity()
+              ..scale(scaleFactor)
+              ..translate(-((chartWidth - chartWindow) / 2.1));
             context.read<AppStateCubit>().resetReload();
           }
         });
@@ -159,10 +158,9 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     gridData: gridData,
     titlesData: titlesData,
     borderData: borderData,
-    rangeAnnotations:
-        context.read<AppStateCubit>().showCriticalZone
-            ? criticalZoneAnnotation
-            : null,
+    rangeAnnotations: context.read<AppStateCubit>().showCriticalZone
+        ? criticalZoneAnnotation
+        : null,
     lineBarsData: lineBarsData,
     lineTouchData: lineTouchData,
     maxY: 1,
@@ -235,8 +233,8 @@ class _BiorhythmChartState extends State<BiorhythmChart>
           // Indicate with a symbol if this is a critical day
           String criticalIndicator =
               touchedSpots.where((spot) => isCritical(spot.y)).isNotEmpty
-                  ? '\u26A0'
-                  : '';
+              ? '\u26A0'
+              : '';
           items[0] = LineTooltipItem(
             criticalIndicator +
                 dateAndDay(
@@ -299,10 +297,10 @@ class _BiorhythmChartState extends State<BiorhythmChart>
         ? FlLine(color: Colors.amber, strokeWidth: 2)
         // Indicate positive and negative cycles with color coding
         : FlLine(
-          color: value > 0 ? Colors.green : Colors.red,
-          strokeWidth: 1,
-          dashArray: [2, 2],
-        );
+            color: value > 0 ? Colors.green : Colors.red,
+            strokeWidth: 1,
+            dashArray: [2, 2],
+          );
   }
 
   FlLine getDrawingVerticalLine(double value) => FlLine(
@@ -310,12 +308,12 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     strokeWidth:
         // Center line and touched position are more prominent
         value == 0
-            ? value == _touched
-                ? 7
-                : 6
-            : value == _touched
-            ? 3
-            : 1,
+        ? value == _touched
+              ? 7
+              : 6
+        : value == _touched
+        ? 3
+        : 1,
   );
 
   FlDotPainter dotPainter(
@@ -324,16 +322,14 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     LineChartBarData barData,
     int index,
   ) {
-    Biorhythm? biorhythm =
-        allBiorhythms
-            .where((b) => getBiorhythmColor(b) == barData.color)
-            .firstOrNull;
+    Biorhythm? biorhythm = allBiorhythms
+        .where((b) => getBiorhythmColor(b) == barData.color)
+        .firstOrNull;
 
     // Use the highlight color if touched or fallback to the bar color
-    final Color dotColor =
-        biorhythm != null && _touched != null
-            ? getBiorhythmColor(biorhythm, isHighlighted: true)
-            : barData.color ?? Colors.transparent;
+    final Color dotColor = biorhythm != null && _touched != null
+        ? getBiorhythmColor(biorhythm, isHighlighted: true)
+        : barData.color ?? Colors.transparent;
 
     return FlDotCirclePainter(radius: 6, color: dotColor);
   }
@@ -427,10 +423,9 @@ class _BiorhythmChartState extends State<BiorhythmChart>
       // Redraw points if birthday or biorhythm selection changes
       setPoints();
     },
-    listenWhen:
-        (previous, current) =>
-            previous.birthday != current.birthday ||
-            previous.biorhythms != current.biorhythms,
+    listenWhen: (previous, current) =>
+        previous.birthday != current.birthday ||
+        previous.biorhythms != current.biorhythms,
     child: Wrap(
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [

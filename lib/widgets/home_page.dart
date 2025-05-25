@@ -66,34 +66,28 @@ class HomePage extends StatelessWidget {
                 // Reset button
                 BlocSelector<AppStateCubit, AppState, bool>(
                   selector: (state) => state.showResetButton,
-                  builder:
-                      (context, showResetButton) => Visibility.maintain(
-                        visible: showResetButton,
-                        child: adaptiveIconButton(
-                          child: Text(Str.resetLabel, style: labelText),
-                          icon: Icon(todayIcon, size: labelText.fontSize),
-                          onPressed:
-                              () => context.read<AppStateCubit>().reload(),
-                        ),
-                      ),
+                  builder: (context, showResetButton) => Visibility.maintain(
+                    visible: showResetButton,
+                    child: adaptiveIconButton(
+                      child: Text(Str.resetLabel, style: labelText),
+                      icon: Icon(todayIcon, size: labelText.fontSize),
+                      onPressed: () => context.read<AppStateCubit>().reload(),
+                    ),
+                  ),
                 ),
                 // Toggle extra biorhythms
                 BlocSelector<AppStateCubit, AppState, bool>(
                   selector: (state) => state.showExtraPoints,
-                  builder:
-                      (context, showExtraPoints) => adaptiveIconButton(
-                        child: Text(Str.toggleExtraLabel, style: labelText),
-                        icon: Icon(
-                          showExtraPoints ? visibleIcon : invisibleIcon,
-                          size: labelText.fontSize,
-                        ),
-                        iconAlignEnd: true,
-                        onPressed:
-                            () =>
-                                context
-                                    .read<AppStateCubit>()
-                                    .toggleExtraPoints(),
-                      ),
+                  builder: (context, showExtraPoints) => adaptiveIconButton(
+                    child: Text(Str.toggleExtraLabel, style: labelText),
+                    icon: Icon(
+                      showExtraPoints ? visibleIcon : invisibleIcon,
+                      size: labelText.fontSize,
+                    ),
+                    iconAlignEnd: true,
+                    onPressed: () =>
+                        context.read<AppStateCubit>().toggleExtraPoints(),
+                  ),
                 ),
               ],
             ),

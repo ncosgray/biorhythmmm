@@ -95,14 +95,13 @@ abstract class Notifications {
         DateTime date = today.add(Duration(days: day));
 
         // Determine if this date has any critical alerts
-        List<String> criticals =
-            Prefs.biorhythms
-                .where(
-                  (Biorhythm b) =>
-                      isCritical(b.getPoint(dateDiff(Prefs.birthday, date))),
-                )
-                .map((Biorhythm b) => b.name)
-                .toList();
+        List<String> criticals = Prefs.biorhythms
+            .where(
+              (Biorhythm b) =>
+                  isCritical(b.getPoint(dateDiff(Prefs.birthday, date))),
+            )
+            .map((Biorhythm b) => b.name)
+            .toList();
 
         // Generate critical biorhythm text for date
         if (criticals.isNotEmpty) {
