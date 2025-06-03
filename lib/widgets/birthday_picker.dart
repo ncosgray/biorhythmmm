@@ -23,7 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Open a dialog box to choose user birthday
-adaptiveBirthdayPicker(BuildContext context) {
+void adaptiveBirthdayPicker(BuildContext context) {
   if (Platform.isIOS) {
     buildCupertinoDatePicker(context);
   } else {
@@ -32,7 +32,7 @@ adaptiveBirthdayPicker(BuildContext context) {
 }
 
 // Android date picker
-buildMaterialDatePicker(BuildContext context) async {
+Future<void> buildMaterialDatePicker(BuildContext context) async {
   DateTime? picked = await showDatePicker(
     context: context,
     helpText: Str.birthdaySelectText,
@@ -46,7 +46,7 @@ buildMaterialDatePicker(BuildContext context) async {
 }
 
 // Cupertino date picker
-buildCupertinoDatePicker(BuildContext context) {
+void buildCupertinoDatePicker(BuildContext context) {
   showModalBottomSheet(
     context: context,
     backgroundColor: Theme.of(context).canvasColor,

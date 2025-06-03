@@ -30,7 +30,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
 // Navigate to settings sheet
-showSettingsSheet(BuildContext context) {
+void showSettingsSheet(BuildContext context) {
   if (Platform.isIOS) {
     Navigator.of(context).push(
       CupertinoSheetRoute<void>(builder: (_) => buildSettingsSheet(context)),

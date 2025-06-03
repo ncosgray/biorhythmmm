@@ -67,7 +67,7 @@ class AppStateCubit extends Cubit<AppState> {
   bool get showResetButton => state.showResetButton;
 
   // Manage birthday
-  saveBirthday() => Prefs.birthday = state.birthday;
+  DateTime saveBirthday() => Prefs.birthday = state.birthday;
   bool get isBirthdaySet => Prefs.isBirthdaySet;
 
   void setBirthday(DateTime newBirthday) {

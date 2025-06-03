@@ -22,7 +22,7 @@ abstract class Prefs {
   static late SharedPreferencesWithCache _sharedPrefs;
 
   // Initialize shared preferences instance
-  static init() async {
+  static Future<void> init() async {
     const SharedPreferencesOptions sharedPreferencesOptions =
         SharedPreferencesOptions();
 
