@@ -167,14 +167,28 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     minY: -1,
   );
 
-  List<LineChartBarData> get lineBarsData => [
-    for (final Biorhythm b in context.read<AppStateCubit>().biorhythms)
-      biorhythmLineData(
-        color: getBiorhythmColor(b, isHighlighted: _highlighted == b),
-        pointCount: chartRange,
-        pointGenerator: b.getPoint,
-      ),
-  ];
+  List<LineChartBarData> get lineBarsData {
+    List<Biorhythm> biorhythms = context.read<AppStateCubit>().biorhythms;
+
+    if (_highlighted != null) {
+      // Sort the biorhythm lines with highlighted first (end of the stack)
+      biorhythms = List.from(biorhythms)
+        ..sort((a, b) {
+          if (a == _highlighted) return 1;
+          if (b == _highlighted) return -1;
+          return 0;
+        });
+    }
+
+    return [
+      for (final Biorhythm b in biorhythms)
+        biorhythmLineData(
+          color: getBiorhythmColor(b, isHighlighted: _highlighted == b),
+          pointCount: chartRange,
+          pointGenerator: b.getPoint,
+        ),
+    ];
+  }
 
   LineChartBarData biorhythmLineData({
     required Color color,
