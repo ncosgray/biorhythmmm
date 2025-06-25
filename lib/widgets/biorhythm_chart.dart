@@ -120,12 +120,14 @@ class _BiorhythmChartState extends State<BiorhythmChart>
         WidgetsBinding.instance.addPostFrameCallback((_) {
           // Process a reload request
           if (state.reload) {
-            // Scale chart to show default range
-            double scaleFactor = chartRangeSplit / chartWindow;
-            double chartWidth = chartKey.currentContext!.size!.width;
+            // Scale chart to show default range centered on today
+            double scale = chartRange / (chartWindow * 2);
+            double offset = -((chartRange - (chartWindow * 2) + 1) / 2);
+            double widthFactor =
+                chartKey.currentContext!.size!.width / chartRange;
             chartController.value = Matrix4.identity()
-              ..scale(scaleFactor)
-              ..translate(-((chartWidth - chartWindow) / 2.1));
+              ..scale(scale)
+              ..translate(offset * widthFactor);
             context.read<AppStateCubit>().resetReload();
           }
         });
