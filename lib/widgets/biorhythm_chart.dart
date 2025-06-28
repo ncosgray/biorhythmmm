@@ -32,7 +32,8 @@ final TransformationController chartController = TransformationController();
 // Chart ranges
 final int chartRange = 180;
 final int chartRangeSplit = (chartRange / 2).floor();
-final int chartWindow = 14;
+final int chartGrid = 7;
+final double chartWindow = chartGrid * 4.5;
 
 // Interactive biorhythm chart
 class BiorhythmChart extends StatefulWidget {
@@ -121,8 +122,8 @@ class _BiorhythmChartState extends State<BiorhythmChart>
           // Process a reload request
           if (state.reload) {
             // Scale chart to show default range centered on today
-            double scale = chartRange / (chartWindow * 2);
-            double offset = -((chartRange - (chartWindow * 2) + 1) / 2);
+            double scale = chartRange / chartWindow;
+            double offset = -((chartRange - chartWindow + 1) / 2);
             double widthFactor =
                 chartKey.currentContext!.size!.width / chartRange;
             chartController.value = Matrix4.identity()
@@ -379,8 +380,10 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     Widget title = Container();
 
     if (value == 0) {
+      // Today
       title = Text(Str.todayLabel, style: titleTodayText);
-    } else if (value.abs() % (chartWindow / 2) == 0) {
+    } else if (value.abs() % chartGrid == 0) {
+      // Date labels
       title = Text(
         shortDate(today.add(Duration(days: value.toInt()))),
         style: titleDateText,
@@ -426,8 +429,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
   // Chart tranformation
   FlTransformationConfig get chartTransformation => FlTransformationConfig(
     scaleAxis: FlScaleAxis.horizontal,
-    minScale: chartWindow / 4,
-    maxScale: chartWindow.toDouble(),
+    maxScale: chartWindow,
     scaleEnabled: true,
     panEnabled: true,
     transformationController: chartController,
