@@ -320,18 +320,25 @@ class _BiorhythmChartState extends State<BiorhythmChart>
           );
   }
 
-  FlLine getDrawingVerticalLine(double value) => FlLine(
-    color: Theme.of(context).dividerColor,
-    strokeWidth:
-        // Center line and touched position are more prominent
-        value == 0
-        ? value == _touched
-              ? 7
-              : 6
-        : value == _touched
-        ? 3
-        : 1,
-  );
+  FlLine getDrawingVerticalLine(double value) {
+    // Default grid line
+    double strokeWidth = 1;
+    if (value == 0) {
+      // Today (with touched highlight)
+      strokeWidth = (value == _touched) ? 7 : 6;
+    } else if (value == _touched) {
+      // Touched position
+      strokeWidth = 3;
+    } else if (value.abs() % chartGrid == 0) {
+      // Date labels
+      strokeWidth = 2;
+    }
+
+    return FlLine(
+      color: Theme.of(context).dividerColor,
+      strokeWidth: strokeWidth,
+    );
+  }
 
   FlDotPainter dotPainter(
     FlSpot spot,
