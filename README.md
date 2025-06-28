@@ -14,7 +14,7 @@ Biorhythms are natural cycles that influence the states of our minds and bodies.
 
 * **Physical** cycle affecting strength and energy
 
-Biorthymmm is a simple app that displays your personal cycles for these primary biorhythms (and optionally four additional secondary cycles). We believe by having easy access to this information, your heightened awareness of biorhythm cycles will help you plan and optimize your activities based on your peak performance times.
+Biorhythmmm is a simple app that displays your personal cycles for these primary biorhythms (and optionally four additional secondary cycles). We believe by having easy access to this information, your heightened awareness of biorhythm cycles will help you plan and optimize your activities based on your peak performance times.
 
 <img src="https://github.com/ncosgray/Biorhythmmm/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" width="200"/>|<img src="https://github.com/ncosgray/Biorhythmmm/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" width="200"/>|<img src="https://github.com/ncosgray/Biorhythmmm/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" width="200"/>
 -|-|-

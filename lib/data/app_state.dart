@@ -89,7 +89,7 @@ class AppStateCubit extends Cubit<AppState> {
 
   // Manage biorhythms
   void addBiorhythm(Biorhythm newBiorhythm) {
-    // Add biorthyhm maintaining correct sort order
+    // Add biorhythm maintaining correct sort order
     Set<Biorhythm> selectedBiorhythms = Set.from(Prefs.biorhythms)
       ..add(newBiorhythm);
     List<Biorhythm> newBiorhythms = List.from(
