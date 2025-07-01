@@ -18,6 +18,7 @@ import 'dart:io' show Platform;
 import 'package:biorhythmmm/common/helpers.dart';
 import 'package:biorhythmmm/common/icons.dart';
 import 'package:biorhythmmm/common/strings.dart';
+import 'package:biorhythmmm/common/styles.dart';
 import 'package:biorhythmmm/data/prefs.dart';
 import 'package:biorhythmmm/data/app_state.dart';
 import 'package:biorhythmmm/widgets/birthday_picker.dart';
@@ -68,6 +69,7 @@ class BirthdayManagerSheet extends StatelessWidget {
                   // List of birthdays
                   Expanded(
                     child: Material(
+                      type: MaterialType.transparency,
                       child: ListView.separated(
                         itemCount: birthdays.length,
                         separatorBuilder: (_, _) => Divider(height: 1),
@@ -75,7 +77,10 @@ class BirthdayManagerSheet extends StatelessWidget {
                           final entry = birthdays[i];
                           return ListTile(
                             leading: Icon(Icons.cake_outlined),
-                            title: Text(entry.name),
+                            title: Text(
+                              entry.name,
+                              style: listTileText(context),
+                            ),
                             subtitle: Text(longDate(entry.date)),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -138,7 +143,7 @@ class BirthdayManagerSheet extends StatelessWidget {
                               }
                             },
                           )
-                        : ElevatedButton.icon(
+                        : TextButton.icon(
                             icon: Icon(Icons.add),
                             label: Text(Str.birthdayAddLabel),
                             onPressed: () async {
@@ -184,9 +189,7 @@ class _BirthdayManagerSheetHeader extends StatelessWidget {
                 Expanded(
                   child: Text(
                     Str.birthdayManageLabel,
-                    style: CupertinoTheme.of(
-                      context,
-                    ).textTheme.navTitleTextStyle,
+                    style: listTileText(context),
                   ),
                 ),
                 CupertinoButton(
@@ -197,10 +200,7 @@ class _BirthdayManagerSheetHeader extends StatelessWidget {
             ),
           )
         : ListTile(
-            title: Text(
-              Str.birthdayManageLabel,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+            title: Text(Str.birthdayManageLabel, style: listTileText(context)),
             trailing: IconButton(
               icon: Icon(Icons.close),
               tooltip: Str.doneLabel,
@@ -250,10 +250,13 @@ Future<BirthdayEntry?> showBirthdayEditDialog(
                     children: [
                       SizedBox(height: 12),
                       CupertinoTextField(
+                        style: listTileText(context),
                         controller: nameController,
                         placeholder: Str.birthdayNameLabel,
                       ),
-                      CupertinoButton(
+                      SizedBox(height: 24),
+                      CupertinoButton.filled(
+                        sizeStyle: CupertinoButtonSize.small,
                         onPressed: pickDate,
                         child: Text(
                           selectedDate == null
@@ -327,7 +330,7 @@ Future<BirthdayEntry?> showBirthdayEditDialog(
                       child: Text(Str.cancelLabel),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
-                    ElevatedButton(
+                    FilledButton.tonal(
                       child: Text(Str.okLabel),
                       onPressed: () {
                         if (nameController.text.trim().isEmpty ||

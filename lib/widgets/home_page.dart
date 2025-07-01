@@ -113,7 +113,6 @@ class HomePage extends StatelessWidget {
                       );
                     } else {
                       return DropdownButton<int>(
-                        style: labelText,
                         value: selected,
                         items: [
                           for (int i = 0; i < entries.length; i++)
