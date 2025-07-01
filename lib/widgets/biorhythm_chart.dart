@@ -449,7 +449,8 @@ class _BiorhythmChartState extends State<BiorhythmChart>
       setPoints();
     },
     listenWhen: (previous, current) =>
-        previous.birthday != current.birthday ||
+        previous.birthdays != current.birthdays ||
+        previous.selectedBirthday != current.selectedBirthday ||
         previous.biorhythms != current.biorhythms,
     child: Wrap(
       crossAxisAlignment: WrapCrossAlignment.center,

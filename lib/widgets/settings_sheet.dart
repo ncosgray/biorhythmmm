@@ -14,16 +14,15 @@
 // - Adaptive settings sheet
 // - App settings: biorhythm selection, notification type
 
+import 'dart:io' show Platform;
+
 import 'package:biorhythmmm/common/buttons.dart';
-import 'package:biorhythmmm/common/helpers.dart';
 import 'package:biorhythmmm/common/notifications.dart' show NotificationType;
 import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/common/styles.dart';
 import 'package:biorhythmmm/data/app_state.dart';
 import 'package:biorhythmmm/data/biorhythm.dart';
-import 'package:biorhythmmm/widgets/birthday_picker.dart';
 
-import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -128,17 +127,6 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
                 );
               }
             },
-          ),
-        ),
-        // Birthday
-        ListTile(
-          title: Text(Str.birthdayLabel, style: listTileText(context)),
-          trailing: BlocSelector<AppStateCubit, AppState, DateTime>(
-            selector: (state) => state.birthday,
-            builder: (context, birthday) => adaptiveSettingButton(
-              onPressed: () => adaptiveBirthdayPicker(context),
-              child: Text(longDate(birthday)),
-            ),
           ),
         ),
         // Use accessible color palette

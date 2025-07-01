@@ -13,8 +13,12 @@
 // Biorhythmmm
 // - Shared preferences
 
+import 'dart:convert';
+
 import 'package:biorhythmmm/common/notifications.dart' show NotificationType;
+import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/data/biorhythm.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences/util/legacy_to_async_migration_util.dart';
 
@@ -44,18 +48,47 @@ abstract class Prefs {
   // Preference keys
   static String get _migrationCompletedKey => 'migrationCompleted';
   static String get _birthdayKey => 'birthday';
+  static String get _birthdaysKey => 'birthdays';
+  static String get _selectedBirthdayKey => 'selectedBirthday';
   static String get _biorhythmsKey => 'biorhythms';
   static String get _notificationsKey => 'notifications';
   static String get _useAccessibleColorsKey => 'useAccessibleColors';
   static String get _showCriticalZoneKey => 'showCriticalZone';
 
-  // Get and set birthday
+  // Determine if a birthday has been set
+  static bool get isBirthdaySet =>
+      _sharedPrefs.containsKey(_birthdaysKey) ||
+      _sharedPrefs.containsKey(_birthdayKey);
+
+  // Get and set selected birthday index
+  static int get selectedBirthday =>
+      _sharedPrefs.getInt(_selectedBirthdayKey) ?? 0;
+  static set selectedBirthday(int i) =>
+      _sharedPrefs.setInt(_selectedBirthdayKey, i);
+
+  // Get selected birthday
   static DateTime get birthday => DateTime.fromMillisecondsSinceEpoch(
-    _sharedPrefs.getInt(_birthdayKey) ?? 0,
+    _sharedPrefs.containsKey(_selectedBirthdayKey) &&
+            _sharedPrefs.containsKey(_birthdaysKey)
+        ? birthdays[selectedBirthday].date.millisecondsSinceEpoch
+        // Fallback to legacy birthday
+        : _sharedPrefs.getInt(_birthdayKey) ?? 0,
   );
-  static set birthday(DateTime d) =>
-      _sharedPrefs.setInt(_birthdayKey, d.millisecondsSinceEpoch);
-  static bool get isBirthdaySet => _sharedPrefs.containsKey(_birthdayKey);
+
+  // Get and set birthdays list
+  static List<BirthdayEntry> get birthdays {
+    final list = _sharedPrefs.getStringList(_birthdaysKey);
+    if (list == null || list.isEmpty) {
+      // Fallback to legacy birthday
+      return [BirthdayEntry(name: Str.birthdayDefaultName, date: birthday)];
+    }
+    return list.map((s) => BirthdayEntry.fromJson(jsonDecode(s))).toList();
+  }
+
+  static set birthdays(List<BirthdayEntry> l) => _sharedPrefs.setStringList(
+    _birthdaysKey,
+    l.map((b) => jsonEncode(b.toJson())).toList(),
+  );
 
   // Get and set biorhythm list
   static List<Biorhythm> get biorhythms {
@@ -89,4 +122,20 @@ abstract class Prefs {
       _sharedPrefs.getBool(_showCriticalZoneKey) ?? true;
   static set showCriticalZone(bool s) =>
       _sharedPrefs.setBool(_showCriticalZoneKey, s);
+}
+
+class BirthdayEntry {
+  factory BirthdayEntry.fromJson(Map<String, dynamic> json) => BirthdayEntry(
+    name: json['name'],
+    date: DateTime.fromMillisecondsSinceEpoch(json['date']),
+  );
+
+  BirthdayEntry({this.name = '', required this.date});
+  final String name;
+  final DateTime date;
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'date': date.millisecondsSinceEpoch,
+  };
 }

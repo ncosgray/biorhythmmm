@@ -22,7 +22,8 @@ import 'package:bloc/bloc.dart';
 
 class AppState {
   AppState(
-    this.birthday,
+    this.birthdays,
+    this.selectedBirthday,
     this.biorhythms,
     this.notifications,
     this.useAccessibleColors,
@@ -32,7 +33,8 @@ class AppState {
     this.reload,
   );
 
-  final DateTime birthday;
+  final List<BirthdayEntry> birthdays;
+  final int selectedBirthday;
   final List<Biorhythm> biorhythms;
   final NotificationType notifications;
   final bool useAccessibleColors;
@@ -43,7 +45,8 @@ class AppState {
 
   // Populate state with initial values from shared preferences
   static AppState initial() => AppState(
-    Prefs.birthday,
+    Prefs.birthdays,
+    Prefs.selectedBirthday,
     Prefs.biorhythms,
     Prefs.notifications,
     Prefs.useAccessibleColors,
@@ -58,7 +61,7 @@ class AppStateCubit extends Cubit<AppState> {
   AppStateCubit() : super(AppState.initial());
 
   // Getters
-  DateTime get birthday => state.birthday;
+  DateTime get birthday => state.birthdays[state.selectedBirthday].date;
   List<Biorhythm> get biorhythms => state.biorhythms;
   NotificationType get notifications => state.notifications;
   bool get useAccessibleColors => state.useAccessibleColors;
@@ -67,14 +70,81 @@ class AppStateCubit extends Cubit<AppState> {
   bool get showResetButton => state.showResetButton;
 
   // Manage birthday
-  DateTime saveBirthday() => Prefs.birthday = state.birthday;
-  bool get isBirthdaySet => Prefs.isBirthdaySet;
-
-  void setBirthday(DateTime newBirthday) {
-    Prefs.birthday = newBirthday;
+  void setBirthdays(List<BirthdayEntry> newBirthdays) {
+    final int newSelectedBirthday = newBirthdays.length - 1;
+    Prefs.birthdays = newBirthdays;
+    Prefs.selectedBirthday = newSelectedBirthday;
     emit(
       AppState(
-        newBirthday,
+        newBirthdays,
+        newSelectedBirthday,
+        state.biorhythms,
+        state.notifications,
+        state.useAccessibleColors,
+        state.showExtraPoints,
+        state.showCriticalZone,
+        state.showResetButton,
+        state.reload,
+      ),
+    );
+  }
+
+  void addBirthday(BirthdayEntry entry) {
+    final newBirthdays = List<BirthdayEntry>.from(state.birthdays)..add(entry);
+    setBirthdays(newBirthdays);
+  }
+
+  void editBirthday(int index, BirthdayEntry entry) {
+    List<BirthdayEntry> newBirthdays = List<BirthdayEntry>.from(
+      state.birthdays,
+    );
+    newBirthdays[index] = entry;
+    Prefs.birthdays = newBirthdays;
+    emit(
+      AppState(
+        newBirthdays,
+        state.selectedBirthday,
+        state.biorhythms,
+        state.notifications,
+        state.useAccessibleColors,
+        state.showExtraPoints,
+        state.showCriticalZone,
+        state.showResetButton,
+        state.reload,
+      ),
+    );
+  }
+
+  void removeBirthday(int index) {
+    final newBirthdays = List<BirthdayEntry>.from(state.birthdays)
+      ..removeAt(index);
+    int newSelectedBirthday = state.selectedBirthday;
+    if (newSelectedBirthday >= newBirthdays.length) {
+      newSelectedBirthday = newBirthdays.length - 1;
+    }
+    Prefs.birthdays = newBirthdays;
+    Prefs.selectedBirthday = newSelectedBirthday;
+    emit(
+      AppState(
+        newBirthdays,
+        newSelectedBirthday,
+        state.biorhythms,
+        state.notifications,
+        state.useAccessibleColors,
+        state.showExtraPoints,
+        state.showCriticalZone,
+        state.showResetButton,
+        state.reload,
+      ),
+    );
+  }
+
+  void setSelectedBirthday(int newSelectedBirthday) {
+    Prefs.selectedBirthday = newSelectedBirthday;
+    emit(
+      AppState(
+        state.birthdays,
+        newSelectedBirthday,
         state.biorhythms,
         state.notifications,
         state.useAccessibleColors,
@@ -98,7 +168,8 @@ class AppStateCubit extends Cubit<AppState> {
     Prefs.biorhythms = newBiorhythms;
     emit(
       AppState(
-        state.birthday,
+        state.birthdays,
+        state.selectedBirthday,
         newBiorhythms,
         state.notifications,
         state.useAccessibleColors,
@@ -117,7 +188,8 @@ class AppStateCubit extends Cubit<AppState> {
     Prefs.biorhythms = newBiorhythms;
     emit(
       AppState(
-        state.birthday,
+        state.birthdays,
+        state.selectedBirthday,
         newBiorhythms,
         state.notifications,
         state.useAccessibleColors,
@@ -137,7 +209,8 @@ class AppStateCubit extends Cubit<AppState> {
     Prefs.notifications = newNotifications;
     emit(
       AppState(
-        state.birthday,
+        state.birthdays,
+        state.selectedBirthday,
         state.biorhythms,
         newNotifications,
         state.useAccessibleColors,
@@ -164,7 +237,8 @@ class AppStateCubit extends Cubit<AppState> {
     Prefs.useAccessibleColors = newUseAccessibleColors;
     emit(
       AppState(
-        state.birthday,
+        state.birthdays,
+        state.selectedBirthday,
         state.biorhythms,
         state.notifications,
         newUseAccessibleColors,
@@ -181,7 +255,8 @@ class AppStateCubit extends Cubit<AppState> {
     bool newShowExtraPoints = !state.showExtraPoints;
     emit(
       AppState(
-        state.birthday,
+        state.birthdays,
+        state.selectedBirthday,
         newShowExtraPoints
             ? allBiorhythms
             : (Prefs.biorhythms.length == allBiorhythms.length
@@ -202,7 +277,8 @@ class AppStateCubit extends Cubit<AppState> {
     Prefs.showCriticalZone = newShowCriticalZone;
     emit(
       AppState(
-        state.birthday,
+        state.birthdays,
+        state.selectedBirthday,
         state.biorhythms,
         state.notifications,
         state.useAccessibleColors,
@@ -219,7 +295,8 @@ class AppStateCubit extends Cubit<AppState> {
     if (!state.showResetButton) {
       emit(
         AppState(
-          state.birthday,
+          state.birthdays,
+          state.selectedBirthday,
           state.biorhythms,
           state.notifications,
           state.useAccessibleColors,
@@ -235,7 +312,8 @@ class AppStateCubit extends Cubit<AppState> {
   // Reload request
   void reload() => emit(
     AppState(
-      state.birthday,
+      state.birthdays,
+      state.selectedBirthday,
       state.biorhythms,
       state.notifications,
       state.useAccessibleColors,
@@ -248,7 +326,8 @@ class AppStateCubit extends Cubit<AppState> {
 
   void resetReload() => emit(
     AppState(
-      state.birthday,
+      state.birthdays,
+      state.selectedBirthday,
       state.biorhythms,
       state.notifications,
       state.useAccessibleColors,

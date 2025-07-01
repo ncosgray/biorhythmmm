@@ -29,6 +29,9 @@ IconData get todayIcon =>
 IconData get editIcon =>
     Platform.isIOS ? CupertinoIcons.square_pencil_fill : Icons.edit;
 
+IconData get deleteIcon =>
+    Platform.isIOS ? CupertinoIcons.trash : Icons.delete_outline;
+
 IconData get visibleIcon =>
     Platform.isIOS ? CupertinoIcons.eye : Icons.visibility;
 
