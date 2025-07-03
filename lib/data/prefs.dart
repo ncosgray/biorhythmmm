@@ -60,34 +60,35 @@ abstract class Prefs {
       _sharedPrefs.containsKey(_birthdaysKey) ||
       _sharedPrefs.containsKey(_birthdayKey);
 
-  // Get and set selected birthday index
+  // Get and set selected birthday
   static int get selectedBirthday =>
       _sharedPrefs.getInt(_selectedBirthdayKey) ?? 0;
   static set selectedBirthday(int i) =>
       _sharedPrefs.setInt(_selectedBirthdayKey, i);
 
-  // Get selected birthday
-  static DateTime get birthday => DateTime.fromMillisecondsSinceEpoch(
-    _sharedPrefs.containsKey(_selectedBirthdayKey) &&
-            _sharedPrefs.containsKey(_birthdaysKey)
-        ? birthdays[selectedBirthday].date.millisecondsSinceEpoch
-        // Fallback to legacy birthday
-        : _sharedPrefs.getInt(_birthdayKey) ?? 0,
-  );
+  static DateTime get birthday => birthdays[selectedBirthday].date;
 
   // Get and set birthdays list
   static List<BirthdayEntry> get birthdays {
     final list = _sharedPrefs.getStringList(_birthdaysKey);
     if (list == null || list.isEmpty) {
       // Fallback to legacy birthday
-      return [BirthdayEntry(name: Str.birthdayDefaultName, date: birthday)];
+      return [
+        BirthdayEntry(
+          name: Str.birthdayDefaultName,
+          date: DateTime.fromMillisecondsSinceEpoch(
+            _sharedPrefs.getInt(_birthdayKey) ?? 0,
+          ),
+          notify: true,
+        ),
+      ];
     }
     return list.map((s) => BirthdayEntry.fromJson(jsonDecode(s))).toList();
   }
 
-  static set birthdays(List<BirthdayEntry> l) => _sharedPrefs.setStringList(
+  static set birthdays(List<BirthdayEntry> list) => _sharedPrefs.setStringList(
     _birthdaysKey,
-    l.map((b) => jsonEncode(b.toJson())).toList(),
+    list.map((b) => jsonEncode(b.toJson())).toList(),
   );
 
   // Get and set biorhythm list
@@ -111,6 +112,10 @@ abstract class Prefs {
   static set notifications(NotificationType n) =>
       _sharedPrefs.setInt(_notificationsKey, n.value);
 
+  // Get birthday for notifications
+  static DateTime get notifyBirthday =>
+      birthdays.firstWhere((d) => d.notify).date;
+
   // Get and set accessible color palette choice
   static bool get useAccessibleColors =>
       _sharedPrefs.getBool(_useAccessibleColorsKey) ?? false;
@@ -128,14 +133,17 @@ class BirthdayEntry {
   factory BirthdayEntry.fromJson(Map<String, dynamic> json) => BirthdayEntry(
     name: json['name'],
     date: DateTime.fromMillisecondsSinceEpoch(json['date']),
+    notify: json['notify'],
   );
 
-  BirthdayEntry({this.name = '', required this.date});
+  BirthdayEntry({this.name = '', required this.date, this.notify = false});
   final String name;
   final DateTime date;
+  final bool notify;
 
   Map<String, dynamic> toJson() => {
     'name': name,
     'date': date.millisecondsSinceEpoch,
+    'notify': notify,
   };
 }

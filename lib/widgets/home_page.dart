@@ -43,7 +43,11 @@ class HomePage extends StatelessWidget {
         final picked = await adaptiveBirthdayPicker(context);
         if (!context.mounted) return;
         context.read<AppStateCubit>().setBirthdays([
-          BirthdayEntry(date: picked ?? today),
+          BirthdayEntry(
+            name: Str.birthdayDefaultName,
+            date: picked ?? today,
+            notify: true,
+          ),
         ]);
       }
     });

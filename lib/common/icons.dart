@@ -32,6 +32,13 @@ IconData get editIcon =>
 IconData get deleteIcon =>
     Platform.isIOS ? CupertinoIcons.trash : Icons.delete_outline;
 
+IconData get notifyOnIcon =>
+    Platform.isIOS ? CupertinoIcons.bell_fill : Icons.notifications_active;
+
+IconData get notifyOffIcon => Platform.isIOS
+    ? CupertinoIcons.bell_slash
+    : Icons.notifications_off_outlined;
+
 IconData get visibleIcon =>
     Platform.isIOS ? CupertinoIcons.eye : Icons.visibility;
 

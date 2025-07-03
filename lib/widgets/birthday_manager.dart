@@ -17,6 +17,7 @@ import 'dart:io' show Platform;
 
 import 'package:biorhythmmm/common/helpers.dart';
 import 'package:biorhythmmm/common/icons.dart';
+import 'package:biorhythmmm/common/notifications.dart' show NotificationType;
 import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/common/styles.dart';
 import 'package:biorhythmmm/data/prefs.dart';
@@ -59,106 +60,17 @@ class BirthdayManagerSheet extends StatelessWidget {
         child: BlocBuilder<AppStateCubit, AppState>(
           builder: (context, state) {
             final birthdays = state.birthdays;
+            final bool notify = state.notifications != NotificationType.none;
             // Size the sheet based on the number of birthdays
             return SizedBox(
               height: birthdays.length * 65 + 180,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  // Build a birthday manager
                   _BirthdayManagerSheetHeader(isIOS: isIOS),
-                  // List of birthdays
-                  Expanded(
-                    child: Material(
-                      type: MaterialType.transparency,
-                      child: ListView.separated(
-                        itemCount: birthdays.length,
-                        separatorBuilder: (_, _) => Divider(height: 1),
-                        itemBuilder: (context, i) {
-                          final entry = birthdays[i];
-                          return ListTile(
-                            leading: Icon(Icons.cake_outlined),
-                            title: Text(
-                              entry.name,
-                              style: listTileText(context),
-                            ),
-                            subtitle: Text(longDate(entry.date)),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: Icon(editIcon),
-                                  tooltip: Str.editLabel,
-                                  onPressed: () async {
-                                    final updated =
-                                        await showBirthdayEditDialog(
-                                          context,
-                                          initial: entry,
-                                        );
-                                    if (!context.mounted) return;
-                                    if (updated != null) {
-                                      context
-                                          .read<AppStateCubit>()
-                                          .editBirthday(i, updated);
-                                    }
-                                  },
-                                ),
-                                if (birthdays.length > 1)
-                                  IconButton(
-                                    icon: Icon(deleteIcon),
-                                    tooltip: Str.deleteLabel,
-                                    onPressed: () {
-                                      context
-                                          .read<AppStateCubit>()
-                                          .removeBirthday(i);
-                                    },
-                                  ),
-                              ],
-                            ),
-                            onTap: () {
-                              context.read<AppStateCubit>().setSelectedBirthday(
-                                i,
-                              );
-                              Navigator.of(context).maybePop();
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                  // Button to add a new birthday
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: isIOS
-                        ? CupertinoButton.filled(
-                            child: Text(Str.birthdayAddLabel),
-                            onPressed: () async {
-                              final newEntry = await showBirthdayEditDialog(
-                                context,
-                              );
-                              if (!context.mounted) return;
-                              if (newEntry != null) {
-                                context.read<AppStateCubit>().addBirthday(
-                                  newEntry,
-                                );
-                              }
-                            },
-                          )
-                        : TextButton.icon(
-                            icon: Icon(Icons.add),
-                            label: Text(Str.birthdayAddLabel),
-                            onPressed: () async {
-                              final newEntry = await showBirthdayEditDialog(
-                                context,
-                              );
-                              if (!context.mounted) return;
-                              if (newEntry != null) {
-                                context.read<AppStateCubit>().addBirthday(
-                                  newEntry,
-                                );
-                              }
-                            },
-                          ),
-                  ),
+                  _BirthdayManagerList(birthdays: birthdays, notify: notify),
+                  _BirthdayManagerAddButton(isIOS: isIOS),
                 ],
               ),
             );
@@ -207,6 +119,115 @@ class _BirthdayManagerSheetHeader extends StatelessWidget {
               onPressed: () => Navigator.of(context).maybePop(),
             ),
           );
+  }
+}
+
+// List of birthday tiles
+class _BirthdayManagerList extends StatelessWidget {
+  const _BirthdayManagerList({required this.birthdays, required this.notify});
+  final List<BirthdayEntry> birthdays;
+  final bool notify;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Material(
+        type: MaterialType.transparency,
+        child: ListView.separated(
+          itemCount: birthdays.length,
+          separatorBuilder: (_, _) => Divider(height: 1),
+          itemBuilder: (context, i) {
+            final entry = birthdays[i];
+            // Birthday entry
+            return ListTile(
+              leading: Icon(Icons.cake_outlined),
+              title: Text(entry.name, style: listTileText(context)),
+              subtitle: Text(longDate(entry.date)),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Toggle notifications for a birthday
+                  if (notify)
+                    IconButton(
+                      icon: Icon(entry.notify ? notifyOnIcon : notifyOffIcon),
+                      tooltip: Str.editLabel,
+                      onPressed: () async {
+                        // Enable this only if disabled
+                        if (!entry.notify) {
+                          context.read<AppStateCubit>().toggleBirthdayNotify(i);
+                        }
+                      },
+                    ),
+                  // Edit this birthday entry
+                  IconButton(
+                    icon: Icon(editIcon),
+                    tooltip: Str.editLabel,
+                    onPressed: () async {
+                      final updated = await showBirthdayEditDialog(
+                        context,
+                        initial: entry,
+                      );
+                      if (!context.mounted) return;
+                      if (updated != null) {
+                        context.read<AppStateCubit>().editBirthday(i, updated);
+                      }
+                    },
+                  ),
+                  // Delete this birthday entry
+                  if (birthdays.length > 1)
+                    IconButton(
+                      icon: Icon(deleteIcon),
+                      tooltip: Str.deleteLabel,
+                      onPressed: () {
+                        context.read<AppStateCubit>().removeBirthday(i);
+                      },
+                    ),
+                ],
+              ),
+              onTap: () {
+                context.read<AppStateCubit>().setSelectedBirthday(i);
+                Navigator.of(context).maybePop();
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+// Button to add a new birthday
+class _BirthdayManagerAddButton extends StatelessWidget {
+  const _BirthdayManagerAddButton({required this.isIOS});
+  final bool isIOS;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: isIOS
+          ? CupertinoButton.filled(
+              child: Text(Str.birthdayAddLabel),
+              onPressed: () async {
+                final newEntry = await showBirthdayEditDialog(context);
+                if (!context.mounted) return;
+                if (newEntry != null) {
+                  context.read<AppStateCubit>().addBirthday(newEntry);
+                }
+              },
+            )
+          : TextButton.icon(
+              icon: Icon(Icons.add),
+              label: Text(Str.birthdayAddLabel),
+              onPressed: () async {
+                final newEntry = await showBirthdayEditDialog(context);
+                if (!context.mounted) return;
+                if (newEntry != null) {
+                  context.read<AppStateCubit>().addBirthday(newEntry);
+                }
+              },
+            ),
+    );
   }
 }
 

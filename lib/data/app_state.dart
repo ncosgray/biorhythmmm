@@ -113,6 +113,7 @@ class AppStateCubit extends Cubit<AppState> {
         state.reload,
       ),
     );
+    updateNotifications();
   }
 
   void removeBirthday(int index) {
@@ -137,6 +138,7 @@ class AppStateCubit extends Cubit<AppState> {
         state.reload,
       ),
     );
+    updateNotifications();
   }
 
   void setSelectedBirthday(int newSelectedBirthday) {
@@ -145,6 +147,31 @@ class AppStateCubit extends Cubit<AppState> {
       AppState(
         state.birthdays,
         newSelectedBirthday,
+        state.biorhythms,
+        state.notifications,
+        state.useAccessibleColors,
+        state.showExtraPoints,
+        state.showCriticalZone,
+        state.showResetButton,
+        state.reload,
+      ),
+    );
+  }
+
+  void toggleBirthdayNotify(int index) {
+    List<BirthdayEntry> newBirthdays = List<BirthdayEntry>.generate(
+      state.birthdays.length,
+      (i) => BirthdayEntry(
+        name: state.birthdays[i].name,
+        date: state.birthdays[i].date,
+        notify: i == index ? true : false,
+      ),
+    );
+    Prefs.birthdays = newBirthdays;
+    emit(
+      AppState(
+        newBirthdays,
+        state.selectedBirthday,
         state.biorhythms,
         state.notifications,
         state.useAccessibleColors,
@@ -228,6 +255,31 @@ class AppStateCubit extends Cubit<AppState> {
     if (state.notifications == NotificationType.none) {
       Notifications.cancel();
     } else {
+      // Ensure at least one birthday can generate notifications
+      if (!state.birthdays.any((d) => d.notify)) {
+        List<BirthdayEntry> newBirthdays = List<BirthdayEntry>.generate(
+          state.birthdays.length,
+          (i) => BirthdayEntry(
+            name: state.birthdays[i].name,
+            date: state.birthdays[i].date,
+            notify: i == 0 ? true : false,
+          ),
+        );
+        Prefs.birthdays = newBirthdays;
+        emit(
+          AppState(
+            newBirthdays,
+            state.selectedBirthday,
+            state.biorhythms,
+            state.notifications,
+            state.useAccessibleColors,
+            state.showExtraPoints,
+            state.showCriticalZone,
+            state.showResetButton,
+            state.reload,
+          ),
+        );
+      }
       Notifications.schedule();
     }
   }

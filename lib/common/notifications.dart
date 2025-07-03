@@ -85,7 +85,7 @@ abstract class Notifications {
           _notifyAt(date),
           _biorhythmSummary([
             for (final Biorhythm b in Prefs.biorhythms)
-              b.getBiorhythmPoint(dateDiff(Prefs.birthday, date)),
+              b.getBiorhythmPoint(dateDiff(Prefs.notifyBirthday, date)),
           ]),
         );
       });
@@ -98,7 +98,7 @@ abstract class Notifications {
         List<String> criticals = Prefs.biorhythms
             .where(
               (Biorhythm b) =>
-                  isCritical(b.getPoint(dateDiff(Prefs.birthday, date))),
+                  isCritical(b.getPoint(dateDiff(Prefs.notifyBirthday, date))),
             )
             .map((Biorhythm b) => b.name)
             .toList();
