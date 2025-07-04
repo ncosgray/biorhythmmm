@@ -51,7 +51,6 @@ class BirthdayManagerSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isIOS = Platform.isIOS;
     final padding = MediaQuery.of(context).viewInsets;
 
     return Padding(
@@ -68,9 +67,9 @@ class BirthdayManagerSheet extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   // Build a birthday manager
-                  _BirthdayManagerSheetHeader(isIOS: isIOS),
-                  _BirthdayManagerList(birthdays: birthdays, notify: notify),
-                  _BirthdayManagerAddButton(isIOS: isIOS),
+                  sheetHeader(context),
+                  birthdayList(birthdays: birthdays, notify: notify),
+                  addBirthday(context),
                 ],
               ),
             );
@@ -79,16 +78,10 @@ class BirthdayManagerSheet extends StatelessWidget {
       ),
     );
   }
-}
 
-// Platform-specific header for the birthday manager sheet
-class _BirthdayManagerSheetHeader extends StatelessWidget {
-  const _BirthdayManagerSheetHeader({required this.isIOS});
-  final bool isIOS;
-
-  @override
-  Widget build(BuildContext context) {
-    return isIOS
+  // Platform-specific header for the birthday manager sheet
+  Widget sheetHeader(BuildContext context) {
+    return Platform.isIOS
         ? Padding(
             padding: const EdgeInsets.only(
               top: 12,
@@ -120,16 +113,12 @@ class _BirthdayManagerSheetHeader extends StatelessWidget {
             ),
           );
   }
-}
 
-// List of birthday tiles
-class _BirthdayManagerList extends StatelessWidget {
-  const _BirthdayManagerList({required this.birthdays, required this.notify});
-  final List<BirthdayEntry> birthdays;
-  final bool notify;
-
-  @override
-  Widget build(BuildContext context) {
+  // List of birthday tiles
+  Widget birthdayList({
+    required List<BirthdayEntry> birthdays,
+    required bool notify,
+  }) {
     return Expanded(
       child: Material(
         type: MaterialType.transparency,
@@ -194,18 +183,12 @@ class _BirthdayManagerList extends StatelessWidget {
       ),
     );
   }
-}
 
-// Button to add a new birthday
-class _BirthdayManagerAddButton extends StatelessWidget {
-  const _BirthdayManagerAddButton({required this.isIOS});
-  final bool isIOS;
-
-  @override
-  Widget build(BuildContext context) {
+  // Button to add a new birthday
+  Widget addBirthday(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: isIOS
+      child: Platform.isIOS
           ? CupertinoButton.filled(
               child: Text(Str.birthdayAddLabel),
               onPressed: () async {
@@ -236,7 +219,6 @@ Future<BirthdayEntry?> showBirthdayEditDialog(
   BuildContext context, {
   BirthdayEntry? initial,
 }) async {
-  final isIOS = Platform.isIOS;
   final nameController = TextEditingController(text: initial?.name ?? '');
   DateTime? selectedDate = initial?.date;
 
@@ -259,7 +241,7 @@ Future<BirthdayEntry?> showBirthdayEditDialog(
           }
 
           // Build the dialog based on the platform
-          return isIOS
+          return Platform.isIOS
               ? CupertinoAlertDialog(
                   title: Text(
                     initial == null
