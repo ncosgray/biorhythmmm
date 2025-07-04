@@ -112,9 +112,18 @@ abstract class Prefs {
   static set notifications(NotificationType n) =>
       _sharedPrefs.setInt(_notificationsKey, n.value);
 
-  // Get birthday for notifications
+  // Get birthday and name for notifications
   static DateTime get notifyBirthday =>
       birthdays.firstWhere((d) => d.notify).date;
+
+  static String get notifyForName {
+    if (birthdays.length > 1) {
+      // Only specify name if mutiple birthdays are defined
+      return Str.notifyForPrefix + birthdays.firstWhere((d) => d.notify).name;
+    } else {
+      return '';
+    }
+  }
 
   // Get and set accessible color palette choice
   static bool get useAccessibleColors =>
