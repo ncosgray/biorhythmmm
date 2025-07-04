@@ -89,60 +89,7 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
                 // Birthday switcher
-                BlocSelector<AppStateCubit, AppState, AppState>(
-                  selector: (state) => state,
-                  builder: (context, state) {
-                    final entries = state.birthdays;
-                    final selected = state.selectedBirthday;
-                    if (Platform.isIOS) {
-                      return PullDownButton(
-                        buttonBuilder: (_, showMenu) => adaptiveSettingButton(
-                          onPressed: showMenu,
-                          child: Text(entries[selected].name, style: labelText),
-                        ),
-                        itemBuilder: (_) => [
-                          for (int i = 0; i < entries.length; i++)
-                            PullDownMenuItem.selectable(
-                              selected: i == selected,
-                              title: entries[i].name,
-                              onTap: () => context
-                                  .read<AppStateCubit>()
-                                  .setSelectedBirthday(i),
-                            ),
-                          PullDownMenuItem(
-                            title: Str.manageLabel,
-                            onTap: () => showBirthdayManager(context),
-                          ),
-                        ],
-                      );
-                    } else {
-                      return DropdownButton<int>(
-                        value: selected,
-                        items: [
-                          for (int i = 0; i < entries.length; i++)
-                            DropdownMenuItem(
-                              value: i,
-                              child: Text(entries[i].name),
-                            ),
-                          DropdownMenuItem(
-                            value: -1,
-                            child: Text(Str.manageLabel),
-                          ),
-                        ],
-                        onChanged: (i) {
-                          if (i == null) return;
-                          if (i == -1) {
-                            showBirthdayManager(context);
-                          } else {
-                            context.read<AppStateCubit>().setSelectedBirthday(
-                              i,
-                            );
-                          }
-                        },
-                      );
-                    }
-                  },
-                ),
+                birthdaySwitcher(),
                 // Toggle extra biorhythms
                 BlocSelector<AppStateCubit, AppState, bool>(
                   selector: (state) => state.showExtraPoints,
@@ -169,6 +116,79 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  // Popup menu to select birthday or manage birthday list
+  Widget birthdaySwitcher() {
+    return BlocSelector<AppStateCubit, AppState, AppState>(
+      selector: (state) => state,
+      builder: (context, state) {
+        final entries = state.birthdays;
+        final selected = state.selectedBirthday;
+        if (Platform.isIOS) {
+          return PullDownButton(
+            buttonBuilder: (_, showMenu) => adaptiveSettingButton(
+              onPressed: showMenu,
+              child: Text(entries[selected].name, style: labelText),
+            ),
+            itemBuilder: (_) => [
+              // Birthdays
+              for (int i = 0; i < entries.length; i++)
+                PullDownMenuItem.selectable(
+                  selected: i == selected,
+                  title: entries[i].name,
+                  onTap: () =>
+                      context.read<AppStateCubit>().setSelectedBirthday(i),
+                ),
+              // Manage
+              PullDownMenuDivider.large(),
+              PullDownMenuItem(
+                title: Str.manageLabel,
+                icon: Icons.cake_outlined,
+                onTap: () => showBirthdayManager(context),
+              ),
+            ],
+          );
+        } else {
+          return DropdownButton<int>(
+            value: selected,
+            items: [
+              // Birthdays
+              for (int i = 0; i < entries.length; i++)
+                DropdownMenuItem(value: i, child: Text(entries[i].name)),
+              // Manage
+              DropdownMenuItem(
+                value: -1,
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.cake_outlined,
+                      size: 16,
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      Str.manageLabel,
+                      style: labelText.copyWith(
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            onChanged: (i) {
+              if (i == null) return;
+              if (i == -1) {
+                showBirthdayManager(context);
+              } else {
+                context.read<AppStateCubit>().setSelectedBirthday(i);
+              }
+            },
+          );
+        }
+      },
     );
   }
 }
