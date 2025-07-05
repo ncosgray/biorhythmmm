@@ -16,7 +16,6 @@
 import 'dart:io' show Platform;
 
 import 'package:biorhythmmm/common/buttons.dart';
-import 'package:biorhythmmm/common/helpers.dart';
 import 'package:biorhythmmm/common/icons.dart';
 import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/common/styles.dart';
@@ -25,7 +24,6 @@ import 'package:biorhythmmm/data/prefs.dart';
 import 'package:biorhythmmm/widgets/about_dialog.dart';
 import 'package:biorhythmmm/widgets/biorhythm_chart.dart';
 import 'package:biorhythmmm/widgets/birthday_manager.dart';
-import 'package:biorhythmmm/widgets/birthday_picker.dart';
 import 'package:biorhythmmm/widgets/settings_sheet.dart';
 
 import 'package:flutter/material.dart';
@@ -40,15 +38,11 @@ class HomePage extends StatelessWidget {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // Prompt user once if birthday is unset
       if (context.mounted && !Prefs.isBirthdaySet) {
-        final picked = await adaptiveBirthdayPicker(context);
+        final newEntry = await showBirthdayEditDialog(context);
         if (!context.mounted) return;
-        context.read<AppStateCubit>().setBirthdays([
-          BirthdayEntry(
-            name: Str.birthdayDefaultName,
-            date: picked ?? today,
-            notify: true,
-          ),
-        ]);
+        if (newEntry != null) {
+          context.read<AppStateCubit>().setBirthdays([newEntry]);
+        }
       }
     });
 
