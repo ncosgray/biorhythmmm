@@ -26,7 +26,10 @@ import 'package:biorhythmmm/widgets/birthday_picker.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show LengthLimitingTextInputFormatter;
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+const int birthdayNameMaxLength = 25;
 
 // Open a modal to add, edit, or delete user birthdays
 Future<void> showBirthdayManager(BuildContext context) async {
@@ -260,6 +263,12 @@ Future<BirthdayEntry?> showBirthdayEditDialog(
                         style: listTileText(context),
                         controller: nameController,
                         placeholder: Str.birthdayNameLabel,
+                        maxLength: birthdayNameMaxLength,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(
+                            birthdayNameMaxLength,
+                          ),
+                        ],
                       ),
                       SizedBox(height: 24),
                       CupertinoButton.filled(
@@ -313,6 +322,12 @@ Future<BirthdayEntry?> showBirthdayEditDialog(
                         decoration: InputDecoration(
                           labelText: Str.birthdayNameLabel,
                         ),
+                        maxLength: birthdayNameMaxLength,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(
+                            birthdayNameMaxLength,
+                          ),
+                        ],
                       ),
                       SizedBox(height: 12),
                       Row(
