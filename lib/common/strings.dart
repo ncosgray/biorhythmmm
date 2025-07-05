@@ -55,7 +55,6 @@ class Str {
   static String get birthdayEditLabel => 'Edit birthday';
   static String get birthdayManageLabel => 'Manage birthdays';
   static String get birthdayNameLabel => 'Name';
-  static String get birthdaySelectText => 'Select birthday';
   static String get cancelLabel => 'Cancel';
   static String get chartTitle => 'Today\u2019s Biorhythms';
   static String get dateNoneLabel => 'No date selected';

@@ -83,12 +83,7 @@ class BirthdayManagerSheet extends StatelessWidget {
   Widget sheetHeader(BuildContext context) {
     return Platform.isIOS
         ? Padding(
-            padding: const EdgeInsets.only(
-              top: 12,
-              left: 16,
-              right: 8,
-              bottom: 8,
-            ),
+            padding: const EdgeInsets.only(top: 12, left: 18),
             child: Row(
               children: [
                 Expanded(
@@ -104,12 +99,18 @@ class BirthdayManagerSheet extends StatelessWidget {
               ],
             ),
           )
-        : ListTile(
-            title: Text(Str.birthdayManageLabel, style: listTileText(context)),
-            trailing: IconButton(
-              icon: Icon(Icons.close),
-              tooltip: Str.doneLabel,
-              onPressed: () => Navigator.of(context).maybePop(),
+        : Padding(
+            padding: const EdgeInsets.only(left: 12, top: 12, right: 12),
+            child: ListTile(
+              title: Text(
+                Str.birthdayManageLabel,
+                style: listTileText(context),
+              ),
+              trailing: IconButton(
+                icon: Icon(Icons.close),
+                tooltip: Str.doneLabel,
+                onPressed: () => Navigator.of(context).maybePop(),
+              ),
             ),
           );
   }
@@ -129,7 +130,10 @@ class BirthdayManagerSheet extends StatelessWidget {
             final entry = birthdays[i];
             // Birthday entry
             return ListTile(
-              leading: Icon(Icons.cake_outlined),
+              leading: Padding(
+                padding: EdgeInsets.only(left: 12),
+                child: Icon(Icons.cake_outlined),
+              ),
               title: Text(entry.name, style: listTileText(context)),
               subtitle: Text(longDate(entry.date)),
               trailing: Row(

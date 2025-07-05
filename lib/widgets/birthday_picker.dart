@@ -16,7 +16,6 @@
 import 'dart:io' show Platform;
 
 import 'package:biorhythmmm/common/strings.dart';
-import 'package:biorhythmmm/common/styles.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +39,6 @@ Future<DateTime?> buildMaterialDatePicker(
 }) async {
   return await showDatePicker(
     context: context,
-    helpText: Str.birthdaySelectText,
     initialDate: initialDate,
     firstDate: DateTime(1900),
     lastDate: DateTime(DateTime.now().year, 12, 31),
@@ -62,13 +60,6 @@ Future<DateTime?> buildCupertinoDatePicker(
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Padding(
-                padding: EdgeInsets.all(8),
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: Text(Str.birthdaySelectText, style: titleText),
-                ),
-              ),
               SizedBox(
                 height: MediaQuery.of(context).size.height / 3 - 40,
                 child: CupertinoDatePicker(
@@ -82,10 +73,10 @@ Future<DateTime?> buildCupertinoDatePicker(
                   },
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.only(bottom: 14),
+              SafeArea(
                 child: CupertinoButton(
-                  sizeStyle: CupertinoButtonSize.large,
+                  padding: EdgeInsets.zero,
+                  sizeStyle: CupertinoButtonSize.medium,
                   child: Text(Str.doneLabel),
                   onPressed: () {
                     Navigator.of(context).pop(tempPicked);
