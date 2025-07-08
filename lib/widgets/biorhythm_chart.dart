@@ -16,10 +16,12 @@
 // - Chart interactivity (touch, pan, zoom)
 
 import 'package:biorhythmmm/common/helpers.dart';
+import 'package:biorhythmmm/common/notifications.dart';
 import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/common/styles.dart';
 import 'package:biorhythmmm/data/app_state.dart';
 import 'package:biorhythmmm/data/biorhythm.dart';
+import 'package:biorhythmmm/data/prefs.dart';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -77,6 +79,18 @@ class _BiorhythmChartState extends State<BiorhythmChart>
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
+
+    // Handle notification taps
+    Notifications.onNotificationTap = () => selectNotifyBirthday();
+
+    // Handle cold start from notification
+    Notifications.launchedFromNotification().then((fromNotification) {
+      if (fromNotification) {
+        selectNotifyBirthday();
+      }
+    });
+
+    // Update the chart
     resetChart();
     super.initState();
 
@@ -89,6 +103,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    Notifications.onNotificationTap = null;
     chartController.dispose();
     super.dispose();
   }
@@ -146,6 +161,15 @@ class _BiorhythmChartState extends State<BiorhythmChart>
         );
       },
     );
+  }
+
+  // Display biorhythm chart for notify birthday
+  void selectNotifyBirthday() {
+    if (mounted) {
+      context.read<AppStateCubit>().setSelectedBirthday(
+        Prefs.notifyBirthdayIndex,
+      );
+    }
   }
 
   // Create a line chart graphing biorhythm data

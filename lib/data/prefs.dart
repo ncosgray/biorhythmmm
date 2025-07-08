@@ -13,12 +13,11 @@
 // Biorhythmmm
 // - Shared preferences
 
-import 'dart:convert';
-
 import 'package:biorhythmmm/common/notifications.dart' show NotificationType;
 import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/data/biorhythm.dart';
 
+import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences/util/legacy_to_async_migration_util.dart';
 
@@ -115,6 +114,11 @@ abstract class Prefs {
   // Get birthday and name for notifications
   static DateTime get notifyBirthday =>
       birthdays.firstWhere((d) => d.notify, orElse: () => birthdays[0]).date;
+
+  static int get notifyBirthdayIndex {
+    final index = birthdays.indexWhere((d) => d.notify);
+    return index >= 0 ? index : 0;
+  }
 
   static String get notifyForName {
     if (birthdays.length > 1) {

@@ -20,6 +20,7 @@ import 'package:biorhythmmm/data/biorhythm.dart';
 import 'package:biorhythmmm/data/prefs.dart';
 
 import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show VoidCallback;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // ignore: depend_on_referenced_packages
 import 'package:timezone/timezone.dart' as tz;
@@ -46,6 +47,9 @@ abstract class Notifications {
           requestAlertPermission: false,
         ),
       ),
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        Notifications.handleNotificationTap();
+      },
     );
 
     // Ensure scheduled notifications are set properly
@@ -54,6 +58,13 @@ abstract class Notifications {
     } else {
       await schedule();
     }
+  }
+
+  // Callback for when a notification is tapped
+  static VoidCallback? onNotificationTap;
+
+  static void handleNotificationTap() {
+    onNotificationTap?.call();
   }
 
   // Schedule biorhythm notifications
@@ -135,6 +146,13 @@ abstract class Notifications {
   // Cancel daily biorhythm notifications
   static Future<void> cancel() async {
     await _notify.cancelAll();
+  }
+
+  // Determine if app was launched from a notification
+  static Future<bool> launchedFromNotification() async {
+    final NotificationAppLaunchDetails? notifyLaunchDetails = await _notify
+        .getNotificationAppLaunchDetails();
+    return notifyLaunchDetails?.didNotificationLaunchApp ?? false;
   }
 
   // Notification details
