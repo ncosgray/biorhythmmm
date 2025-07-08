@@ -114,7 +114,7 @@ abstract class Prefs {
 
   // Get birthday and name for notifications
   static DateTime get notifyBirthday =>
-      birthdays.firstWhere((d) => d.notify).date;
+      birthdays.firstWhere((d) => d.notify, orElse: () => birthdays[0]).date;
 
   static String get notifyForName {
     if (birthdays.length > 1) {
@@ -140,9 +140,9 @@ abstract class Prefs {
 
 class BirthdayEntry {
   factory BirthdayEntry.fromJson(Map<String, dynamic> json) => BirthdayEntry(
-    name: json['name'],
-    date: DateTime.fromMillisecondsSinceEpoch(json['date']),
-    notify: json['notify'],
+    name: json['name'] ?? Str.birthdayDefaultName,
+    date: DateTime.fromMillisecondsSinceEpoch(json['date'] ?? 0),
+    notify: json['notify'] ?? false,
   );
 
   BirthdayEntry({this.name = '', required this.date, this.notify = false});
