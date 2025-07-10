@@ -112,20 +112,22 @@ abstract class Prefs {
       _sharedPrefs.setInt(_notificationsKey, n.value);
 
   // Get birthday and name for notifications
-  static DateTime get notifyBirthday =>
-      birthdays.firstWhere((d) => d.notify, orElse: () => birthdays[0]).date;
-
   static int get notifyBirthdayIndex {
     final index = birthdays.indexWhere((d) => d.notify);
     return index >= 0 ? index : 0;
   }
 
-  static String get notifyForName {
+  static DateTime get notifyBirthday => birthdays[notifyBirthdayIndex].date;
+
+  static String get notifyTitle {
     if (birthdays.length > 1) {
       // Only specify name if mutiple birthdays are defined
-      return Str.notifyForPrefix + birthdays.firstWhere((d) => d.notify).name;
+      return Str.notifyTitleName.replaceAll(
+        '{{name}}',
+        birthdays[notifyBirthdayIndex].name,
+      );
     } else {
-      return '';
+      return Str.notifyTitleToday;
     }
   }
 

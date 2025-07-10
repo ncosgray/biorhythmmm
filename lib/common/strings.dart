@@ -69,8 +69,8 @@ class Str {
   static String get notificationTypeNone => 'Never';
   static String get notifyChannelName => 'Biorhythm alerts';
   static String get notifyCriticalPrefix => 'Critical: ';
-  static String get notifyForPrefix => ' for ';
-  static String get notifyTitle => "Today's Biorhythms";
+  static String get notifyTitleName => 'Biorhythms for {{name}}';
+  static String get notifyTitleToday => "Today's Biorhythms";
   static String get okLabel => 'OK';
   static String get otherSettingsTitle => 'Other settings';
   static String get resetLabel => 'Reset';

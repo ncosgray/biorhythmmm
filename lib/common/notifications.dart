@@ -133,7 +133,7 @@ abstract class Notifications {
     for (final (tz.TZDateTime, String) alarm in alarms) {
       await _notify.zonedSchedule(
         alarms.indexOf(alarm),
-        Str.notifyTitle + Prefs.notifyForName,
+        Prefs.notifyTitle,
         alarm.$2,
         alarm.$1,
         _notificationDetails,
