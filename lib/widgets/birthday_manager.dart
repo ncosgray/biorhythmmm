@@ -301,6 +301,7 @@ Future<BirthdayEntry?> showBirthdayEditDialog(
                           BirthdayEntry(
                             name: nameController.text.trim(),
                             date: selectedDate!,
+                            notify: initial?.notify ?? false,
                           ),
                         );
                       },
@@ -363,6 +364,7 @@ Future<BirthdayEntry?> showBirthdayEditDialog(
                           BirthdayEntry(
                             name: nameController.text.trim(),
                             date: selectedDate!,
+                            notify: initial?.notify ?? false,
                           ),
                         );
                       },
