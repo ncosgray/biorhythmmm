@@ -75,6 +75,7 @@ class Str {
   static String get otherSettingsTitle => 'Other settings';
   static String get resetLabel => 'Reset';
   static String get selectBiorhythmsTitle => 'Select biorhythms';
+  static String get setNotificationsLabel => 'And choose who gets alerts';
   static String get settingsTitle => 'Settings';
   static String get showCriticalZoneLabel => 'Show critical zone on graph';
   static String get todayLabel => 'Today';

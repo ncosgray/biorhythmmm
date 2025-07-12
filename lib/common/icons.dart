@@ -17,6 +17,10 @@ import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+Icon get chevronIcon => Platform.isIOS
+    ? Icon(CupertinoIcons.chevron_right, color: CupertinoColors.systemBlue)
+    : Icon(Icons.chevron_right);
+
 IconData get helpIcon =>
     Platform.isIOS ? CupertinoIcons.question_circle : Icons.help_outline;
 

@@ -14,15 +14,16 @@
 // - Adaptive settings sheet
 // - App settings: biorhythm selection, notification type
 
-import 'dart:io' show Platform;
-
 import 'package:biorhythmmm/common/buttons.dart';
+import 'package:biorhythmmm/common/icons.dart';
 import 'package:biorhythmmm/common/notifications.dart' show NotificationType;
 import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/common/styles.dart';
 import 'package:biorhythmmm/data/app_state.dart';
 import 'package:biorhythmmm/data/biorhythm.dart';
+import 'package:biorhythmmm/widgets/birthday_manager.dart';
 
+import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -128,6 +129,35 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
               }
             },
           ),
+        ),
+        // Birthday manager
+        BlocSelector<AppStateCubit, AppState, bool>(
+          selector: (state) =>
+              state.notifications != NotificationType.none &&
+              state.birthdays.length > 1,
+          builder: (context, showSetNotificationsLabel) {
+            return ListTile(
+              title: Text(
+                Str.birthdayManageLabel,
+                style: listTileText(context),
+              ),
+              // Optional text about setting notifications
+              subtitle: showSetNotificationsLabel
+                  ? Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(Str.setNotificationsLabel),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8),
+                          child: Icon(notifyOnIcon, size: 16),
+                        ),
+                      ],
+                    )
+                  : null,
+              trailing: chevronIcon,
+              onTap: () => showBirthdayManager(context),
+            );
+          },
         ),
         // Use accessible color palette
         ListTile(
