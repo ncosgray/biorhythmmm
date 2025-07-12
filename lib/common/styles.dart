@@ -46,6 +46,12 @@ TextStyle listTileText(BuildContext context) =>
             : Theme.of(context).textTheme.bodyMedium!)
         .copyWith(color: Theme.of(context).colorScheme.onSurface);
 
+TextStyle listTitleText(BuildContext context) =>
+    (Platform.isIOS
+            ? CupertinoTheme.of(context).textTheme.navTitleTextStyle
+            : Theme.of(context).textTheme.titleMedium!)
+        .copyWith(color: Theme.of(context).colorScheme.onSurface);
+
 const pointText = TextStyle(
   fontSize: 19,
   fontWeight: FontWeight.bold,

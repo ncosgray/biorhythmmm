@@ -13,8 +13,6 @@
 // Biorhythmmm
 // - Birthday management widget
 
-import 'dart:io' show Platform;
-
 import 'package:biorhythmmm/common/helpers.dart';
 import 'package:biorhythmmm/common/icons.dart';
 import 'package:biorhythmmm/common/notifications.dart' show NotificationType;
@@ -24,6 +22,7 @@ import 'package:biorhythmmm/data/prefs.dart';
 import 'package:biorhythmmm/data/app_state.dart';
 import 'package:biorhythmmm/widgets/birthday_picker.dart';
 
+import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show LengthLimitingTextInputFormatter;
@@ -65,7 +64,7 @@ class BirthdayManagerSheet extends StatelessWidget {
             final bool notify = state.notifications != NotificationType.none;
             // Size the sheet based on the number of birthdays
             return SizedBox(
-              height: birthdays.length * 65 + 180,
+              height: birthdays.length * 55 + 180,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -82,40 +81,26 @@ class BirthdayManagerSheet extends StatelessWidget {
     );
   }
 
-  // Platform-specific header for the birthday manager sheet
+  // Header for the birthday manager sheet
   Widget sheetHeader(BuildContext context) {
-    return Platform.isIOS
-        ? Padding(
-            padding: const EdgeInsets.only(top: 12, left: 18),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    Str.birthdayManageLabel,
-                    style: listTileText(context),
-                  ),
-                ),
-                CupertinoButton(
-                  child: Text(Str.doneLabel),
-                  onPressed: () => Navigator.of(context).maybePop(),
-                ),
-              ],
-            ),
-          )
-        : Padding(
-            padding: const EdgeInsets.only(left: 12, top: 12, right: 12),
-            child: ListTile(
-              title: Text(
-                Str.birthdayManageLabel,
-                style: listTileText(context),
-              ),
-              trailing: IconButton(
+    return Padding(
+      padding: const EdgeInsets.only(left: 12, top: 12, right: 12),
+      child: ListTile(
+        title: Text(Str.birthdayManageLabel, style: listTitleText(context)),
+        trailing: Platform.isIOS
+            ? CupertinoButton(
+                padding: EdgeInsets.zero,
+                child: Text(Str.doneLabel),
+                onPressed: () => Navigator.of(context).maybePop(),
+              )
+            : IconButton(
+                padding: EdgeInsets.zero,
                 icon: Icon(Icons.close),
                 tooltip: Str.doneLabel,
                 onPressed: () => Navigator.of(context).maybePop(),
               ),
-            ),
-          );
+      ),
+    );
   }
 
   // List of birthday tiles
@@ -146,7 +131,7 @@ class BirthdayManagerSheet extends StatelessWidget {
                   if (notify)
                     IconButton(
                       icon: Icon(entry.notify ? notifyOnIcon : notifyOffIcon),
-                      tooltip: Str.editLabel,
+                      tooltip: Str.notificationsLabel,
                       onPressed: () async {
                         // Enable this only if disabled
                         if (!entry.notify) {
