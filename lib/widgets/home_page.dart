@@ -13,8 +13,6 @@
 // Biorhythmmm
 // - App home page
 
-import 'dart:io' show Platform;
-
 import 'package:biorhythmmm/common/buttons.dart';
 import 'package:biorhythmmm/common/icons.dart';
 import 'package:biorhythmmm/common/strings.dart';
@@ -26,6 +24,7 @@ import 'package:biorhythmmm/widgets/biorhythm_chart.dart';
 import 'package:biorhythmmm/widgets/birthday_manager.dart';
 import 'package:biorhythmmm/widgets/settings_sheet.dart';
 
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pull_down_button/pull_down_button.dart';
@@ -54,11 +53,13 @@ class HomePage extends StatelessWidget {
           // About button
           IconButton(
             icon: Icon(helpIcon),
+            tooltip: Str.aboutTitle,
             onPressed: () => showAboutBiorhythms(context),
           ),
           // Settings button
           IconButton(
             icon: Icon(settingsIcon),
+            tooltip: Str.settingsTitle,
             onPressed: () => showSettingsSheet(context),
           ),
         ],
