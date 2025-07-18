@@ -13,71 +13,81 @@
 // Biorhythmmm
 // - Platform aware date picker
 
-import 'package:biorhythmmm/common/strings.dart';
-import 'package:biorhythmmm/common/styles.dart';
-import 'package:biorhythmmm/data/app_state.dart';
+import 'dart:io' show Platform;
 
-import 'dart:io';
+import 'package:biorhythmmm/common/strings.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Open a dialog box to choose user birthday
-adaptiveBirthdayPicker(BuildContext context) {
+Future<DateTime?> adaptiveBirthdayPicker(
+  BuildContext context, {
+  DateTime? initialDate,
+}) async {
   if (Platform.isIOS) {
-    buildCupertinoDatePicker(context);
+    return await buildCupertinoDatePicker(context, initialDate: initialDate);
   } else {
-    buildMaterialDatePicker(context);
+    return await buildMaterialDatePicker(context, initialDate: initialDate);
   }
 }
 
 // Android date picker
-buildMaterialDatePicker(BuildContext context) async {
-  DateTime? picked = await showDatePicker(
+Future<DateTime?> buildMaterialDatePicker(
+  BuildContext context, {
+  DateTime? initialDate,
+}) async {
+  return await showDatePicker(
     context: context,
-    helpText: Str.birthdaySelectText,
-    initialDate: context.read<AppStateCubit>().birthday,
-    firstDate: DateTime(0),
-    lastDate: DateTime(DateTime.now().year),
+    initialDate: initialDate,
+    firstDate: DateTime(1900),
+    lastDate: DateTime(DateTime.now().year, 12, 31),
   );
-  if (picked != null && context.mounted) {
-    context.read<AppStateCubit>().setBirthday(picked);
-  }
 }
 
 // Cupertino date picker
-buildCupertinoDatePicker(BuildContext context) {
-  showModalBottomSheet(
+Future<DateTime?> buildCupertinoDatePicker(
+  BuildContext context, {
+  DateTime? initialDate,
+}) async {
+  DateTime? tempPicked = initialDate;
+  DateTime? result = await showModalBottomSheet<DateTime>(
     context: context,
     backgroundColor: Theme.of(context).canvasColor,
     builder: (_) {
-      return SizedBox(
-        height: MediaQuery.of(context).size.height / 3,
-        child: Stack(
-          children: [
-            // Help text overlay
-            Padding(
-              padding: EdgeInsets.all(8),
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: Text(Str.birthdaySelectText, style: titleText),
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                height: MediaQuery.of(context).size.height / 3 - 40,
+                child: CupertinoDatePicker(
+                  mode: CupertinoDatePickerMode.date,
+                  initialDateTime: initialDate ?? DateTime.now(),
+                  maximumDate: DateTime.now(),
+                  onDateTimeChanged: (picked) {
+                    setState(() {
+                      tempPicked = picked;
+                    });
+                  },
+                ),
               ),
-            ),
-            // Date picker
-            Padding(
-              padding: EdgeInsets.only(top: 16),
-              child: CupertinoDatePicker(
-                mode: CupertinoDatePickerMode.date,
-                onDateTimeChanged:
-                    (picked) =>
-                        context.read<AppStateCubit>().setBirthday(picked),
-                initialDateTime: context.read<AppStateCubit>().birthday,
-                maximumYear: DateTime.now().year,
+              SafeArea(
+                child: CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  sizeStyle: CupertinoButtonSize.medium,
+                  child: Text(Str.doneLabel),
+                  onPressed: () {
+                    Navigator.of(context).pop(tempPicked);
+                  },
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          );
+        },
       );
     },
   );
+  return result;
 }

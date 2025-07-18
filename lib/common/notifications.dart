@@ -20,6 +20,7 @@ import 'package:biorhythmmm/data/biorhythm.dart';
 import 'package:biorhythmmm/data/prefs.dart';
 
 import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show VoidCallback;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // ignore: depend_on_referenced_packages
 import 'package:timezone/timezone.dart' as tz;
@@ -46,6 +47,9 @@ abstract class Notifications {
           requestAlertPermission: false,
         ),
       ),
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        Notifications.handleNotificationTap();
+      },
     );
 
     // Ensure scheduled notifications are set properly
@@ -54,6 +58,13 @@ abstract class Notifications {
     } else {
       await schedule();
     }
+  }
+
+  // Callback for when a notification is tapped
+  static VoidCallback? onNotificationTap;
+
+  static void handleNotificationTap() {
+    onNotificationTap?.call();
   }
 
   // Schedule biorhythm notifications
@@ -85,7 +96,7 @@ abstract class Notifications {
           _notifyAt(date),
           _biorhythmSummary([
             for (final Biorhythm b in Prefs.biorhythms)
-              b.getBiorhythmPoint(dateDiff(Prefs.birthday, date)),
+              b.getBiorhythmPoint(dateDiff(Prefs.notifyBirthday, date)),
           ]),
         );
       });
@@ -95,14 +106,13 @@ abstract class Notifications {
         DateTime date = today.add(Duration(days: day));
 
         // Determine if this date has any critical alerts
-        List<String> criticals =
-            Prefs.biorhythms
-                .where(
-                  (Biorhythm b) =>
-                      isCritical(b.getPoint(dateDiff(Prefs.birthday, date))),
-                )
-                .map((Biorhythm b) => b.name)
-                .toList();
+        List<String> criticals = Prefs.biorhythms
+            .where(
+              (Biorhythm b) =>
+                  isCritical(b.getPoint(dateDiff(Prefs.notifyBirthday, date))),
+            )
+            .map((Biorhythm b) => b.name)
+            .toList();
 
         // Generate critical biorhythm text for date
         if (criticals.isNotEmpty) {
@@ -123,7 +133,7 @@ abstract class Notifications {
     for (final (tz.TZDateTime, String) alarm in alarms) {
       await _notify.zonedSchedule(
         alarms.indexOf(alarm),
-        Str.notifyTitle,
+        Prefs.notifyTitle,
         alarm.$2,
         alarm.$1,
         _notificationDetails,
@@ -136,6 +146,13 @@ abstract class Notifications {
   // Cancel daily biorhythm notifications
   static Future<void> cancel() async {
     await _notify.cancelAll();
+  }
+
+  // Determine if app was launched from a notification
+  static Future<bool> launchedFromNotification() async {
+    final NotificationAppLaunchDetails? notifyLaunchDetails = await _notify
+        .getNotificationAppLaunchDetails();
+    return notifyLaunchDetails?.didNotificationLaunchApp ?? false;
   }
 
   // Notification details

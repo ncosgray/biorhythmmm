@@ -1,0 +1,9 @@
+Biorhythms are natural cycles that influence the states of our minds and bodies. The three primary cycles are:
+
+* Intellectual cycle influencing mental clarity and concentration
+
+* Emotional cycle governing mood and emotional stability
+
+* Physical cycle affecting strength and energy
+
+Biorhythmmm is a simple app that displays your personal cycles for these primary biorhythms (and optionally four additional secondary cycles). We believe by having easy access to this information, your heightened awareness of biorhythm cycles will help you plan and optimize your activities based on your peak performance times.

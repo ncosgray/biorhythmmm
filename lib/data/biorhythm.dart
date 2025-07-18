@@ -19,21 +19,30 @@ import 'package:biorhythmmm/common/strings.dart';
 import 'dart:math';
 import 'package:flutter/material.dart';
 
-typedef BiorhythmPoint =
-    ({Biorhythm biorhythm, double point, BiorhythmTrend trend});
+typedef BiorhythmPoint = ({
+  Biorhythm biorhythm,
+  double point,
+  BiorhythmTrend trend,
+});
 
 enum Biorhythm {
-  intellectual(Colors.lightGreen, 33, true),
-  emotional(Colors.pinkAccent, 28, true),
-  physical(Colors.cyan, 23, true),
-  intuition(Colors.purple, 38, false),
-  aesthetic(Colors.indigoAccent, 43, false),
-  awareness(Colors.orangeAccent, 48, false),
-  spiritual(Colors.blueGrey, 53, false);
+  intellectual(Colors.lightGreen, Color(0xFF00A896), 33, true),
+  emotional(Colors.pinkAccent, Color(0xFFE63946), 28, true),
+  physical(Colors.cyan, Color(0xFF2A9DF4), 23, true),
+  intuition(Colors.purple, Color(0xFFD62AD0), 38, false),
+  aesthetic(Colors.indigoAccent, Color(0xFF06D6A0), 43, false),
+  awareness(Colors.orangeAccent, Color(0xFFFFB703), 48, false),
+  spiritual(Colors.blueGrey, Color(0xFF996600), 53, false);
 
-  const Biorhythm(this.color, this.cycleDays, this.primary);
+  const Biorhythm(
+    this.color,
+    this.accessibleColor,
+    this.cycleDays,
+    this.primary,
+  );
 
   final Color color;
+  final Color accessibleColor;
   final int cycleDays;
   final bool primary;
 
@@ -48,9 +57,17 @@ enum Biorhythm {
     spiritual => Str.biorhythmSpiritual,
   };
 
-  // Biorhythm colors
-  Color get graphColor => color.withValues(alpha: 0.6);
-  Color get highlightColor => color;
+  // Biorhythm chart color
+  Color getChartColor({
+    bool isHighlighted = false,
+    bool useAccessibleColors = false,
+  }) => isHighlighted
+      ? useAccessibleColors
+            ? accessibleColor
+            : color
+      : useAccessibleColors
+      ? accessibleColor.withValues(alpha: 0.6)
+      : color.withValues(alpha: 0.6);
 
   // Calcuate biorhythm point for a given day
   double getPoint(int day) => sin(2 * pi * day / cycleDays);
@@ -64,8 +81,9 @@ enum Biorhythm {
 
 // Define default biorhythm list options
 final List<Biorhythm> allBiorhythms = Biorhythm.values.toList();
-final List<Biorhythm> primaryBiorhythms =
-    Biorhythm.values.where((b) => b.primary).toList();
+final List<Biorhythm> primaryBiorhythms = Biorhythm.values
+    .where((b) => b.primary)
+    .toList();
 
 // Biorhythm trend
 enum BiorhythmTrend {

@@ -17,6 +17,10 @@ import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+Icon get chevronIcon => Platform.isIOS
+    ? Icon(CupertinoIcons.chevron_right, color: CupertinoColors.systemBlue)
+    : Icon(Icons.chevron_right);
+
 IconData get helpIcon =>
     Platform.isIOS ? CupertinoIcons.question_circle : Icons.help_outline;
 
@@ -28,6 +32,16 @@ IconData get todayIcon =>
 
 IconData get editIcon =>
     Platform.isIOS ? CupertinoIcons.square_pencil_fill : Icons.edit;
+
+IconData get deleteIcon =>
+    Platform.isIOS ? CupertinoIcons.trash : Icons.delete_outline;
+
+IconData get notifyOnIcon =>
+    Platform.isIOS ? CupertinoIcons.bell_fill : Icons.notifications_active;
+
+IconData get notifyOffIcon => Platform.isIOS
+    ? CupertinoIcons.bell_slash
+    : Icons.notifications_off_outlined;
 
 IconData get visibleIcon =>
     Platform.isIOS ? CupertinoIcons.eye : Icons.visibility;

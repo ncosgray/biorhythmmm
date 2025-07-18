@@ -15,13 +15,13 @@
 // - App settings: biorhythm selection, notification type
 
 import 'package:biorhythmmm/common/buttons.dart';
-import 'package:biorhythmmm/common/helpers.dart';
+import 'package:biorhythmmm/common/icons.dart';
 import 'package:biorhythmmm/common/notifications.dart' show NotificationType;
 import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/common/styles.dart';
 import 'package:biorhythmmm/data/app_state.dart';
 import 'package:biorhythmmm/data/biorhythm.dart';
-import 'package:biorhythmmm/widgets/birthday_picker.dart';
+import 'package:biorhythmmm/widgets/birthday_manager.dart';
 
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
@@ -30,7 +30,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
 // Navigate to settings sheet
-showSettingsSheet(BuildContext context) {
+void showSettingsSheet(BuildContext context) {
   if (Platform.isIOS) {
     Navigator.of(context).push(
       CupertinoSheetRoute<void>(builder: (_) => buildSettingsSheet(context)),
@@ -47,7 +47,7 @@ showSettingsSheet(BuildContext context) {
 
 // Settings sheet
 Widget buildSettingsSheet(BuildContext context) => Scaffold(
-  appBar: AppBar(title: Text(Str.settingsTitle)),
+  appBar: AppBar(title: Text(Str.settingsTitle), toolbarHeight: 56),
   body: SingleChildScrollView(
     padding: const EdgeInsets.all(8),
     child: Column(
@@ -59,31 +59,28 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
         ),
         BlocSelector<AppStateCubit, AppState, List<Biorhythm>>(
           selector: (state) => state.biorhythms,
-          builder:
-              (context, biorhythms) => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  for (final Biorhythm b in allBiorhythms)
-                    CheckboxListTile.adaptive(
-                      title: Text(b.name, style: listTileText(context)),
-                      value: context.read<AppStateCubit>().isBiorhythmSelected(
-                        b,
-                      ),
-                      onChanged: (bool? value) {
-                        // Add or remove selected biorhythm
-                        if (value!) {
-                          context.read<AppStateCubit>().addBiorhythm(b);
-                        } else {
-                          context.read<AppStateCubit>().removeBiorhythm(b);
-                        }
-                      },
-                      enabled:
-                          biorhythms.length > 1 ||
-                          !context.read<AppStateCubit>().isBiorhythmSelected(b),
-                      visualDensity: VisualDensity.compact,
-                    ),
-                ],
-              ),
+          builder: (context, biorhythms) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (final Biorhythm b in allBiorhythms)
+                CheckboxListTile.adaptive(
+                  title: Text(b.name, style: listTileText(context)),
+                  value: context.read<AppStateCubit>().isBiorhythmSelected(b),
+                  onChanged: (bool? value) {
+                    // Add or remove selected biorhythm
+                    if (value!) {
+                      context.read<AppStateCubit>().addBiorhythm(b);
+                    } else {
+                      context.read<AppStateCubit>().removeBiorhythm(b);
+                    }
+                  },
+                  enabled:
+                      biorhythms.length > 1 ||
+                      !context.read<AppStateCubit>().isBiorhythmSelected(b),
+                  visualDensity: VisualDensity.compact,
+                ),
+            ],
+          ),
         ),
         // Other settings
         Padding(
@@ -99,26 +96,21 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
               if (Platform.isIOS) {
                 // iOS styled dropdown menu
                 return PullDownButton(
-                  buttonBuilder:
-                      (_, showMenu) => adaptiveSettingButton(
-                        onPressed: showMenu,
-                        child: Text(notifications.name),
-                      ),
+                  buttonBuilder: (_, showMenu) => adaptiveSettingButton(
+                    onPressed: showMenu,
+                    child: Text(notifications.name),
+                  ),
                   // Notification type options
-                  itemBuilder:
-                      (_) => [
-                        for (final NotificationType n
-                            in NotificationType.values)
-                          PullDownMenuItem.selectable(
-                            selected: n == notifications,
-                            title: n.name,
-                            // Set selected notification type
-                            onTap:
-                                () => context
-                                    .read<AppStateCubit>()
-                                    .setNotifications(n),
-                          ),
-                      ],
+                  itemBuilder: (_) => [
+                    for (final NotificationType n in NotificationType.values)
+                      PullDownMenuItem.selectable(
+                        selected: n == notifications,
+                        title: n.name,
+                        // Set selected notification type
+                        onTap: () =>
+                            context.read<AppStateCubit>().setNotifications(n),
+                      ),
+                  ],
                 );
               } else {
                 // Material dropdown menu
@@ -131,25 +123,56 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
                       DropdownMenuItem(value: n, child: Text(n.name)),
                   ],
                   // Set selected notification type
-                  onChanged:
-                      (NotificationType? newValue) => context
-                          .read<AppStateCubit>()
-                          .setNotifications(newValue!),
+                  onChanged: (NotificationType? newValue) =>
+                      context.read<AppStateCubit>().setNotifications(newValue!),
                 );
               }
             },
           ),
         ),
-        // Birthday
+        // Birthday manager
+        BlocSelector<AppStateCubit, AppState, bool>(
+          selector: (state) =>
+              state.notifications != NotificationType.none &&
+              state.birthdays.length > 1,
+          builder: (context, showSetNotificationsLabel) {
+            return ListTile(
+              title: Text(
+                Str.birthdayManageLabel,
+                style: listTileText(context),
+              ),
+              // Optional text about setting notifications
+              subtitle: showSetNotificationsLabel
+                  ? Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(Str.setNotificationsLabel),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8),
+                          child: Icon(notifyOnIcon, size: 16),
+                        ),
+                      ],
+                    )
+                  : null,
+              trailing: chevronIcon,
+              onTap: () => showBirthdayManager(context),
+            );
+          },
+        ),
+        // Use accessible color palette
         ListTile(
-          title: Text(Str.birthdayLabel, style: listTileText(context)),
-          trailing: BlocSelector<AppStateCubit, AppState, DateTime>(
-            selector: (state) => state.birthday,
-            builder:
-                (context, birthday) => adaptiveSettingButton(
-                  onPressed: () => adaptiveBirthdayPicker(context),
-                  child: Text(longDate(birthday)),
-                ),
+          title: Text(
+            Str.useAccessibleColorsLabel,
+            style: listTileText(context),
+          ),
+          trailing: BlocSelector<AppStateCubit, AppState, bool>(
+            selector: (state) => state.useAccessibleColors,
+            builder: (context, useAccessibleColors) => Switch.adaptive(
+              value: useAccessibleColors,
+              onChanged: (bool value) {
+                context.read<AppStateCubit>().setAccessibleColors(value);
+              },
+            ),
           ),
         ),
         // Show critical zone
@@ -157,13 +180,12 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
           title: Text(Str.showCriticalZoneLabel, style: listTileText(context)),
           trailing: BlocSelector<AppStateCubit, AppState, bool>(
             selector: (state) => state.showCriticalZone,
-            builder:
-                (context, showCriticalZone) => Switch.adaptive(
-                  value: showCriticalZone,
-                  onChanged: (bool value) {
-                    context.read<AppStateCubit>().setCriticalZone(value);
-                  },
-                ),
+            builder: (context, showCriticalZone) => Switch.adaptive(
+              value: showCriticalZone,
+              onChanged: (bool value) {
+                context.read<AppStateCubit>().setCriticalZone(value);
+              },
+            ),
           ),
         ),
       ],

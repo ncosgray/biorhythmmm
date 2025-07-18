@@ -16,10 +16,12 @@
 // - Chart interactivity (touch, pan, zoom)
 
 import 'package:biorhythmmm/common/helpers.dart';
+import 'package:biorhythmmm/common/notifications.dart';
 import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/common/styles.dart';
 import 'package:biorhythmmm/data/app_state.dart';
 import 'package:biorhythmmm/data/biorhythm.dart';
+import 'package:biorhythmmm/data/prefs.dart';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +34,8 @@ final TransformationController chartController = TransformationController();
 // Chart ranges
 final int chartRange = 180;
 final int chartRangeSplit = (chartRange / 2).floor();
-final int chartWindow = 14;
+final int chartGrid = 7;
+final double chartWindow = chartGrid * 4.5;
 
 // Interactive biorhythm chart
 class BiorhythmChart extends StatefulWidget {
@@ -76,6 +79,18 @@ class _BiorhythmChartState extends State<BiorhythmChart>
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
+
+    // Handle notification taps
+    Notifications.onNotificationTap = () => selectNotifyBirthday();
+
+    // Handle cold start from notification
+    Notifications.launchedFromNotification().then((fromNotification) {
+      if (fromNotification) {
+        selectNotifyBirthday();
+      }
+    });
+
+    // Update the chart
     resetChart();
     super.initState();
 
@@ -88,6 +103,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    Notifications.onNotificationTap = null;
     chartController.dispose();
     super.dispose();
   }
@@ -120,13 +136,14 @@ class _BiorhythmChartState extends State<BiorhythmChart>
         WidgetsBinding.instance.addPostFrameCallback((_) {
           // Process a reload request
           if (state.reload) {
-            // Scale chart to show default range
-            double scaleFactor = chartRangeSplit / chartWindow;
-            double chartWidth = chartKey.currentContext!.size!.width;
-            chartController.value =
-                Matrix4.identity()
-                  ..scale(scaleFactor)
-                  ..translate(-((chartWidth - chartWindow) / 2.1));
+            // Scale chart to show default range centered on today
+            double scale = chartRange / chartWindow;
+            double offset = -((chartRange - chartWindow + 1) / 2);
+            double widthFactor =
+                chartKey.currentContext!.size!.width / chartRange;
+            chartController.value = Matrix4.identity()
+              ..scale(scale)
+              ..translate(offset * widthFactor);
             context.read<AppStateCubit>().resetReload();
           }
         });
@@ -146,6 +163,15 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     );
   }
 
+  // Display biorhythm chart for notify birthday
+  void selectNotifyBirthday() {
+    if (mounted) {
+      context.read<AppStateCubit>().setSelectedBirthday(
+        Prefs.notifyBirthdayIndex,
+      );
+    }
+  }
+
   // Create a line chart graphing biorhythm data
   LineChart get biorhythmChart => LineChart(
     chartData,
@@ -159,24 +185,37 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     gridData: gridData,
     titlesData: titlesData,
     borderData: borderData,
-    rangeAnnotations:
-        context.read<AppStateCubit>().showCriticalZone
-            ? criticalZoneAnnotation
-            : null,
+    rangeAnnotations: context.read<AppStateCubit>().showCriticalZone
+        ? criticalZoneAnnotation
+        : null,
     lineBarsData: lineBarsData,
     lineTouchData: lineTouchData,
     maxY: 1,
     minY: -1,
   );
 
-  List<LineChartBarData> get lineBarsData => [
-    for (final Biorhythm b in context.read<AppStateCubit>().biorhythms)
-      biorhythmLineData(
-        color: _highlighted == b ? b.highlightColor : b.graphColor,
-        pointCount: chartRange,
-        pointGenerator: b.getPoint,
-      ),
-  ];
+  List<LineChartBarData> get lineBarsData {
+    List<Biorhythm> biorhythms = context.read<AppStateCubit>().biorhythms;
+
+    if (_highlighted != null) {
+      // Sort the biorhythm lines with highlighted first (end of the stack)
+      biorhythms = List.from(biorhythms)
+        ..sort((a, b) {
+          if (a == _highlighted) return 1;
+          if (b == _highlighted) return -1;
+          return 0;
+        });
+    }
+
+    return [
+      for (final Biorhythm b in biorhythms)
+        biorhythmLineData(
+          color: getBiorhythmColor(b, isHighlighted: _highlighted == b),
+          pointCount: chartRange,
+          pointGenerator: b.getPoint,
+        ),
+    ];
+  }
 
   LineChartBarData biorhythmLineData({
     required Color color,
@@ -235,8 +274,8 @@ class _BiorhythmChartState extends State<BiorhythmChart>
           // Indicate with a symbol if this is a critical day
           String criticalIndicator =
               touchedSpots.where((spot) => isCritical(spot.y)).isNotEmpty
-                  ? '\u26A0'
-                  : '';
+              ? '\u26A0'
+              : '';
           items[0] = LineTooltipItem(
             criticalIndicator +
                 dateAndDay(
@@ -299,24 +338,31 @@ class _BiorhythmChartState extends State<BiorhythmChart>
         ? FlLine(color: Colors.amber, strokeWidth: 2)
         // Indicate positive and negative cycles with color coding
         : FlLine(
-          color: value > 0 ? Colors.green : Colors.red,
-          strokeWidth: 1,
-          dashArray: [2, 2],
-        );
+            color: value > 0 ? Colors.green : Colors.red,
+            strokeWidth: 1,
+            dashArray: [2, 2],
+          );
   }
 
-  FlLine getDrawingVerticalLine(double value) => FlLine(
-    color: Theme.of(context).dividerColor,
-    strokeWidth:
-        // Center line and touched position are more prominent
-        value == 0
-            ? value == _touched
-                ? 7
-                : 6
-            : value == _touched
-            ? 3
-            : 1,
-  );
+  FlLine getDrawingVerticalLine(double value) {
+    // Default grid line
+    double strokeWidth = 1;
+    if (value == 0) {
+      // Today (with touched highlight)
+      strokeWidth = (value == _touched) ? 7 : 6;
+    } else if (value == _touched) {
+      // Touched position
+      strokeWidth = 3;
+    } else if (value.abs() % chartGrid == 0) {
+      // Date labels
+      strokeWidth = 2;
+    }
+
+    return FlLine(
+      color: Theme.of(context).dividerColor,
+      strokeWidth: strokeWidth,
+    );
+  }
 
   FlDotPainter dotPainter(
     FlSpot spot,
@@ -324,20 +370,24 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     LineChartBarData barData,
     int index,
   ) {
-    // Look up the biorhythm highlight color for this line
-    Color? highlightColor =
-        allBiorhythms
-            .where((b) => b.graphColor == barData.color)
-            .firstOrNull
-            ?.highlightColor;
+    Biorhythm? biorhythm = allBiorhythms
+        .where((b) => getBiorhythmColor(b) == barData.color)
+        .firstOrNull;
 
-    return FlDotCirclePainter(
-      radius: 6,
-      color:
-          (_touched != null ? highlightColor : barData.color) ??
-          Colors.transparent,
-    );
+    // Use the highlight color if touched or fallback to the bar color
+    final Color dotColor = biorhythm != null && _touched != null
+        ? getBiorhythmColor(biorhythm, isHighlighted: true)
+        : barData.color ?? Colors.transparent;
+
+    return FlDotCirclePainter(radius: 6, color: dotColor);
   }
+
+  // Chart colors
+  Color getBiorhythmColor(Biorhythm biorhythm, {bool isHighlighted = false}) =>
+      biorhythm.getChartColor(
+        isHighlighted: isHighlighted,
+        useAccessibleColors: context.read<AppStateCubit>().useAccessibleColors,
+      );
 
   // Chart titles
   FlTitlesData get titlesData => FlTitlesData(
@@ -361,8 +411,10 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     Widget title = Container();
 
     if (value == 0) {
+      // Today
       title = Text(Str.todayLabel, style: titleTodayText);
-    } else if (value.abs() % (chartWindow / 2) == 0) {
+    } else if (value.abs() % chartGrid == 0) {
+      // Date labels
       title = Text(
         shortDate(today.add(Duration(days: value.toInt()))),
         style: titleDateText,
@@ -408,8 +460,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
   // Chart tranformation
   FlTransformationConfig get chartTransformation => FlTransformationConfig(
     scaleAxis: FlScaleAxis.horizontal,
-    minScale: chartWindow / 4,
-    maxScale: chartWindow.toDouble(),
+    maxScale: chartWindow,
     scaleEnabled: true,
     panEnabled: true,
     transformationController: chartController,
@@ -421,10 +472,10 @@ class _BiorhythmChartState extends State<BiorhythmChart>
       // Redraw points if birthday or biorhythm selection changes
       setPoints();
     },
-    listenWhen:
-        (previous, current) =>
-            previous.birthday != current.birthday ||
-            previous.biorhythms != current.biorhythms,
+    listenWhen: (previous, current) =>
+        previous.birthdays != current.birthdays ||
+        previous.selectedBirthday != current.selectedBirthday ||
+        previous.biorhythms != current.biorhythms,
     child: Wrap(
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
@@ -440,10 +491,10 @@ class _BiorhythmChartState extends State<BiorhythmChart>
       child: Container(
         padding: EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color:
-              _highlighted == point.biorhythm
-                  ? point.biorhythm.highlightColor
-                  : point.biorhythm.graphColor,
+          color: getBiorhythmColor(
+            point.biorhythm,
+            isHighlighted: _highlighted == point.biorhythm,
+          ),
         ),
         child: Column(
           children: [

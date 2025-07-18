@@ -14,7 +14,10 @@
 // - Shared preferences
 
 import 'package:biorhythmmm/common/notifications.dart' show NotificationType;
+import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/data/biorhythm.dart';
+
+import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences/util/legacy_to_async_migration_util.dart';
 
@@ -22,7 +25,7 @@ abstract class Prefs {
   static late SharedPreferencesWithCache _sharedPrefs;
 
   // Initialize shared preferences instance
-  static init() async {
+  static Future<void> init() async {
     const SharedPreferencesOptions sharedPreferencesOptions =
         SharedPreferencesOptions();
 
@@ -44,17 +47,48 @@ abstract class Prefs {
   // Preference keys
   static String get _migrationCompletedKey => 'migrationCompleted';
   static String get _birthdayKey => 'birthday';
+  static String get _birthdaysKey => 'birthdays';
+  static String get _selectedBirthdayKey => 'selectedBirthday';
   static String get _biorhythmsKey => 'biorhythms';
   static String get _notificationsKey => 'notifications';
+  static String get _useAccessibleColorsKey => 'useAccessibleColors';
   static String get _showCriticalZoneKey => 'showCriticalZone';
 
-  // Get and set birthday
-  static DateTime get birthday => DateTime.fromMillisecondsSinceEpoch(
-    _sharedPrefs.getInt(_birthdayKey) ?? 0,
+  // Determine if a birthday has been set
+  static bool get isBirthdaySet =>
+      _sharedPrefs.containsKey(_birthdaysKey) ||
+      _sharedPrefs.containsKey(_birthdayKey);
+
+  // Get and set selected birthday
+  static int get selectedBirthday =>
+      _sharedPrefs.getInt(_selectedBirthdayKey) ?? 0;
+  static set selectedBirthday(int i) =>
+      _sharedPrefs.setInt(_selectedBirthdayKey, i);
+
+  static DateTime get birthday => birthdays[selectedBirthday].date;
+
+  // Get and set birthdays list
+  static List<BirthdayEntry> get birthdays {
+    final list = _sharedPrefs.getStringList(_birthdaysKey);
+    if (list == null || list.isEmpty) {
+      // Fallback to legacy birthday
+      return [
+        BirthdayEntry(
+          name: Str.birthdayDefaultName,
+          date: DateTime.fromMillisecondsSinceEpoch(
+            _sharedPrefs.getInt(_birthdayKey) ?? 0,
+          ),
+          notify: true,
+        ),
+      ];
+    }
+    return list.map((s) => BirthdayEntry.fromJson(jsonDecode(s))).toList();
+  }
+
+  static set birthdays(List<BirthdayEntry> list) => _sharedPrefs.setStringList(
+    _birthdaysKey,
+    list.map((b) => jsonEncode(b.toJson())).toList(),
   );
-  static set birthday(DateTime d) =>
-      _sharedPrefs.setInt(_birthdayKey, d.millisecondsSinceEpoch);
-  static bool get isBirthdaySet => _sharedPrefs.containsKey(_birthdayKey);
 
   // Get and set biorhythm list
   static List<Biorhythm> get biorhythms {
@@ -77,9 +111,54 @@ abstract class Prefs {
   static set notifications(NotificationType n) =>
       _sharedPrefs.setInt(_notificationsKey, n.value);
 
+  // Get birthday and name for notifications
+  static int get notifyBirthdayIndex {
+    final index = birthdays.indexWhere((d) => d.notify);
+    return index >= 0 ? index : 0;
+  }
+
+  static DateTime get notifyBirthday => birthdays[notifyBirthdayIndex].date;
+
+  static String get notifyTitle {
+    if (birthdays.length > 1) {
+      // Only specify name if mutiple birthdays are defined
+      return Str.notifyTitleName.replaceAll(
+        '{{name}}',
+        birthdays[notifyBirthdayIndex].name,
+      );
+    } else {
+      return Str.notifyTitleToday;
+    }
+  }
+
+  // Get and set accessible color palette choice
+  static bool get useAccessibleColors =>
+      _sharedPrefs.getBool(_useAccessibleColorsKey) ?? false;
+  static set useAccessibleColors(bool u) =>
+      _sharedPrefs.setBool(_useAccessibleColorsKey, u);
+
   // Get and set critical zone choice
   static bool get showCriticalZone =>
       _sharedPrefs.getBool(_showCriticalZoneKey) ?? true;
   static set showCriticalZone(bool s) =>
       _sharedPrefs.setBool(_showCriticalZoneKey, s);
+}
+
+class BirthdayEntry {
+  factory BirthdayEntry.fromJson(Map<String, dynamic> json) => BirthdayEntry(
+    name: json['name'] ?? Str.birthdayDefaultName,
+    date: DateTime.fromMillisecondsSinceEpoch(json['date'] ?? 0),
+    notify: json['notify'] ?? false,
+  );
+
+  BirthdayEntry({this.name = '', required this.date, this.notify = false});
+  final String name;
+  final DateTime date;
+  final bool notify;
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'date': date.millisecondsSinceEpoch,
+    'notify': notify,
+  };
 }

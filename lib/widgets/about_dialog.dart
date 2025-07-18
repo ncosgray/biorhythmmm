@@ -28,7 +28,7 @@ Future<void> showAboutBiorhythms(BuildContext context) {
       return StatefulBuilder(
         builder: (_, setDialogState) {
           return AlertDialog.adaptive(
-            // About Biorthythms
+            // About Biorhythms
             title: Padding(
               padding: const EdgeInsets.all(8),
               child: Text(Str.aboutTitle),

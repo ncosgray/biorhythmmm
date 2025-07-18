@@ -22,18 +22,22 @@ import 'package:bloc/bloc.dart';
 
 class AppState {
   AppState(
-    this.birthday,
+    this.birthdays,
+    this.selectedBirthday,
     this.biorhythms,
     this.notifications,
+    this.useAccessibleColors,
     this.showExtraPoints,
     this.showCriticalZone,
     this.showResetButton,
     this.reload,
   );
 
-  final DateTime birthday;
+  final List<BirthdayEntry> birthdays;
+  final int selectedBirthday;
   final List<Biorhythm> biorhythms;
   final NotificationType notifications;
+  final bool useAccessibleColors;
   final bool showExtraPoints;
   final bool showCriticalZone;
   final bool showResetButton;
@@ -41,50 +45,123 @@ class AppState {
 
   // Populate state with initial values from shared preferences
   static AppState initial() => AppState(
-    Prefs.birthday,
+    Prefs.birthdays,
+    Prefs.selectedBirthday,
     Prefs.biorhythms,
     Prefs.notifications,
+    Prefs.useAccessibleColors,
     Prefs.biorhythms.length == allBiorhythms.length ? true : false,
     Prefs.showCriticalZone,
     false,
     false,
   );
+
+  // Helper method to create a copy of the state with updated values
+  AppState copyWith({
+    List<BirthdayEntry>? birthdays,
+    int? selectedBirthday,
+    List<Biorhythm>? biorhythms,
+    NotificationType? notifications,
+    bool? useAccessibleColors,
+    bool? showExtraPoints,
+    bool? showCriticalZone,
+    bool? showResetButton,
+    bool? reload,
+  }) {
+    return AppState(
+      birthdays ?? this.birthdays,
+      selectedBirthday ?? this.selectedBirthday,
+      biorhythms ?? this.biorhythms,
+      notifications ?? this.notifications,
+      useAccessibleColors ?? this.useAccessibleColors,
+      showExtraPoints ?? this.showExtraPoints,
+      showCriticalZone ?? this.showCriticalZone,
+      showResetButton ?? this.showResetButton,
+      reload ?? this.reload,
+    );
+  }
 }
 
 class AppStateCubit extends Cubit<AppState> {
   AppStateCubit() : super(AppState.initial());
 
   // Getters
-  DateTime get birthday => state.birthday;
+  DateTime get birthday => state.birthdays[state.selectedBirthday].date;
   List<Biorhythm> get biorhythms => state.biorhythms;
   NotificationType get notifications => state.notifications;
+  bool get useAccessibleColors => state.useAccessibleColors;
   bool get showExtraPoints => state.showExtraPoints;
   bool get showCriticalZone => state.showCriticalZone;
   bool get showResetButton => state.showResetButton;
 
   // Manage birthday
-  saveBirthday() => Prefs.birthday = state.birthday;
-  bool get isBirthdaySet => Prefs.isBirthdaySet;
-
-  void setBirthday(DateTime newBirthday) {
-    Prefs.birthday = newBirthday;
+  void setBirthdays(List<BirthdayEntry> newBirthdays) {
+    final int newSelectedBirthday = newBirthdays.length - 1;
+    Prefs.birthdays = newBirthdays;
+    Prefs.selectedBirthday = newSelectedBirthday;
     emit(
-      AppState(
-        newBirthday,
-        state.biorhythms,
-        state.notifications,
-        state.showExtraPoints,
-        state.showCriticalZone,
-        state.showResetButton,
-        state.reload,
+      state.copyWith(
+        birthdays: newBirthdays,
+        selectedBirthday: newSelectedBirthday,
+      ),
+    );
+  }
+
+  void addBirthday(BirthdayEntry entry) {
+    final newBirthdays = List<BirthdayEntry>.from(state.birthdays)..add(entry);
+    setBirthdays(newBirthdays);
+  }
+
+  void editBirthday(int index, BirthdayEntry entry) {
+    List<BirthdayEntry> newBirthdays = List<BirthdayEntry>.from(
+      state.birthdays,
+    );
+    newBirthdays[index] = entry;
+    Prefs.birthdays = newBirthdays;
+    emit(state.copyWith(birthdays: newBirthdays));
+    updateNotifications();
+  }
+
+  void removeBirthday(int index) {
+    final newBirthdays = List<BirthdayEntry>.from(state.birthdays)
+      ..removeAt(index);
+    int newSelectedBirthday = state.selectedBirthday;
+    if (newSelectedBirthday >= newBirthdays.length) {
+      newSelectedBirthday = newBirthdays.length - 1;
+    }
+    Prefs.birthdays = newBirthdays;
+    Prefs.selectedBirthday = newSelectedBirthday;
+    emit(
+      state.copyWith(
+        birthdays: newBirthdays,
+        selectedBirthday: newSelectedBirthday,
       ),
     );
     updateNotifications();
   }
 
+  void setSelectedBirthday(int newSelectedBirthday) {
+    Prefs.selectedBirthday = newSelectedBirthday;
+    emit(state.copyWith(selectedBirthday: newSelectedBirthday));
+  }
+
+  void toggleBirthdayNotify(int index) {
+    List<BirthdayEntry> newBirthdays = List<BirthdayEntry>.generate(
+      state.birthdays.length,
+      (i) => BirthdayEntry(
+        name: state.birthdays[i].name,
+        date: state.birthdays[i].date,
+        notify: i == index ? true : false,
+      ),
+    );
+    Prefs.birthdays = newBirthdays;
+    emit(state.copyWith(birthdays: newBirthdays));
+    updateNotifications();
+  }
+
   // Manage biorhythms
   void addBiorhythm(Biorhythm newBiorhythm) {
-    // Add biorthyhm maintaining correct sort order
+    // Add biorhythm maintaining correct sort order
     Set<Biorhythm> selectedBiorhythms = Set.from(Prefs.biorhythms)
       ..add(newBiorhythm);
     List<Biorhythm> newBiorhythms = List.from(
@@ -92,14 +169,11 @@ class AppStateCubit extends Cubit<AppState> {
     );
     Prefs.biorhythms = newBiorhythms;
     emit(
-      AppState(
-        state.birthday,
-        newBiorhythms,
-        state.notifications,
-        newBiorhythms.length == allBiorhythms.length ? true : false,
-        state.showCriticalZone,
-        state.showResetButton,
-        state.reload,
+      state.copyWith(
+        biorhythms: newBiorhythms,
+        showExtraPoints: newBiorhythms.length == allBiorhythms.length
+            ? true
+            : false,
       ),
     );
     updateNotifications();
@@ -109,17 +183,7 @@ class AppStateCubit extends Cubit<AppState> {
     List<Biorhythm> newBiorhythms = List.from(Prefs.biorhythms)
       ..remove(oldBiorhythm);
     Prefs.biorhythms = newBiorhythms;
-    emit(
-      AppState(
-        state.birthday,
-        newBiorhythms,
-        state.notifications,
-        false,
-        state.showCriticalZone,
-        state.showResetButton,
-        state.reload,
-      ),
-    );
+    emit(state.copyWith(biorhythms: newBiorhythms, showExtraPoints: false));
     updateNotifications();
   }
 
@@ -128,17 +192,7 @@ class AppStateCubit extends Cubit<AppState> {
   // Enable or disable notifications
   void setNotifications(NotificationType newNotifications) {
     Prefs.notifications = newNotifications;
-    emit(
-      AppState(
-        state.birthday,
-        state.biorhythms,
-        newNotifications,
-        state.showExtraPoints,
-        state.showCriticalZone,
-        state.showResetButton,
-        state.reload,
-      ),
-    );
+    emit(state.copyWith(notifications: newNotifications));
     updateNotifications();
   }
 
@@ -147,26 +201,40 @@ class AppStateCubit extends Cubit<AppState> {
     if (state.notifications == NotificationType.none) {
       Notifications.cancel();
     } else {
+      // Ensure at least one birthday can generate notifications
+      if (!state.birthdays.any((d) => d.notify)) {
+        List<BirthdayEntry> newBirthdays = List<BirthdayEntry>.generate(
+          state.birthdays.length,
+          (i) => BirthdayEntry(
+            name: state.birthdays[i].name,
+            date: state.birthdays[i].date,
+            notify: i == 0 ? true : false,
+          ),
+        );
+        Prefs.birthdays = newBirthdays;
+        emit(state.copyWith(birthdays: newBirthdays));
+      }
       Notifications.schedule();
     }
+  }
+
+  // Enable or disable accessible color palette
+  void setAccessibleColors(bool newUseAccessibleColors) {
+    Prefs.useAccessibleColors = newUseAccessibleColors;
+    emit(state.copyWith(useAccessibleColors: newUseAccessibleColors));
   }
 
   // Toggle extra biorhythms display
   void toggleExtraPoints() {
     bool newShowExtraPoints = !state.showExtraPoints;
     emit(
-      AppState(
-        state.birthday,
-        newShowExtraPoints
+      state.copyWith(
+        biorhythms: newShowExtraPoints
             ? allBiorhythms
             : (Prefs.biorhythms.length == allBiorhythms.length
-                ? primaryBiorhythms
-                : Prefs.biorhythms),
-        state.notifications,
-        newShowExtraPoints,
-        state.showCriticalZone,
-        state.showResetButton,
-        state.reload,
+                  ? primaryBiorhythms
+                  : Prefs.biorhythms),
+        showExtraPoints: newShowExtraPoints,
       ),
     );
   }
@@ -174,58 +242,19 @@ class AppStateCubit extends Cubit<AppState> {
   // Enable or disable critical zone display
   void setCriticalZone(bool newShowCriticalZone) {
     Prefs.showCriticalZone = newShowCriticalZone;
-    emit(
-      AppState(
-        state.birthday,
-        state.biorhythms,
-        state.notifications,
-        state.showExtraPoints,
-        newShowCriticalZone,
-        state.showResetButton,
-        state.reload,
-      ),
-    );
+    emit(state.copyWith(showCriticalZone: newShowCriticalZone));
   }
 
   // Enable reset button
   void enableResetButton() {
     if (!state.showResetButton) {
-      emit(
-        AppState(
-          state.birthday,
-          state.biorhythms,
-          state.notifications,
-          state.showExtraPoints,
-          state.showCriticalZone,
-          true,
-          state.reload,
-        ),
-      );
+      emit(state.copyWith(showResetButton: true));
     }
   }
 
   // Reload request
-  void reload() => emit(
-    AppState(
-      state.birthday,
-      state.biorhythms,
-      state.notifications,
-      state.showExtraPoints,
-      state.showCriticalZone,
-      state.showResetButton,
-      true,
-    ),
-  );
+  void reload() => emit(state.copyWith(reload: true));
 
-  void resetReload() => emit(
-    AppState(
-      state.birthday,
-      state.biorhythms,
-      state.notifications,
-      state.showExtraPoints,
-      state.showCriticalZone,
-      false,
-      false,
-    ),
-  );
+  void resetReload() =>
+      emit(state.copyWith(showResetButton: false, reload: false));
 }
