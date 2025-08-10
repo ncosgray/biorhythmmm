@@ -22,6 +22,7 @@ import 'package:biorhythmmm/common/styles.dart';
 import 'package:biorhythmmm/data/app_state.dart';
 import 'package:biorhythmmm/data/biorhythm.dart';
 import 'package:biorhythmmm/widgets/birthday_manager.dart';
+import 'package:biorhythmmm/widgets/time_picker.dart';
 
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
@@ -128,6 +129,42 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
                 );
               }
             },
+          ),
+        ),
+        // Notification time
+        BlocSelector<AppStateCubit, AppState, NotificationType>(
+          selector: (state) => state.notifications,
+          builder: (context, notifications) => AnimatedSize(
+            duration: const Duration(milliseconds: 100),
+            child: Visibility(
+              visible: notifications != NotificationType.none,
+              child: ListTile(
+                title: Text(
+                  Str.notificationTimeLabel,
+                  style: listTileText(context),
+                ),
+                trailing: BlocSelector<AppStateCubit, AppState, TimeOfDay>(
+                  selector: (state) => state.notificationTime,
+                  builder: (context, notificationTime) => adaptiveSettingButton(
+                    child: Text(notificationTime.format(context)),
+                    onPressed: () async {
+                      TimeOfDay? newValue = await adaptiveTimePicker(
+                        context,
+                        initialTime: notificationTime,
+                        helpText: Str.notificationTimeLabel,
+                      );
+                      if (!context.mounted) return;
+                      if (newValue != null) {
+                        // Set selected notification time
+                        context.read<AppStateCubit>().setNotificationTime(
+                          newValue,
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
         // Birthday manager

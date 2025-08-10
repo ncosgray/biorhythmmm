@@ -19,6 +19,7 @@ import 'package:biorhythmmm/data/biorhythm.dart';
 import 'package:biorhythmmm/data/prefs.dart';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart' show TimeOfDay;
 
 class AppState {
   AppState(
@@ -26,6 +27,7 @@ class AppState {
     this.selectedBirthday,
     this.biorhythms,
     this.notifications,
+    this.notificationTime,
     this.useAccessibleColors,
     this.showExtraPoints,
     this.showCriticalZone,
@@ -37,6 +39,7 @@ class AppState {
   final int selectedBirthday;
   final List<Biorhythm> biorhythms;
   final NotificationType notifications;
+  final TimeOfDay notificationTime;
   final bool useAccessibleColors;
   final bool showExtraPoints;
   final bool showCriticalZone;
@@ -49,6 +52,7 @@ class AppState {
     Prefs.selectedBirthday,
     Prefs.biorhythms,
     Prefs.notifications,
+    Prefs.notificationTime,
     Prefs.useAccessibleColors,
     Prefs.biorhythms.length == allBiorhythms.length ? true : false,
     Prefs.showCriticalZone,
@@ -62,6 +66,7 @@ class AppState {
     int? selectedBirthday,
     List<Biorhythm>? biorhythms,
     NotificationType? notifications,
+    TimeOfDay? notificationTime,
     bool? useAccessibleColors,
     bool? showExtraPoints,
     bool? showCriticalZone,
@@ -73,6 +78,7 @@ class AppState {
       selectedBirthday ?? this.selectedBirthday,
       biorhythms ?? this.biorhythms,
       notifications ?? this.notifications,
+      notificationTime ?? this.notificationTime,
       useAccessibleColors ?? this.useAccessibleColors,
       showExtraPoints ?? this.showExtraPoints,
       showCriticalZone ?? this.showCriticalZone,
@@ -196,6 +202,13 @@ class AppStateCubit extends Cubit<AppState> {
     updateNotifications();
   }
 
+  // Set notification time
+  void setNotificationTime(TimeOfDay newNotificationTime) {
+    Prefs.notificationTime = newNotificationTime;
+    emit(state.copyWith(notificationTime: newNotificationTime));
+    updateNotifications();
+  }
+
   // Schedule or cancel notifications after a settings change
   void updateNotifications() {
     if (state.notifications == NotificationType.none) {
@@ -214,7 +227,7 @@ class AppStateCubit extends Cubit<AppState> {
         Prefs.birthdays = newBirthdays;
         emit(state.copyWith(birthdays: newBirthdays));
       }
-      Notifications.schedule();
+      Notifications.schedule(state.notificationTime);
     }
   }
 
