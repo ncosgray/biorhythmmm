@@ -39,7 +39,7 @@ platform :android do
   end
 
   desc 'Release Play Store Alpha to Prod'
-  lane :playstore do
+  lane :playprod do
     upload_to_play_store(
       json_key: ENV['GOOGLE_PLAY_JSON_KEY_PATH'],
       version_code: build_number,
@@ -85,7 +85,7 @@ platform :ios do
   end
 
   desc 'Release Apple TestFlight to Prod'
-  lane :applestore do
+  lane :appleprod do
     upload_to_app_store(
       api_key_path: ENV['APPSTORE_API_KEY_PATH'],
       build_number: build_number,
@@ -107,12 +107,4 @@ platform :ios do
       automatic_release: true,
     )
   end
-end
-
-# Release test versions everywhere
-desc 'Release on Play Store, App Store, GitHub'
-lane :release do
-  playstore
-  applestore
-  github
 end
