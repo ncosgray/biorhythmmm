@@ -1,0 +1,1 @@
+* New setting: choose when to receive biorhythm alerts.

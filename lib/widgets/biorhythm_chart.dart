@@ -26,6 +26,8 @@ import 'package:biorhythmmm/data/prefs.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+// ignore: depend_on_referenced_packages
+import 'package:vector_math/vector_math_64.dart' show Vector3;
 
 // Chart
 final GlobalKey chartKey = GlobalKey();
@@ -141,9 +143,10 @@ class _BiorhythmChartState extends State<BiorhythmChart>
             double offset = -((chartRange - chartWindow + 1) / 2);
             double widthFactor =
                 chartKey.currentContext!.size!.width / chartRange;
+            double translate = offset * widthFactor;
             chartController.value = Matrix4.identity()
-              ..scale(scale)
-              ..translate(offset * widthFactor);
+              ..scaleByVector3(Vector3(scale, 1, 1))
+              ..translateByVector3(Vector3(translate, 0, 0));
             context.read<AppStateCubit>().resetReload();
           }
         });

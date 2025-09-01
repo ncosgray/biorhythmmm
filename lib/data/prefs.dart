@@ -18,6 +18,7 @@ import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/data/biorhythm.dart';
 
 import 'dart:convert';
+import 'package:flutter/material.dart' show TimeOfDay;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences/util/legacy_to_async_migration_util.dart';
 
@@ -51,6 +52,7 @@ abstract class Prefs {
   static String get _selectedBirthdayKey => 'selectedBirthday';
   static String get _biorhythmsKey => 'biorhythms';
   static String get _notificationsKey => 'notifications';
+  static String get _notificationTimeKey => 'notificationTime';
   static String get _useAccessibleColorsKey => 'useAccessibleColors';
   static String get _showCriticalZoneKey => 'showCriticalZone';
 
@@ -130,6 +132,15 @@ abstract class Prefs {
       return Str.notifyTitleToday;
     }
   }
+
+  // Get and set notification time
+  static TimeOfDay get notificationTime {
+    int t = _sharedPrefs.getInt(_notificationTimeKey) ?? 600;
+    return TimeOfDay(hour: t ~/ 100, minute: t % 100);
+  }
+
+  static set notificationTime(TimeOfDay t) =>
+      _sharedPrefs.setInt(_notificationTimeKey, (t.hour * 100) + t.minute);
 
   // Get and set accessible color palette choice
   static bool get useAccessibleColors =>

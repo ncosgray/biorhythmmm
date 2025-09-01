@@ -21,6 +21,7 @@ import 'package:biorhythmmm/data/prefs.dart';
 
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show VoidCallback;
+import 'package:flutter/material.dart' show TimeOfDay;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // ignore: depend_on_referenced_packages
 import 'package:timezone/timezone.dart' as tz;
@@ -33,7 +34,6 @@ abstract class Notifications {
   static const String _notifyChannel = 'Biorhythmmm_channel';
   static const String _notifyIcon = 'ic_stat_name';
   static const int _notifyLookAheadDays = 30;
-  static const int _notifyAtHour = 6;
 
   // Initialize notifications plugin
   static Future<void> init() async {
@@ -56,7 +56,7 @@ abstract class Notifications {
     if (Prefs.notifications == NotificationType.none) {
       await cancel();
     } else {
-      await schedule();
+      await schedule(Prefs.notificationTime);
     }
   }
 
@@ -68,7 +68,7 @@ abstract class Notifications {
   }
 
   // Schedule biorhythm notifications
-  static Future<void> schedule() async {
+  static Future<void> schedule(TimeOfDay time) async {
     // Request notification permissions
     if (Platform.isIOS) {
       await _notify
@@ -85,15 +85,16 @@ abstract class Notifications {
     }
 
     // Generate upcoming notifications
+    int offsetDays = time.isAfter(TimeOfDay.now()) ? 0 : 1;
     List<(tz.TZDateTime, String)> alarms = [];
     if (Prefs.notifications == NotificationType.daily) {
       // Daily notifications
       alarms = List.generate(_notifyLookAheadDays, (int day) {
-        DateTime date = today.add(Duration(days: day + 1));
+        DateTime date = today.add(Duration(days: day + offsetDays));
 
         // Generate biorhythm summary notification text for date
         return (
-          _notifyAt(date),
+          _notifyAt(date, time),
           _biorhythmSummary([
             for (final Biorhythm b in Prefs.biorhythms)
               b.getBiorhythmPoint(dateDiff(Prefs.notifyBirthday, date)),
@@ -102,7 +103,7 @@ abstract class Notifications {
       });
     } else {
       // Only critical notifications
-      for (int day = 1; day <= _notifyLookAheadDays; day++) {
+      for (int day = offsetDays; day <= _notifyLookAheadDays; day++) {
         DateTime date = today.add(Duration(days: day));
 
         // Determine if this date has any critical alerts
@@ -117,7 +118,7 @@ abstract class Notifications {
         // Generate critical biorhythm text for date
         if (criticals.isNotEmpty) {
           alarms.add((
-            _notifyAt(date),
+            _notifyAt(date, time),
             Str.notifyCriticalPrefix + criticals.join(', '),
           ));
         }
@@ -173,19 +174,16 @@ abstract class Notifications {
     ),
   );
 
-  // Calculate zoned notification time for a given date
-  static tz.TZDateTime _notifyAt(DateTime date) {
-    tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+  // Calculate zoned notification time for a given date and time
+  static tz.TZDateTime _notifyAt(DateTime date, TimeOfDay time) {
     tz.TZDateTime scheduleTime = tz.TZDateTime(
       tz.local,
       date.year,
       date.month,
       date.day,
-      _notifyAtHour,
+      time.hour,
+      time.minute,
     );
-    if (scheduleTime.isBefore(now)) {
-      scheduleTime = now.add(const Duration(minutes: 1));
-    }
     return scheduleTime;
   }
 

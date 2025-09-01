@@ -67,6 +67,7 @@ class Str {
   static String get notificationTypeCritical => 'Critical days';
   static String get notificationTypeDaily => 'Every day';
   static String get notificationTypeNone => 'Never';
+  static String get notificationTimeLabel => 'Set notification time';
   static String get notifyChannelName => 'Biorhythm alerts';
   static String get notifyCriticalPrefix => 'Critical: ';
   static String get notifyTitleName => 'Biorhythms for {{name}}';
