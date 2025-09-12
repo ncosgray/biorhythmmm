@@ -92,6 +92,7 @@ platform :ios do
       app_version: version,
       skip_binary_upload: true,
       metadata_path: 'fastlane/metadata/ios/metadata',
+      overwrite_screenshots: true,
       screenshots_path: 'fastlane/metadata/ios/screenshots',
       release_notes: {
         "en-US" => File.read("metadata/ios/en-US/changelogs/#{build_number}.txt")
