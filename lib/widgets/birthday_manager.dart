@@ -241,31 +241,36 @@ Future<BirthdayEntry?> showBirthdayEditDialog(
                         : Str.birthdayEditLabel,
                   ),
                   // Name field and date picker button
-                  content: Column(
-                    children: [
-                      SizedBox(height: 12),
-                      CupertinoTextField(
-                        style: listTileText(context),
-                        controller: nameController,
-                        placeholder: Str.birthdayNameLabel,
-                        maxLength: birthdayNameMaxLength,
-                        inputFormatters: [
-                          LengthLimitingTextInputFormatter(
-                            birthdayNameMaxLength,
+                  content: SizedBox(
+                    height: 120,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          SizedBox(height: 12),
+                          CupertinoTextField(
+                            style: listTileText(context),
+                            controller: nameController,
+                            placeholder: Str.birthdayNameLabel,
+                            maxLength: birthdayNameMaxLength,
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(
+                                birthdayNameMaxLength,
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 24),
+                          CupertinoButton.filled(
+                            sizeStyle: CupertinoButtonSize.small,
+                            onPressed: pickDate,
+                            child: Text(
+                              selectedDate == null
+                                  ? Str.dateSelectLabel
+                                  : longDate(selectedDate!),
+                            ),
                           ),
                         ],
                       ),
-                      SizedBox(height: 24),
-                      CupertinoButton.filled(
-                        sizeStyle: CupertinoButtonSize.small,
-                        onPressed: pickDate,
-                        child: Text(
-                          selectedDate == null
-                              ? Str.dateSelectLabel
-                              : longDate(selectedDate!),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                   // Cancel or save changes
                   actions: [
