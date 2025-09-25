@@ -31,7 +31,12 @@ import 'package:timezone/data/latest_all.dart' as tz;
 // ignore: depend_on_referenced_packages
 import 'package:timezone/timezone.dart' as tz;
 
-void main() async {
+void main() {
+  initApp().then((_) => runApp(const BiorhythmApp()));
+}
+
+// Initialize preferences, locale, time zone, and notifications
+Future<void> initApp() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Get shared preferences instance
@@ -43,13 +48,11 @@ void main() async {
 
   // Get time zone
   tz.initializeTimeZones();
-  final String timeZoneName = await FlutterTimezone.getLocalTimezone();
-  tz.setLocalLocation(tz.getLocation(timeZoneName));
+  final TimezoneInfo timeZone = await FlutterTimezone.getLocalTimezone();
+  tz.setLocalLocation(tz.getLocation(timeZone.identifier));
 
   // Initialize notifications plugin
   await Notifications.init();
-
-  runApp(const BiorhythmApp());
 }
 
 // Create the app
