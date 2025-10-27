@@ -47,17 +47,14 @@ final List<String> fallbackLanguageCodes = supportedLanguageCodes
 // Localizable app strings
 enum AppString {
   aboutAdditional('aboutAdditional'),
-  aboutAestheticDays('aboutAestheticDays'),
   aboutApp('aboutApp'),
-  aboutAwarenessDays('aboutAwarenessDays'),
+  aboutBiorhythmDays('aboutBiorhythmDays'),
   aboutCopyright('aboutCopyright'),
   aboutCycles('aboutCycles'),
-  aboutEmotionalText('aboutEmotionalText'),
-  aboutIntellectualText('aboutIntellectualText'),
-  aboutIntutionDays('aboutIntutionDays'),
+  aboutEmotional('aboutEmotional'),
+  aboutIntellectual('aboutIntellectual'),
   aboutPhases('aboutPhases'),
-  aboutPhysicalText('aboutPhysicalText'),
-  aboutSpiritualDays('aboutSpiritualDays'),
+  aboutPhysical('aboutPhysical'),
   aboutTitle('aboutTitle'),
   biorhythmAesthetic('biorhythmAesthetic'),
   biorhythmAwareness('biorhythmAwareness'),
@@ -104,10 +101,11 @@ enum AppString {
   final String key;
 
   // Lookup localized string and apply substitutions
-  String translate({String name = '', int days = 0}) {
+  String translate({String name = '', String biorhythm = '', int days = 0}) {
     return AppLocalizations.translate(key)
         .replaceAll('{{app_name}}', appName)
         .replaceAll('{{name}}', name)
+        .replaceAll('{{biorhythm}}', biorhythm)
         .replaceAll('{{days}}', days.toString());
   }
 }

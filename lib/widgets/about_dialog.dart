@@ -55,81 +55,69 @@ Future<void> showAboutBiorhythms(BuildContext context) {
 
 // Rich text widget explaining biorhythms
 Widget aboutText({required Color textColor}) {
-  const String bulletSymbol = '\u2022';
-
   return RichText(
     text: TextSpan(
       style: bodyText.copyWith(color: textColor),
       children: [
         TextSpan(text: AppString.aboutCycles.translate()),
         lineBreak,
-        TextSpan(
-          text: '$bulletSymbol ${AppString.biorhythmIntellectual.translate()}',
-          style: bodyBoldText,
-        ),
-        TextSpan(
-          text: AppString.aboutIntellectualText.translate(
+        buildTextWithBold(
+          text: AppString.aboutIntellectual.translate(
+            biorhythm: AppString.biorhythmIntellectual.translate(),
             days: Biorhythm.intellectual.cycleDays,
           ),
+          textToBold: AppString.biorhythmIntellectual.translate(),
         ),
         lineBreak,
-        TextSpan(
-          text: '$bulletSymbol ${AppString.biorhythmEmotional.translate()}',
-          style: bodyBoldText,
-        ),
-        TextSpan(
-          text: AppString.aboutEmotionalText.translate(
+        buildTextWithBold(
+          text: AppString.aboutEmotional.translate(
+            biorhythm: AppString.biorhythmEmotional.translate(),
             days: Biorhythm.emotional.cycleDays,
           ),
+          textToBold: AppString.biorhythmEmotional.translate(),
         ),
         lineBreak,
-        TextSpan(
-          text: '$bulletSymbol ${AppString.biorhythmPhysical.translate()}',
-          style: bodyBoldText,
-        ),
-        TextSpan(
-          text: AppString.aboutPhysicalText.translate(
+        buildTextWithBold(
+          text: AppString.aboutPhysical.translate(
+            biorhythm: AppString.biorhythmPhysical.translate(),
             days: Biorhythm.physical.cycleDays,
           ),
+          textToBold: AppString.biorhythmPhysical.translate(),
         ),
         lineBreak,
         lineBreak,
         TextSpan(text: AppString.aboutAdditional.translate()),
-        TextSpan(
-          text: AppString.biorhythmIntuition.translate(),
-          style: bodyBoldText,
-        ),
-        TextSpan(
-          text: AppString.aboutIntutionDays.translate(
+        lineBreak,
+        buildTextWithBold(
+          text: AppString.aboutBiorhythmDays.translate(
+            biorhythm: AppString.biorhythmIntuition.translate(),
             days: Biorhythm.intuition.cycleDays,
           ),
+          textToBold: AppString.biorhythmIntuition.translate(),
         ),
-        TextSpan(
-          text: AppString.biorhythmAesthetic.translate(),
-          style: bodyBoldText,
-        ),
-        TextSpan(
-          text: AppString.aboutAestheticDays.translate(
+        lineBreak,
+        buildTextWithBold(
+          text: AppString.aboutBiorhythmDays.translate(
+            biorhythm: AppString.biorhythmAesthetic.translate(),
             days: Biorhythm.aesthetic.cycleDays,
           ),
+          textToBold: AppString.biorhythmAesthetic.translate(),
         ),
-        TextSpan(
-          text: AppString.biorhythmAwareness.translate(),
-          style: bodyBoldText,
-        ),
-        TextSpan(
-          text: AppString.aboutAwarenessDays.translate(
+        lineBreak,
+        buildTextWithBold(
+          text: AppString.aboutBiorhythmDays.translate(
+            biorhythm: AppString.biorhythmAwareness.translate(),
             days: Biorhythm.awareness.cycleDays,
           ),
+          textToBold: AppString.biorhythmAwareness.translate(),
         ),
-        TextSpan(
-          text: AppString.biorhythmSpiritual.translate(),
-          style: bodyBoldText,
-        ),
-        TextSpan(
-          text: AppString.aboutSpiritualDays.translate(
+        lineBreak,
+        buildTextWithBold(
+          text: AppString.aboutBiorhythmDays.translate(
+            biorhythm: AppString.biorhythmSpiritual.translate(),
             days: Biorhythm.spiritual.cycleDays,
           ),
+          textToBold: AppString.biorhythmSpiritual.translate(),
         ),
         lineBreak,
         lineBreak,
@@ -146,3 +134,21 @@ Widget aboutText({required Color textColor}) {
 
 // Line break for RichText widget
 TextSpan get lineBreak => TextSpan(text: '\n');
+
+// Helper function to create a TextSpan widget with a bolded portion
+TextSpan buildTextWithBold({required String text, required String textToBold}) {
+  final parts = text.split(textToBold);
+
+  return TextSpan(
+    children: [
+      for (int i = 0; i < parts.length; i++) ...[
+        TextSpan(text: parts[i]),
+        if (i < parts.length - 1)
+          TextSpan(
+            text: textToBold,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+      ],
+    ],
+  );
+}
