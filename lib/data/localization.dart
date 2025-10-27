@@ -26,7 +26,15 @@ const String appName = 'Biorhythmmm';
 const Locale defaultLocale = Locale.fromSubtags(languageCode: 'en');
 
 // Supported locales
-const List<Locale> supportedLocales = [Locale.fromSubtags(languageCode: 'en')];
+const List<Locale> supportedLocales = [
+  Locale.fromSubtags(languageCode: 'en'),
+  Locale.fromSubtags(languageCode: 'de'),
+  Locale.fromSubtags(languageCode: 'es'),
+  Locale.fromSubtags(languageCode: 'fr'),
+  Locale.fromSubtags(languageCode: 'ja'),
+  Locale.fromSubtags(languageCode: 'pt'),
+  Locale.fromSubtags(languageCode: 'zh'),
+];
 final List<String> supportedLanguageCodes = supportedLocales
     .map<String>((Locale locale) => locale.languageCode)
     .toList();
