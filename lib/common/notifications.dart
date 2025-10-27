@@ -15,8 +15,8 @@
 // - Notification types
 
 import 'package:biorhythmmm/common/helpers.dart';
-import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/data/biorhythm.dart';
+import 'package:biorhythmmm/data/localization.dart';
 import 'package:biorhythmmm/data/prefs.dart';
 
 import 'dart:io' show Platform;
@@ -119,7 +119,7 @@ abstract class Notifications {
         if (criticals.isNotEmpty) {
           alarms.add((
             _notifyAt(date, time),
-            Str.notifyCriticalPrefix + criticals.join(', '),
+            AppString.notifyCriticalPrefix.translate() + criticals.join(', '),
           ));
         }
       }
@@ -131,13 +131,14 @@ abstract class Notifications {
     }
 
     // Schedule alarms
+    final NotificationDetails notificationDetails = _getNotificationDetails();
     for (final (tz.TZDateTime, String) alarm in alarms) {
       await _notify.zonedSchedule(
         alarms.indexOf(alarm),
         Prefs.notifyTitle,
         alarm.$2,
         alarm.$1,
-        _notificationDetails,
+        notificationDetails,
         payload: _notifyChannel,
         androidScheduleMode: AndroidScheduleMode.inexact,
       );
@@ -157,10 +158,10 @@ abstract class Notifications {
   }
 
   // Notification details
-  static final NotificationDetails _notificationDetails = NotificationDetails(
+  static NotificationDetails _getNotificationDetails() => NotificationDetails(
     android: AndroidNotificationDetails(
       _notifyChannel,
-      Str.notifyChannelName,
+      AppString.notifyChannelName.translate(),
       showWhen: true,
       visibility: NotificationVisibility.public,
       channelShowBadge: true,
@@ -208,8 +209,8 @@ enum NotificationType {
 
   // Display names
   String get name => switch (this) {
-    none => Str.notificationTypeNone,
-    critical => Str.notificationTypeCritical,
-    daily => Str.notificationTypeDaily,
+    none => AppString.notificationTypeNone.translate(),
+    critical => AppString.notificationTypeCritical.translate(),
+    daily => AppString.notificationTypeDaily.translate(),
   };
 }

@@ -14,7 +14,7 @@
 // - Biorhythm definitions
 
 import 'package:biorhythmmm/common/helpers.dart';
-import 'package:biorhythmmm/common/strings.dart';
+import 'package:biorhythmmm/data/localization.dart';
 
 import 'dart:math';
 import 'package:flutter/material.dart';
@@ -48,13 +48,13 @@ enum Biorhythm {
 
   // Biorhythm names
   String get name => switch (this) {
-    intellectual => Str.biorhythmIntellectual,
-    emotional => Str.biorhythmEmotional,
-    physical => Str.biorhythmPhysical,
-    intuition => Str.biorhythmIntuition,
-    aesthetic => Str.biorhythmAesthetic,
-    awareness => Str.biorhythmAwareness,
-    spiritual => Str.biorhythmSpiritual,
+    intellectual => AppString.biorhythmIntellectual.translate(),
+    emotional => AppString.biorhythmEmotional.translate(),
+    physical => AppString.biorhythmPhysical.translate(),
+    intuition => AppString.biorhythmIntuition.translate(),
+    aesthetic => AppString.biorhythmAesthetic.translate(),
+    awareness => AppString.biorhythmAwareness.translate(),
+    spiritual => AppString.biorhythmSpiritual.translate(),
   };
 
   // Biorhythm chart color

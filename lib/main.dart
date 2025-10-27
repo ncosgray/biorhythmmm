@@ -14,14 +14,15 @@
 // - App initialization
 
 import 'package:biorhythmmm/common/notifications.dart';
-import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/common/themes.dart';
 import 'package:biorhythmmm/data/app_state.dart';
+import 'package:biorhythmmm/data/localization.dart';
 import 'package:biorhythmmm/data/prefs.dart';
 import 'package:biorhythmmm/widgets/home_page.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/find_locale.dart';
@@ -50,9 +51,6 @@ Future<void> initApp() async {
   tz.initializeTimeZones();
   final TimezoneInfo timeZone = await FlutterTimezone.getLocalTimezone();
   tz.setLocalLocation(tz.getLocation(timeZone.identifier));
-
-  // Initialize notifications plugin
-  await Notifications.init();
 }
 
 // Create the app
@@ -65,10 +63,32 @@ class BiorhythmApp extends StatelessWidget {
       create: (BuildContext context) => AppStateCubit(),
       child: MaterialApp(
         home: HomePage(),
-        title: Str.appName,
+        title: appName,
         theme: lightTheme,
         darkTheme: darkTheme,
         debugShowCheckedModeBanner: false,
+        supportedLocales: supportedLocales,
+        localizationsDelegates: [
+          AppLocalizationsDelegate(),
+          GlobalMaterialLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          FallbackMaterialLocalizationsDelegate(),
+          FallbackCupertinoLocalizationsDelegate(),
+        ],
+        localeResolutionCallback: (locale, supportedLocales) {
+          final Locale resolvedLocale = localeResolutionCallback(
+            locale,
+            supportedLocales,
+          );
+
+          // Set up notifications after locale is resolved
+          WidgetsBinding.instance.addPostFrameCallback(
+            (_) => Notifications.init(),
+          );
+
+          return resolvedLocale;
+        },
       ),
     );
   }

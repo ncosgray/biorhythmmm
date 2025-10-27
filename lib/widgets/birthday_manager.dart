@@ -16,8 +16,8 @@
 import 'package:biorhythmmm/common/helpers.dart';
 import 'package:biorhythmmm/common/icons.dart';
 import 'package:biorhythmmm/common/notifications.dart' show NotificationType;
-import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/common/styles.dart';
+import 'package:biorhythmmm/data/localization.dart';
 import 'package:biorhythmmm/data/prefs.dart';
 import 'package:biorhythmmm/data/app_state.dart';
 import 'package:biorhythmmm/widgets/birthday_picker.dart';
@@ -86,17 +86,20 @@ class BirthdayManagerSheet extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 12, top: 12, right: 12),
       child: ListTile(
-        title: Text(Str.birthdayManageLabel, style: listTitleText(context)),
+        title: Text(
+          AppString.birthdayManageLabel.translate(),
+          style: listTitleText(context),
+        ),
         trailing: Platform.isIOS
             ? CupertinoButton(
                 padding: EdgeInsets.zero,
-                child: Text(Str.doneLabel),
+                child: Text(AppString.doneLabel.translate()),
                 onPressed: () => Navigator.of(context).maybePop(),
               )
             : IconButton(
                 padding: EdgeInsets.zero,
                 icon: Icon(Icons.close),
-                tooltip: Str.doneLabel,
+                tooltip: AppString.doneLabel.translate(),
                 onPressed: () => Navigator.of(context).maybePop(),
               ),
       ),
@@ -131,7 +134,7 @@ class BirthdayManagerSheet extends StatelessWidget {
                   if (notify)
                     IconButton(
                       icon: Icon(entry.notify ? notifyOnIcon : notifyOffIcon),
-                      tooltip: Str.notificationsLabel,
+                      tooltip: AppString.notificationsLabel.translate(),
                       onPressed: () async {
                         // Enable this only if disabled
                         if (!entry.notify) {
@@ -142,7 +145,7 @@ class BirthdayManagerSheet extends StatelessWidget {
                   // Edit this birthday entry
                   IconButton(
                     icon: Icon(editIcon),
-                    tooltip: Str.editLabel,
+                    tooltip: AppString.editLabel.translate(),
                     onPressed: () async {
                       final updated = await showBirthdayEditDialog(
                         context,
@@ -158,7 +161,7 @@ class BirthdayManagerSheet extends StatelessWidget {
                   if (birthdays.length > 1)
                     IconButton(
                       icon: Icon(deleteIcon),
-                      tooltip: Str.deleteLabel,
+                      tooltip: AppString.deleteLabel.translate(),
                       onPressed: () {
                         context.read<AppStateCubit>().removeBirthday(i);
                       },
@@ -182,7 +185,7 @@ class BirthdayManagerSheet extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Platform.isIOS
           ? CupertinoButton.filled(
-              child: Text(Str.birthdayAddLabel),
+              child: Text(AppString.birthdayAddLabel.translate()),
               onPressed: () async {
                 final newEntry = await showBirthdayEditDialog(context);
                 if (!context.mounted) return;
@@ -193,7 +196,7 @@ class BirthdayManagerSheet extends StatelessWidget {
             )
           : TextButton.icon(
               icon: Icon(Icons.add),
-              label: Text(Str.birthdayAddLabel),
+              label: Text(AppString.birthdayAddLabel.translate()),
               onPressed: () async {
                 final newEntry = await showBirthdayEditDialog(context);
                 if (!context.mounted) return;
@@ -237,8 +240,8 @@ Future<BirthdayEntry?> showBirthdayEditDialog(
               ? CupertinoAlertDialog(
                   title: Text(
                     initial == null
-                        ? Str.birthdayAddLabel
-                        : Str.birthdayEditLabel,
+                        ? AppString.birthdayAddLabel.translate()
+                        : AppString.birthdayEditLabel.translate(),
                   ),
                   // Name field and date picker button
                   content: SizedBox(
@@ -250,7 +253,8 @@ Future<BirthdayEntry?> showBirthdayEditDialog(
                           CupertinoTextField(
                             style: listTileText(context),
                             controller: nameController,
-                            placeholder: Str.birthdayNameLabel,
+                            placeholder: AppString.birthdayNameLabel
+                                .translate(),
                             maxLength: birthdayNameMaxLength,
                             inputFormatters: [
                               LengthLimitingTextInputFormatter(
@@ -264,7 +268,7 @@ Future<BirthdayEntry?> showBirthdayEditDialog(
                             onPressed: pickDate,
                             child: Text(
                               selectedDate == null
-                                  ? Str.dateSelectLabel
+                                  ? AppString.dateSelectLabel.translate()
                                   : longDate(selectedDate!),
                             ),
                           ),
@@ -276,12 +280,12 @@ Future<BirthdayEntry?> showBirthdayEditDialog(
                   actions: [
                     CupertinoDialogAction(
                       isDestructiveAction: true,
-                      child: Text(Str.cancelLabel),
+                      child: Text(AppString.cancelLabel.translate()),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                     CupertinoDialogAction(
                       isDefaultAction: true,
-                      child: Text(Str.okLabel),
+                      child: Text(AppString.okLabel.translate()),
                       onPressed: () {
                         if (nameController.text.trim().isEmpty ||
                             selectedDate == null) {
@@ -301,8 +305,8 @@ Future<BirthdayEntry?> showBirthdayEditDialog(
               : AlertDialog(
                   title: Text(
                     initial == null
-                        ? Str.birthdayAddLabel
-                        : Str.birthdayEditLabel,
+                        ? AppString.birthdayAddLabel.translate()
+                        : AppString.birthdayEditLabel.translate(),
                   ),
                   // Name field and date picker button
                   content: Column(
@@ -311,7 +315,7 @@ Future<BirthdayEntry?> showBirthdayEditDialog(
                       TextField(
                         controller: nameController,
                         decoration: InputDecoration(
-                          labelText: Str.birthdayNameLabel,
+                          labelText: AppString.birthdayNameLabel.translate(),
                         ),
                         maxLength: birthdayNameMaxLength,
                         inputFormatters: [
@@ -325,13 +329,13 @@ Future<BirthdayEntry?> showBirthdayEditDialog(
                         children: [
                           Text(
                             selectedDate == null
-                                ? Str.dateNoneLabel
+                                ? AppString.dateNoneLabel.translate()
                                 : longDate(selectedDate!),
                           ),
                           Spacer(),
                           TextButton(
                             onPressed: pickDate,
-                            child: Text(Str.dateSelectLabel),
+                            child: Text(AppString.dateSelectLabel.translate()),
                           ),
                         ],
                       ),
@@ -340,11 +344,11 @@ Future<BirthdayEntry?> showBirthdayEditDialog(
                   // Cancel or save changes
                   actions: [
                     TextButton(
-                      child: Text(Str.cancelLabel),
+                      child: Text(AppString.cancelLabel.translate()),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                     FilledButton.tonal(
-                      child: Text(Str.okLabel),
+                      child: Text(AppString.okLabel.translate()),
                       onPressed: () {
                         if (nameController.text.trim().isEmpty ||
                             selectedDate == null) {

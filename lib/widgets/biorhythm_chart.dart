@@ -17,10 +17,10 @@
 
 import 'package:biorhythmmm/common/helpers.dart';
 import 'package:biorhythmmm/common/notifications.dart';
-import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/common/styles.dart';
 import 'package:biorhythmmm/data/app_state.dart';
 import 'package:biorhythmmm/data/biorhythm.dart';
+import 'package:biorhythmmm/data/localization.dart';
 import 'package:biorhythmmm/data/prefs.dart';
 
 import 'package:fl_chart/fl_chart.dart';
@@ -415,7 +415,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
 
     if (value == 0) {
       // Today
-      title = Text(Str.todayLabel, style: titleTodayText);
+      title = Text(AppString.todayLabel.translate(), style: titleTodayText);
     } else if (value.abs() % chartGrid == 0) {
       // Date labels
       title = Text(

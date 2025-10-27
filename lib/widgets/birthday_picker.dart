@@ -13,10 +13,9 @@
 // Biorhythmmm
 // - Platform aware date picker
 
+import 'package:biorhythmmm/data/localization.dart';
+
 import 'dart:io' show Platform;
-
-import 'package:biorhythmmm/common/strings.dart';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -77,7 +76,7 @@ Future<DateTime?> buildCupertinoDatePicker(
                 child: CupertinoButton(
                   padding: EdgeInsets.zero,
                   sizeStyle: CupertinoButtonSize.medium,
-                  child: Text(Str.doneLabel),
+                  child: Text(AppString.doneLabel.translate()),
                   onPressed: () {
                     Navigator.of(context).pop(tempPicked);
                   },

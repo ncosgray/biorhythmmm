@@ -17,10 +17,10 @@
 import 'package:biorhythmmm/common/buttons.dart';
 import 'package:biorhythmmm/common/icons.dart';
 import 'package:biorhythmmm/common/notifications.dart' show NotificationType;
-import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/common/styles.dart';
 import 'package:biorhythmmm/data/app_state.dart';
 import 'package:biorhythmmm/data/biorhythm.dart';
+import 'package:biorhythmmm/data/localization.dart';
 import 'package:biorhythmmm/widgets/birthday_manager.dart';
 import 'package:biorhythmmm/widgets/time_picker.dart';
 
@@ -48,7 +48,10 @@ void showSettingsSheet(BuildContext context) {
 
 // Settings sheet
 Widget buildSettingsSheet(BuildContext context) => Scaffold(
-  appBar: AppBar(title: Text(Str.settingsTitle), toolbarHeight: 56),
+  appBar: AppBar(
+    title: Text(AppString.settingsTitle.translate()),
+    toolbarHeight: 56,
+  ),
   body: SingleChildScrollView(
     padding: const EdgeInsets.all(8),
     child: SafeArea(
@@ -57,7 +60,10 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
           // Select biorhythms
           Padding(
             padding: const EdgeInsets.all(8),
-            child: Text(Str.selectBiorhythmsTitle, style: titleText),
+            child: Text(
+              AppString.selectBiorhythmsTitle.translate(),
+              style: titleText,
+            ),
           ),
           BlocSelector<AppStateCubit, AppState, List<Biorhythm>>(
             selector: (state) => state.biorhythms,
@@ -87,11 +93,17 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
           // Other settings
           Padding(
             padding: const EdgeInsets.all(8),
-            child: Text(Str.otherSettingsTitle, style: titleText),
+            child: Text(
+              AppString.otherSettingsTitle.translate(),
+              style: titleText,
+            ),
           ),
           // Select notifications
           ListTile(
-            title: Text(Str.notificationsLabel, style: listTileText(context)),
+            title: Text(
+              AppString.notificationsLabel.translate(),
+              style: listTileText(context),
+            ),
             trailing: BlocSelector<AppStateCubit, AppState, NotificationType>(
               selector: (state) => state.notifications,
               builder: (context, notifications) {
@@ -142,7 +154,7 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
                 visible: notifications != NotificationType.none,
                 child: ListTile(
                   title: Text(
-                    Str.notificationTimeLabel,
+                    AppString.notificationTimeLabel.translate(),
                     style: listTileText(context),
                   ),
                   trailing: BlocSelector<AppStateCubit, AppState, TimeOfDay>(
@@ -154,7 +166,8 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
                             TimeOfDay? newValue = await adaptiveTimePicker(
                               context,
                               initialTime: notificationTime,
-                              helpText: Str.notificationTimeLabel,
+                              helpText: AppString.notificationTimeLabel
+                                  .translate(),
                             );
                             if (!context.mounted) return;
                             if (newValue != null) {
@@ -178,7 +191,7 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
             builder: (context, showSetNotificationsLabel) {
               return ListTile(
                 title: Text(
-                  Str.birthdayManageLabel,
+                  AppString.birthdayManageLabel.translate(),
                   style: listTileText(context),
                 ),
                 // Optional text about setting notifications
@@ -186,7 +199,7 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
                     ? Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(Str.setNotificationsLabel),
+                          Text(AppString.setNotificationsLabel.translate()),
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 8),
                             child: Icon(notifyOnIcon, size: 16),
@@ -202,7 +215,7 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
           // Use accessible color palette
           ListTile(
             title: Text(
-              Str.useAccessibleColorsLabel,
+              AppString.useAccessibleColorsLabel.translate(),
               style: listTileText(context),
             ),
             trailing: BlocSelector<AppStateCubit, AppState, bool>(
@@ -218,7 +231,7 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
           // Show critical zone
           ListTile(
             title: Text(
-              Str.showCriticalZoneLabel,
+              AppString.showCriticalZoneLabel.translate(),
               style: listTileText(context),
             ),
             trailing: BlocSelector<AppStateCubit, AppState, bool>(
