@@ -219,6 +219,7 @@ Future<BirthdayEntry?> showBirthdayEditDialog(
 
   return await showDialog<BirthdayEntry>(
     context: context,
+    barrierDismissible: false,
     builder: (context) {
       return StatefulBuilder(
         builder: (context, setState) {
