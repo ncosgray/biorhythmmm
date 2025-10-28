@@ -112,7 +112,7 @@ abstract class Notifications {
               (Biorhythm b) =>
                   isCritical(b.getPoint(dateDiff(Prefs.notifyBirthday, date))),
             )
-            .map((Biorhythm b) => b.name)
+            .map((Biorhythm b) => b.localizedName)
             .toList();
 
         // Generate critical biorhythm text for date
@@ -192,7 +192,7 @@ abstract class Notifications {
   static String _biorhythmSummary(List<BiorhythmPoint> points) {
     return [
       for (final BiorhythmPoint p in points)
-        '${p.biorhythm.name}: ${shortPercent(p.point)}',
+        '${p.biorhythm.localizedName}: ${shortPercent(p.point)}',
     ].join(', ');
   }
 }

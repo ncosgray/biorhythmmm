@@ -72,7 +72,7 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
               children: [
                 for (final Biorhythm b in allBiorhythms)
                   CheckboxListTile.adaptive(
-                    title: Text(b.name, style: listTileText(context)),
+                    title: Text(b.localizedName, style: listTileText(context)),
                     value: context.read<AppStateCubit>().isBiorhythmSelected(b),
                     onChanged: (bool? value) {
                       // Add or remove selected biorhythm

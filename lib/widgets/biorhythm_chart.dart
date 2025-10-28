@@ -503,7 +503,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
           children: [
             // Name label
             Text(
-              point.biorhythm.name,
+              point.biorhythm.localizedName,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: labelText,
