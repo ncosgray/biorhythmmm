@@ -493,6 +493,8 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     return GestureDetector(
       child: Container(
         padding: EdgeInsets.all(8),
+        width: pointText.fontSize! * 6.2,
+        height: pointText.fontSize! * 4.2,
         decoration: BoxDecoration(
           color: getBiorhythmColor(
             point.biorhythm,
@@ -500,17 +502,16 @@ class _BiorhythmChartState extends State<BiorhythmChart>
           ),
         ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Name label
-            Text(
-              point.biorhythm.localizedName,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: labelText,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(point.biorhythm.localizedName, style: labelText),
             ),
             // Point percentage with phase icon
-            SizedBox.fromSize(
-              size: Size(pointText.fontSize! * 5, pointText.fontSize! * 1.8),
+            FittedBox(
+              fit: BoxFit.scaleDown,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,

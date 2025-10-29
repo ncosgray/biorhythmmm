@@ -196,15 +196,19 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
                 ),
                 // Optional text about setting notifications
                 subtitle: showSetNotificationsLabel
-                    ? Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(AppString.setNotificationsLabel.translate()),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8),
-                            child: Icon(notifyOnIcon, size: 16),
-                          ),
-                        ],
+                    ? FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: AlignmentGeometry.centerLeft,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(AppString.setNotificationsLabel.translate()),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 8),
+                              child: Icon(notifyOnIcon, size: 16),
+                            ),
+                          ],
+                        ),
                       )
                     : null,
                 trailing: chevronIcon,
