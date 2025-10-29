@@ -38,7 +38,7 @@
   "notifyCriticalPrefix": "致命的： ",
   "notifyTitleName": "{{name}}のバイオリズム",
   "notifyTitleToday": "今日のバイオリズム",
-  "okLabel": "わかりました",
+  "okLabel": "はい",
   "otherSettingsTitle": "その他の設定",
   "resetLabel": "リセット",
   "selectBiorhythmsTitle": "バイオリズムを選択",
@@ -46,6 +46,6 @@
   "settingsTitle": "設定",
   "showCriticalZoneLabel": "グラフにクリティカルゾーンを表示する",
   "todayLabel": "今日",
-  "toggleExtraLabel": "ビュー",
+  "toggleExtraLabel": "見る",
   "useAccessibleColorsLabel": "色覚異常者向けパレット"
 }

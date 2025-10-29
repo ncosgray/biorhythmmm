@@ -22,7 +22,7 @@
   "birthdayManageLabel": "管理生日",
   "birthdayNameLabel": "姓名",
   "cancelLabel": "取消",
-  "chartTitle": "当今的生物节律",
+  "chartTitle": "今天的生物节律",
   "dateNoneLabel": "未选择日期",
   "dateSelectLabel": "选择日期",
   "deleteLabel": "删除",
@@ -37,8 +37,8 @@
   "notifyChannelName": "生物节律警报",
   "notifyCriticalPrefix": "批判的： ",
   "notifyTitleName": "{{name}} 的生物节律",
-  "notifyTitleToday": "当今的生物节律",
-  "okLabel": "好的",
+  "notifyTitleToday": "今天的生物节律",
+  "okLabel": "确定",
   "otherSettingsTitle": "其他设置",
   "resetLabel": "重置",
   "selectBiorhythmsTitle": "选择生物节律",
@@ -46,6 +46,6 @@
   "settingsTitle": "设置",
   "showCriticalZoneLabel": "在图上显示临界区域",
   "todayLabel": "今天",
-  "toggleExtraLabel": "看法",
+  "toggleExtraLabel": "查看",
   "useAccessibleColorsLabel": "色盲安全调色板"
 }

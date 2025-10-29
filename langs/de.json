@@ -40,12 +40,12 @@
   "notifyTitleToday": "Heutige Biorhythmen",
   "okLabel": "OK",
   "otherSettingsTitle": "Andere Einstellungen",
-  "resetLabel": "Zurücksetzen",
+  "resetLabel": "Reset",
   "selectBiorhythmsTitle": "Biorhythmen auswählen",
   "setNotificationsLabel": "Und wählen Sie, wer Benachrichtigungen erhält",
   "settingsTitle": "Einstellungen",
   "showCriticalZoneLabel": "Kritische Zone im Diagramm anzeigen",
   "todayLabel": "Heute",
-  "toggleExtraLabel": "Sicht",
+  "toggleExtraLabel": "Ansehen",
   "useAccessibleColorsLabel": "Farbblinde sichere Palette"
 }
