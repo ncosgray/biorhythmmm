@@ -48,7 +48,9 @@ Future<void> main() async {
     await $.tap(find.text(AppString.dateSelectLabel.translate()));
     await $.pumpAndSettle();
     if (Platform.isIOS) {
-      await $.tap(find.text((today.year - 1).toString(), skipOffstage: false));
+      await $.tap(
+        find.textContaining((today.year - 1).toString(), skipOffstage: false),
+      );
       await $.pumpAndSettle();
       await $.tap(find.text(AppString.doneLabel.translate()));
     } else {
@@ -56,7 +58,9 @@ Future<void> main() async {
         find.textContaining((today.year).toString(), skipOffstage: false),
       );
       await $.pumpAndSettle();
-      await $.tap(find.text((today.year - 1).toString(), skipOffstage: false));
+      await $.tap(
+        find.textContaining((today.year - 1).toString(), skipOffstage: false),
+      );
       await $.pumpAndSettle();
       final okButton = find
           .ancestor(
@@ -73,7 +77,7 @@ Future<void> main() async {
         )
         .first;
     await $.tap(textField);
-    await $.enterText(textField, 'My cycles');
+    await $.enterText(textField, AppString.birthdayDefaultName.translate());
     await $.tap(find.text(AppString.okLabel.translate()));
     await $.pumpAndSettle();
 
