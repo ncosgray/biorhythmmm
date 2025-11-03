@@ -96,6 +96,12 @@ platform :ios do
       screenshots_path: 'fastlane/metadata/ios/screenshots',
       release_notes: {
         "en-US" => File.read("metadata/ios/en-US/changelogs/#{build_number}.txt")
+        "de-DE" => File.read("metadata/ios/de-DE/changelogs/#{build_number}.txt")
+        "es-ES" => File.read("metadata/ios/es-ES/changelogs/#{build_number}.txt")
+        "fr-FR" => File.read("metadata/ios/fr-FR/changelogs/#{build_number}.txt")
+        "ja" => File.read("metadata/ios/ja/changelogs/#{build_number}.txt")
+        "pt-PT" => File.read("metadata/ios/pt-PT/changelogs/#{build_number}.txt")
+        "zh-Hans" => File.read("metadata/ios/zh-Hans/changelogs/#{build_number}.txt")
       },
       precheck_include_in_app_purchases: false,
       submission_information: {
