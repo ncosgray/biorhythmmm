@@ -52,13 +52,8 @@ String longDate(DateTime d) {
   return DateFormat.yMMMd().format(d);
 }
 
-// Round double to neareast int
-int roundInt(double x) {
-  return (x * 1000).round() ~/ 10;
-}
-
 // Format number as percentage
 String shortPercent(double x) {
-  int percent = roundInt(x);
+  int percent = (x * 100).round();
   return '${percent < 0 ? '\u2212' : ''}${percent.abs()}%';
 }

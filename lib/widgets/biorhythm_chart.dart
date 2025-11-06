@@ -445,8 +445,8 @@ class _BiorhythmChartState extends State<BiorhythmChart>
   RangeAnnotations get criticalZoneAnnotation => RangeAnnotations(
     horizontalRangeAnnotations: [
       HorizontalRangeAnnotation(
-        y1: -criticalThreshold / 100,
-        y2: criticalThreshold / 100,
+        y1: -criticalThreshold,
+        y2: criticalThreshold,
         gradient: LinearGradient(
           begin: Alignment.bottomCenter,
           end: Alignment.topCenter,

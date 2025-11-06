@@ -13,7 +13,6 @@
 // Biorhythmmm
 // - Biorhythm definitions
 
-import 'package:biorhythmmm/common/helpers.dart';
 import 'package:biorhythmmm/data/localization.dart';
 
 import 'dart:math';
@@ -117,8 +116,7 @@ BiorhythmTrend getTrend(double a, double b) {
 }
 
 // Determine if a biorhythm value is in critical range
-const double criticalThreshold = 15;
+const double criticalThreshold = 0.15;
 bool isCritical(double x) {
-  int i = roundInt(x);
-  return (i > -criticalThreshold && i < criticalThreshold);
+  return (x > -criticalThreshold && x < criticalThreshold);
 }
