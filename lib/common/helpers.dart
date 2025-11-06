@@ -23,7 +23,7 @@ DateTime get today {
   return tz.TZDateTime(tz.local, now.year, now.month, now.day);
 }
 
-// Get inclusive date difference in days
+// Get date difference in days
 int dateDiff(DateTime f, DateTime t, {int addDays = 0}) {
   // Use UTC to account for daylight savings
   tz.TZDateTime from = tz.TZDateTime(tz.local, f.year, f.month, f.day).toUtc();
@@ -34,7 +34,7 @@ int dateDiff(DateTime f, DateTime t, {int addDays = 0}) {
     t.day,
   ).toUtc().add(Duration(days: addDays));
 
-  return 1 + to.difference(from).inDays;
+  return to.difference(from).inDays;
 }
 
 // Format date as short date
