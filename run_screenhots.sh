@@ -2,7 +2,7 @@
 
 # Integration test settings
 APP_ID="com.nathanatos.Biorhythmmm"
-LOCALES=("en-US" "de-DE" "es-ES" "fr-FR" "ja-JP" "pt-PT" "zh-Hans")
+LOCALES=("de-DE" "es-ES" "fr-FR" "ja-JP" "pt-PT" "zh-Hans" "en-US")
 TEST_NAME="screenshots_test.dart"
 
 # Function to run screenshots on a specified Android AVD
