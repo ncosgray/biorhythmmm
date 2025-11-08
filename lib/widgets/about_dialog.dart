@@ -24,7 +24,7 @@ import 'package:flutter/material.dart';
 Future<void> showAboutBiorhythms(BuildContext context) {
   return showAdaptiveDialog<void>(
     context: context,
-    barrierDismissible: true,
+    barrierDismissible: false,
     builder: (_) {
       return StatefulBuilder(
         builder: (_, setDialogState) {
