@@ -14,8 +14,9 @@
 // - About text
 
 import 'package:biorhythmmm/common/buttons.dart';
-import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/common/styles.dart';
+import 'package:biorhythmmm/data/biorhythm.dart';
+import 'package:biorhythmmm/data/localization.dart';
 
 import 'package:flutter/material.dart';
 
@@ -23,7 +24,7 @@ import 'package:flutter/material.dart';
 Future<void> showAboutBiorhythms(BuildContext context) {
   return showAdaptiveDialog<void>(
     context: context,
-    barrierDismissible: true,
+    barrierDismissible: false,
     builder: (_) {
       return StatefulBuilder(
         builder: (_, setDialogState) {
@@ -31,7 +32,7 @@ Future<void> showAboutBiorhythms(BuildContext context) {
             // About Biorhythms
             title: Padding(
               padding: const EdgeInsets.all(8),
-              child: Text(Str.aboutTitle),
+              child: Text(AppString.aboutTitle.translate()),
             ),
             content: SingleChildScrollView(
               child: aboutText(
@@ -41,7 +42,7 @@ Future<void> showAboutBiorhythms(BuildContext context) {
             actions: [
               // Dismiss dialog button
               adaptiveDialogAction(
-                text: Str.okLabel,
+                text: AppString.okLabel.translate(),
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ],
@@ -58,35 +59,74 @@ Widget aboutText({required Color textColor}) {
     text: TextSpan(
       style: bodyText.copyWith(color: textColor),
       children: [
-        TextSpan(text: Str.aboutCycles),
+        TextSpan(text: AppString.aboutCycles.translate()),
         lineBreak,
-        TextSpan(text: Str.aboutIntellectualBullet, style: bodyBoldText),
-        TextSpan(text: Str.aboutIntellectualText),
+        buildTextWithBold(
+          text: AppString.aboutIntellectual.translate(
+            biorhythm: AppString.biorhythmIntellectual.translate(),
+            days: Biorhythm.intellectual.cycleDays,
+          ),
+          textToBold: AppString.biorhythmIntellectual.translate(),
+        ),
         lineBreak,
-        TextSpan(text: Str.aboutEmotionalBullet, style: bodyBoldText),
-        TextSpan(text: Str.aboutEmotionalText),
+        buildTextWithBold(
+          text: AppString.aboutEmotional.translate(
+            biorhythm: AppString.biorhythmEmotional.translate(),
+            days: Biorhythm.emotional.cycleDays,
+          ),
+          textToBold: AppString.biorhythmEmotional.translate(),
+        ),
         lineBreak,
-        TextSpan(text: Str.aboutPhysicalBullet, style: bodyBoldText),
-        TextSpan(text: Str.aboutPhysicalText),
-        lineBreak,
-        lineBreak,
-        TextSpan(text: Str.aboutAdditional),
-        TextSpan(text: Str.biorhythmIntuition, style: bodyBoldText),
-        TextSpan(text: Str.aboutIntutionDays),
-        TextSpan(text: Str.biorhythmAesthetic, style: bodyBoldText),
-        TextSpan(text: Str.aboutAestheticDays),
-        TextSpan(text: Str.biorhythmAwareness, style: bodyBoldText),
-        TextSpan(text: Str.aboutAwarenessDays),
-        TextSpan(text: Str.biorhythmSpiritual, style: bodyBoldText),
-        TextSpan(text: Str.aboutSpiritualDays),
-        lineBreak,
-        lineBreak,
-        TextSpan(text: Str.aboutPhases),
+        buildTextWithBold(
+          text: AppString.aboutPhysical.translate(
+            biorhythm: AppString.biorhythmPhysical.translate(),
+            days: Biorhythm.physical.cycleDays,
+          ),
+          textToBold: AppString.biorhythmPhysical.translate(),
+        ),
         lineBreak,
         lineBreak,
-        TextSpan(text: Str.aboutApp, style: footerText),
+        TextSpan(text: AppString.aboutAdditional.translate()),
         lineBreak,
-        TextSpan(text: Str.aboutCopyright, style: footerText),
+        buildTextWithBold(
+          text: AppString.aboutBiorhythmDays.translate(
+            biorhythm: AppString.biorhythmIntuition.translate(),
+            days: Biorhythm.intuition.cycleDays,
+          ),
+          textToBold: AppString.biorhythmIntuition.translate(),
+        ),
+        lineBreak,
+        buildTextWithBold(
+          text: AppString.aboutBiorhythmDays.translate(
+            biorhythm: AppString.biorhythmAesthetic.translate(),
+            days: Biorhythm.aesthetic.cycleDays,
+          ),
+          textToBold: AppString.biorhythmAesthetic.translate(),
+        ),
+        lineBreak,
+        buildTextWithBold(
+          text: AppString.aboutBiorhythmDays.translate(
+            biorhythm: AppString.biorhythmAwareness.translate(),
+            days: Biorhythm.awareness.cycleDays,
+          ),
+          textToBold: AppString.biorhythmAwareness.translate(),
+        ),
+        lineBreak,
+        buildTextWithBold(
+          text: AppString.aboutBiorhythmDays.translate(
+            biorhythm: AppString.biorhythmSpiritual.translate(),
+            days: Biorhythm.spiritual.cycleDays,
+          ),
+          textToBold: AppString.biorhythmSpiritual.translate(),
+        ),
+        lineBreak,
+        lineBreak,
+        TextSpan(text: AppString.aboutPhases.translate()),
+        lineBreak,
+        lineBreak,
+        TextSpan(text: AppString.aboutApp.translate(), style: footerText),
+        lineBreak,
+        TextSpan(text: AppString.aboutCopyright.translate(), style: footerText),
       ],
     ),
   );
@@ -94,3 +134,21 @@ Widget aboutText({required Color textColor}) {
 
 // Line break for RichText widget
 TextSpan get lineBreak => TextSpan(text: '\n');
+
+// Helper function to create a TextSpan widget with a bolded portion
+TextSpan buildTextWithBold({required String text, required String textToBold}) {
+  final parts = text.split(textToBold);
+
+  return TextSpan(
+    children: [
+      for (int i = 0; i < parts.length; i++) ...[
+        TextSpan(text: parts[i]),
+        if (i < parts.length - 1)
+          TextSpan(
+            text: textToBold,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+      ],
+    ],
+  );
+}

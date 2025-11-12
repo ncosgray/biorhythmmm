@@ -17,10 +17,10 @@
 
 import 'package:biorhythmmm/common/helpers.dart';
 import 'package:biorhythmmm/common/notifications.dart';
-import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/common/styles.dart';
 import 'package:biorhythmmm/data/app_state.dart';
 import 'package:biorhythmmm/data/biorhythm.dart';
+import 'package:biorhythmmm/data/localization.dart';
 import 'package:biorhythmmm/data/prefs.dart';
 
 import 'package:fl_chart/fl_chart.dart';
@@ -415,7 +415,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
 
     if (value == 0) {
       // Today
-      title = Text(Str.todayLabel, style: titleTodayText);
+      title = Text(AppString.todayLabel.translate(), style: titleTodayText);
     } else if (value.abs() % chartGrid == 0) {
       // Date labels
       title = Text(
@@ -445,8 +445,8 @@ class _BiorhythmChartState extends State<BiorhythmChart>
   RangeAnnotations get criticalZoneAnnotation => RangeAnnotations(
     horizontalRangeAnnotations: [
       HorizontalRangeAnnotation(
-        y1: -criticalThreshold / 100,
-        y2: criticalThreshold / 100,
+        y1: -criticalThreshold,
+        y2: criticalThreshold,
         gradient: LinearGradient(
           begin: Alignment.bottomCenter,
           end: Alignment.topCenter,
@@ -493,6 +493,8 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     return GestureDetector(
       child: Container(
         padding: EdgeInsets.all(8),
+        width: pointText.fontSize! * 6.2,
+        height: pointText.fontSize! * 4.2,
         decoration: BoxDecoration(
           color: getBiorhythmColor(
             point.biorhythm,
@@ -500,17 +502,16 @@ class _BiorhythmChartState extends State<BiorhythmChart>
           ),
         ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Name label
-            Text(
-              point.biorhythm.name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: labelText,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(point.biorhythm.localizedName, style: labelText),
             ),
             // Point percentage with phase icon
-            SizedBox.fromSize(
-              size: Size(pointText.fontSize! * 5, pointText.fontSize! * 1.8),
+            FittedBox(
+              fit: BoxFit.scaleDown,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,

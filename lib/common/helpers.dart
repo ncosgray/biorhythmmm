@@ -23,7 +23,7 @@ DateTime get today {
   return tz.TZDateTime(tz.local, now.year, now.month, now.day);
 }
 
-// Get inclusive date difference in days
+// Get date difference in days
 int dateDiff(DateTime f, DateTime t, {int addDays = 0}) {
   // Use UTC to account for daylight savings
   tz.TZDateTime from = tz.TZDateTime(tz.local, f.year, f.month, f.day).toUtc();
@@ -34,7 +34,7 @@ int dateDiff(DateTime f, DateTime t, {int addDays = 0}) {
     t.day,
   ).toUtc().add(Duration(days: addDays));
 
-  return 1 + to.difference(from).inDays;
+  return to.difference(from).inDays;
 }
 
 // Format date as short date
@@ -52,13 +52,8 @@ String longDate(DateTime d) {
   return DateFormat.yMMMd().format(d);
 }
 
-// Round double to neareast int
-int roundInt(double x) {
-  return (x * 1000).round() ~/ 10;
-}
-
 // Format number as percentage
 String shortPercent(double x) {
-  int percent = roundInt(x);
+  int percent = (x * 100).round();
   return '${percent < 0 ? '\u2212' : ''}${percent.abs()}%';
 }

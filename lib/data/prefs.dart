@@ -14,8 +14,8 @@
 // - Shared preferences
 
 import 'package:biorhythmmm/common/notifications.dart' show NotificationType;
-import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/data/biorhythm.dart';
+import 'package:biorhythmmm/data/localization.dart';
 
 import 'dart:convert';
 import 'package:flutter/material.dart' show TimeOfDay;
@@ -76,7 +76,7 @@ abstract class Prefs {
       // Fallback to legacy birthday
       return [
         BirthdayEntry(
-          name: Str.birthdayDefaultName,
+          name: AppString.birthdayDefaultName.translate(),
           date: DateTime.fromMillisecondsSinceEpoch(
             _sharedPrefs.getInt(_birthdayKey) ?? 0,
           ),
@@ -124,12 +124,11 @@ abstract class Prefs {
   static String get notifyTitle {
     if (birthdays.length > 1) {
       // Only specify name if mutiple birthdays are defined
-      return Str.notifyTitleName.replaceAll(
-        '{{name}}',
-        birthdays[notifyBirthdayIndex].name,
+      return AppString.notifyTitleName.translate(
+        name: birthdays[notifyBirthdayIndex].name,
       );
     } else {
-      return Str.notifyTitleToday;
+      return AppString.notifyTitleToday.translate();
     }
   }
 
@@ -157,7 +156,7 @@ abstract class Prefs {
 
 class BirthdayEntry {
   factory BirthdayEntry.fromJson(Map<String, dynamic> json) => BirthdayEntry(
-    name: json['name'] ?? Str.birthdayDefaultName,
+    name: json['name'] ?? AppString.birthdayDefaultName.translate(),
     date: DateTime.fromMillisecondsSinceEpoch(json['date'] ?? 0),
     notify: json['notify'] ?? false,
   );

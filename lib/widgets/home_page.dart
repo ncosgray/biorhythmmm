@@ -15,9 +15,9 @@
 
 import 'package:biorhythmmm/common/buttons.dart';
 import 'package:biorhythmmm/common/icons.dart';
-import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/common/styles.dart';
 import 'package:biorhythmmm/data/app_state.dart';
+import 'package:biorhythmmm/data/localization.dart';
 import 'package:biorhythmmm/data/prefs.dart';
 import 'package:biorhythmmm/widgets/about_dialog.dart';
 import 'package:biorhythmmm/widgets/biorhythm_chart.dart';
@@ -48,18 +48,18 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(Str.chartTitle),
+        title: Text(AppString.chartTitle.translate()),
         actions: [
           // About button
           IconButton(
             icon: Icon(helpIcon),
-            tooltip: Str.aboutTitle,
+            tooltip: AppString.aboutTitle.translate(),
             onPressed: () => showAboutBiorhythms(context),
           ),
           // Settings button
           IconButton(
             icon: Icon(settingsIcon),
-            tooltip: Str.settingsTitle,
+            tooltip: AppString.settingsTitle.translate(),
             onPressed: () => showSettingsSheet(context),
           ),
         ],
@@ -77,7 +77,10 @@ class HomePage extends StatelessWidget {
                   builder: (context, showResetButton) => Visibility.maintain(
                     visible: showResetButton,
                     child: adaptiveIconButton(
-                      child: Text(Str.resetLabel, style: labelText),
+                      child: Text(
+                        AppString.resetLabel.translate(),
+                        style: labelText,
+                      ),
                       icon: Icon(todayIcon, size: labelText.fontSize),
                       onPressed: () => context.read<AppStateCubit>().reload(),
                     ),
@@ -89,7 +92,10 @@ class HomePage extends StatelessWidget {
                 BlocSelector<AppStateCubit, AppState, bool>(
                   selector: (state) => state.showExtraPoints,
                   builder: (context, showExtraPoints) => adaptiveIconButton(
-                    child: Text(Str.toggleExtraLabel, style: labelText),
+                    child: Text(
+                      AppString.toggleExtraLabel.translate(),
+                      style: labelText,
+                    ),
                     icon: Icon(
                       showExtraPoints ? visibleIcon : invisibleIcon,
                       size: labelText.fontSize,
@@ -139,7 +145,7 @@ class HomePage extends StatelessWidget {
               // Manage
               PullDownMenuDivider.large(),
               PullDownMenuItem(
-                title: Str.manageLabel,
+                title: AppString.manageLabel.translate(),
                 icon: Icons.cake_outlined,
                 onTap: () => showBirthdayManager(context),
               ),
@@ -164,7 +170,7 @@ class HomePage extends StatelessWidget {
                     ),
                     SizedBox(width: 8),
                     Text(
-                      Str.manageLabel,
+                      AppString.manageLabel.translate(),
                       style: labelText.copyWith(
                         color: Theme.of(context).colorScheme.secondary,
                       ),

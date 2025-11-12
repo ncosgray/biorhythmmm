@@ -1,0 +1,2 @@
+* Übersetzt ins Deutsche, Spanische, Französische, Japanische, Portugiesische und Chinesische.
+* Verschiedene Usability-Anpassungen und kleine Fehlerbehebungen.

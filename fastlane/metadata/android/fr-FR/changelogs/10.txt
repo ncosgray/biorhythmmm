@@ -1,0 +1,2 @@
+* Traduit en allemand, espagnol, français, japonais, portugais et chinois.
+* Divers ajustements d'utilisabilité et petits correctifs de bogues.

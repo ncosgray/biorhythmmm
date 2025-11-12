@@ -13,8 +13,7 @@
 // Biorhythmmm
 // - Biorhythm definitions
 
-import 'package:biorhythmmm/common/helpers.dart';
-import 'package:biorhythmmm/common/strings.dart';
+import 'package:biorhythmmm/data/localization.dart';
 
 import 'dart:math';
 import 'package:flutter/material.dart';
@@ -26,35 +25,37 @@ typedef BiorhythmPoint = ({
 });
 
 enum Biorhythm {
-  intellectual(Colors.lightGreen, Color(0xFF00A896), 33, true),
-  emotional(Colors.pinkAccent, Color(0xFFE63946), 28, true),
-  physical(Colors.cyan, Color(0xFF2A9DF4), 23, true),
-  intuition(Colors.purple, Color(0xFFD62AD0), 38, false),
-  aesthetic(Colors.indigoAccent, Color(0xFF06D6A0), 43, false),
-  awareness(Colors.orangeAccent, Color(0xFFFFB703), 48, false),
-  spiritual(Colors.blueGrey, Color(0xFF996600), 53, false);
+  intellectual('Intellectual', Colors.lightGreen, Color(0xFF00A896), 33, true),
+  emotional('Emotional', Colors.pinkAccent, Color(0xFFE63946), 28, true),
+  physical('Physical', Colors.cyan, Color(0xFF2A9DF4), 23, true),
+  intuition('Intuition', Colors.purple, Color(0xFFD62AD0), 38, false),
+  aesthetic('Aesthetic', Colors.indigoAccent, Color(0xFF06D6A0), 43, false),
+  awareness('Awareness', Colors.orangeAccent, Color(0xFFFFB703), 48, false),
+  spiritual('Spiritual', Colors.blueGrey, Color(0xFF996600), 53, false);
 
   const Biorhythm(
+    this.name,
     this.color,
     this.accessibleColor,
     this.cycleDays,
     this.primary,
   );
 
+  final String name;
   final Color color;
   final Color accessibleColor;
   final int cycleDays;
   final bool primary;
 
   // Biorhythm names
-  String get name => switch (this) {
-    intellectual => Str.biorhythmIntellectual,
-    emotional => Str.biorhythmEmotional,
-    physical => Str.biorhythmPhysical,
-    intuition => Str.biorhythmIntuition,
-    aesthetic => Str.biorhythmAesthetic,
-    awareness => Str.biorhythmAwareness,
-    spiritual => Str.biorhythmSpiritual,
+  String get localizedName => switch (this) {
+    intellectual => AppString.biorhythmIntellectual.translate(),
+    emotional => AppString.biorhythmEmotional.translate(),
+    physical => AppString.biorhythmPhysical.translate(),
+    intuition => AppString.biorhythmIntuition.translate(),
+    aesthetic => AppString.biorhythmAesthetic.translate(),
+    awareness => AppString.biorhythmAwareness.translate(),
+    spiritual => AppString.biorhythmSpiritual.translate(),
   };
 
   // Biorhythm chart color
@@ -115,8 +116,7 @@ BiorhythmTrend getTrend(double a, double b) {
 }
 
 // Determine if a biorhythm value is in critical range
-const double criticalThreshold = 15;
+const double criticalThreshold = 0.15;
 bool isCritical(double x) {
-  int i = roundInt(x);
-  return (i > -criticalThreshold && i < criticalThreshold);
+  return (x > -criticalThreshold && x < criticalThreshold);
 }

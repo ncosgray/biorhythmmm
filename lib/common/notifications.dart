@@ -15,8 +15,8 @@
 // - Notification types
 
 import 'package:biorhythmmm/common/helpers.dart';
-import 'package:biorhythmmm/common/strings.dart';
 import 'package:biorhythmmm/data/biorhythm.dart';
+import 'package:biorhythmmm/data/localization.dart';
 import 'package:biorhythmmm/data/prefs.dart';
 
 import 'dart:io' show Platform;
@@ -112,14 +112,14 @@ abstract class Notifications {
               (Biorhythm b) =>
                   isCritical(b.getPoint(dateDiff(Prefs.notifyBirthday, date))),
             )
-            .map((Biorhythm b) => b.name)
+            .map((Biorhythm b) => b.localizedName)
             .toList();
 
         // Generate critical biorhythm text for date
         if (criticals.isNotEmpty) {
           alarms.add((
             _notifyAt(date, time),
-            Str.notifyCriticalPrefix + criticals.join(', '),
+            AppString.notifyCriticalPrefix.translate() + criticals.join(', '),
           ));
         }
       }
@@ -131,13 +131,14 @@ abstract class Notifications {
     }
 
     // Schedule alarms
+    final NotificationDetails notificationDetails = _getNotificationDetails();
     for (final (tz.TZDateTime, String) alarm in alarms) {
       await _notify.zonedSchedule(
         alarms.indexOf(alarm),
         Prefs.notifyTitle,
         alarm.$2,
         alarm.$1,
-        _notificationDetails,
+        notificationDetails,
         payload: _notifyChannel,
         androidScheduleMode: AndroidScheduleMode.inexact,
       );
@@ -157,10 +158,10 @@ abstract class Notifications {
   }
 
   // Notification details
-  static final NotificationDetails _notificationDetails = NotificationDetails(
+  static NotificationDetails _getNotificationDetails() => NotificationDetails(
     android: AndroidNotificationDetails(
       _notifyChannel,
-      Str.notifyChannelName,
+      AppString.notifyChannelName.translate(),
       showWhen: true,
       visibility: NotificationVisibility.public,
       channelShowBadge: true,
@@ -191,7 +192,7 @@ abstract class Notifications {
   static String _biorhythmSummary(List<BiorhythmPoint> points) {
     return [
       for (final BiorhythmPoint p in points)
-        '${p.biorhythm.name}: ${shortPercent(p.point)}',
+        '${p.biorhythm.localizedName}: ${shortPercent(p.point)}',
     ].join(', ');
   }
 }
@@ -208,8 +209,8 @@ enum NotificationType {
 
   // Display names
   String get name => switch (this) {
-    none => Str.notificationTypeNone,
-    critical => Str.notificationTypeCritical,
-    daily => Str.notificationTypeDaily,
+    none => AppString.notificationTypeNone.translate(),
+    critical => AppString.notificationTypeCritical.translate(),
+    daily => AppString.notificationTypeDaily.translate(),
   };
 }

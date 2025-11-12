@@ -13,9 +13,9 @@
 // Generate Biorhythmmm screenshots
 
 import 'package:biorhythmmm/common/helpers.dart';
+import 'package:biorhythmmm/data/localization.dart';
 import 'package:biorhythmmm/main.dart';
 import 'package:biorhythmmm/common/icons.dart';
-import 'package:biorhythmmm/common/strings.dart';
 
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
@@ -45,22 +45,26 @@ Future<void> main() async {
     await $.pumpAndSettle();
 
     // Set up a user birthday
-    await $.tap(find.text(Str.dateSelectLabel));
+    await $.tap(find.text(AppString.dateSelectLabel.translate()));
     await $.pumpAndSettle();
     if (Platform.isIOS) {
-      await $.tap(find.text((today.year - 1).toString(), skipOffstage: false));
+      await $.tap(
+        find.textContaining((today.year - 1).toString(), skipOffstage: false),
+      );
       await $.pumpAndSettle();
-      await $.tap(find.text(Str.doneLabel));
+      await $.tap(find.text(AppString.doneLabel.translate()));
     } else {
       await $.tap(
         find.textContaining((today.year).toString(), skipOffstage: false),
       );
       await $.pumpAndSettle();
-      await $.tap(find.text((today.year - 1).toString(), skipOffstage: false));
+      await $.tap(
+        find.textContaining((today.year - 1).toString(), skipOffstage: false),
+      );
       await $.pumpAndSettle();
       final okButton = find
           .ancestor(
-            of: find.text(Str.okLabel),
+            of: find.text(AppString.okLabel.translate()),
             matching: find.byType(TextButton),
           )
           .first;
@@ -73,8 +77,8 @@ Future<void> main() async {
         )
         .first;
     await $.tap(textField);
-    await $.enterText(textField, 'My cycles');
-    await $.tap(find.text(Str.okLabel));
+    await $.enterText(textField, AppString.birthdayDefaultName.translate());
+    await $.tap(find.text(AppString.okLabel.translate()));
     await $.pumpAndSettle();
 
     // Screenshot 1: Initial home screen

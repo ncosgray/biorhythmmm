@@ -13,7 +13,7 @@
 // Biorhythmmm
 // - App theme data
 
-import 'dart:io';
+import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -21,6 +21,7 @@ import 'package:flutter/material.dart';
 ThemeData lightTheme = ThemeData(
   colorScheme: ColorScheme.fromSeed(
     seedColor: Colors.orange.shade300,
+    surface: Platform.isIOS ? CupertinoColors.systemBackground : null,
     brightness: Brightness.light,
   ),
   appBarTheme: appBarTheme,
@@ -33,6 +34,7 @@ ThemeData lightTheme = ThemeData(
 ThemeData darkTheme = ThemeData(
   colorScheme: ColorScheme.fromSeed(
     seedColor: Colors.orange,
+    surface: Platform.isIOS ? CupertinoColors.darkBackgroundGray : null,
     brightness: Brightness.dark,
   ),
   appBarTheme: appBarTheme,

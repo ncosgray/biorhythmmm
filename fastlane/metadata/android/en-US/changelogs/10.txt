@@ -1,0 +1,2 @@
+* Translated to German, Spanish, French, Japanese, Portuguese, and Chinese.
+* Various usability tweaks and small bug fixes.
