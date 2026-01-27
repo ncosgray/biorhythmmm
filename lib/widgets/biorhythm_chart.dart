@@ -13,6 +13,7 @@
 // Biorhythmmm
 // - Biorhythm line chart
 // - Percentage widget
+// - Biorhythm comparison
 // - Chart interactivity (touch, pan, zoom)
 
 import 'package:biorhythmmm/common/helpers.dart';
@@ -51,21 +52,43 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     with WidgetsBindingObserver {
   // State variables
   List<BiorhythmPoint> _points = [];
+  List<BiorhythmPoint> _comparePoints = [];
   Biorhythm? _highlighted;
   double? _touched;
 
   // Populate data points
-  void setPoints([List<BiorhythmPoint>? newPoints]) {
+  void setPoints([
+    List<BiorhythmPoint>? newPoints,
+    List<BiorhythmPoint>? newComparePoints,
+  ]) {
+    final List<Biorhythm> biorhythms = context.read<AppStateCubit>().biorhythms;
+
     if (newPoints != null) {
       // Update points with specified data
       _points = newPoints;
     } else {
       // Reset points to today
-      int day = dateDiff(context.read<AppStateCubit>().birthday, today);
+      final int day = dateDiff(context.read<AppStateCubit>().birthday, today);
       _points = [
-        for (final Biorhythm b in context.read<AppStateCubit>().biorhythms)
-          b.getBiorhythmPoint(day),
+        for (final Biorhythm b in biorhythms) b.getBiorhythmPoint(day),
       ];
+    }
+
+    // Update comparison points if applicable
+    if (newComparePoints != null) {
+      _comparePoints = newComparePoints;
+    } else {
+      final DateTime? compareBirthday = context
+          .read<AppStateCubit>()
+          .compareBirthday;
+      if (compareBirthday != null) {
+        final int compareDay = dateDiff(compareBirthday, today);
+        _comparePoints = [
+          for (final Biorhythm b in biorhythms) b.getBiorhythmPoint(compareDay),
+        ];
+      } else {
+        _comparePoints = [];
+      }
     }
   }
 
@@ -199,6 +222,10 @@ class _BiorhythmChartState extends State<BiorhythmChart>
 
   List<LineChartBarData> get lineBarsData {
     List<Biorhythm> biorhythms = context.read<AppStateCubit>().biorhythms;
+    final DateTime birthday = context.read<AppStateCubit>().birthday;
+    final DateTime? compareBirthday = context
+        .read<AppStateCubit>()
+        .compareBirthday;
 
     if (_highlighted != null) {
       // Sort the biorhythm lines with highlighted first (end of the stack)
@@ -213,17 +240,32 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     return [
       for (final Biorhythm b in biorhythms)
         biorhythmLineData(
+          birthday: birthday,
           color: getBiorhythmColor(b, isHighlighted: _highlighted == b),
           pointCount: chartRange,
           pointGenerator: b.getPoint,
         ),
+      if (compareBirthday != null)
+        for (final Biorhythm b in biorhythms)
+          biorhythmLineData(
+            birthday: compareBirthday,
+            color: getBiorhythmColor(
+              b,
+              isHighlighted: _highlighted == b,
+            ).withAlpha(64),
+            pointCount: chartRange,
+            pointGenerator: b.getPoint,
+            dashedLine: true,
+          ),
     ];
   }
 
   LineChartBarData biorhythmLineData({
+    required DateTime birthday,
     required Color color,
     required int pointCount,
     required double Function(int) pointGenerator,
+    bool dashedLine = false,
   }) {
     return LineChartBarData(
       isCurved: true,
@@ -236,17 +278,14 @@ class _BiorhythmChartState extends State<BiorhythmChart>
         checkToShowDot: (spot, _) => spot.x == 0 && _touched == null,
       ),
       belowBarData: BarAreaData(show: false),
+      dashArray: dashedLine ? [6, 8] : null,
       // Graph a range of biorhythm points
       spots: List.generate(
         pointCount,
         (int day) => FlSpot(
           (day - chartRangeSplit).toDouble(),
           pointGenerator(
-            dateDiff(
-              context.read<AppStateCubit>().birthday,
-              today,
-              addDays: day - chartRangeSplit,
-            ),
+            dateDiff(birthday, today, addDays: day - chartRangeSplit),
           ),
         ),
       ),
@@ -298,20 +337,33 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     setState(() {
       if (event.isInterestedForInteractions) {
         if (response?.lineBarSpots != null) {
+          final List<TouchLineBarSpot> spots = response!.lineBarSpots!;
+          final List<Biorhythm> biorhythms = context
+              .read<AppStateCubit>()
+              .biorhythms;
+          final DateTime birthday = context.read<AppStateCubit>().birthday;
+          final DateTime? compareBirthday = context
+              .read<AppStateCubit>()
+              .compareBirthday;
+
           // Update points for percent displays
-          setPoints([
-            for (final TouchLineBarSpot spot in response!.lineBarSpots!)
-              context
-                  .read<AppStateCubit>()
-                  .biorhythms[spot.barIndex]
-                  .getBiorhythmPoint(
-                    dateDiff(
-                      context.read<AppStateCubit>().birthday,
-                      today,
-                      addDays: spot.x.toInt(),
-                    ),
+          setPoints(
+            [
+              for (final TouchLineBarSpot spot in spots)
+                if (spot.barIndex < biorhythms.length)
+                  biorhythms[spot.barIndex].getBiorhythmPoint(
+                    dateDiff(birthday, today, addDays: spot.x.toInt()),
                   ),
-          ]);
+            ],
+            [
+              if (compareBirthday != null)
+                for (final TouchLineBarSpot spot in spots)
+                  if (spot.barIndex < biorhythms.length)
+                    biorhythms[spot.barIndex].getBiorhythmPoint(
+                      dateDiff(compareBirthday, today, addDays: spot.x.toInt()),
+                    ),
+            ],
+          );
 
           // Update the touched position
           _touched = response.lineBarSpots![0].x;
@@ -483,13 +535,33 @@ class _BiorhythmChartState extends State<BiorhythmChart>
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         for (int i = 0; i < _points.length; i++)
-          biorhythmPercentBox(_points[i]),
+          biorhythmPercentBox(
+            _points[i],
+            comparePoint: _comparePoints.isNotEmpty ? _comparePoints[i] : null,
+          ),
       ],
     ),
   );
 
   // Display a biorhythm point as a percentage with label
-  Widget biorhythmPercentBox(BiorhythmPoint point) {
+  Widget biorhythmPercentBox(
+    BiorhythmPoint point, {
+    BiorhythmPoint? comparePoint,
+  }) {
+    IconData icon = point.trend.trendIcon;
+    String percentText = shortPercent(point.point);
+
+    // Calculate comparison and assign a status icon
+    if (comparePoint != null) {
+      double compareValue = 1 - (comparePoint.point - point.point).abs() / 2;
+      icon = compareValue > .45 && compareValue < .55
+          ? Icons.sentiment_neutral
+          : compareValue >= .55
+          ? Icons.sentiment_satisfied_outlined
+          : Icons.sentiment_dissatisfied_outlined;
+      percentText = shortPercent(compareValue);
+    }
+
     return GestureDetector(
       child: Container(
         padding: EdgeInsets.all(8),
@@ -516,8 +588,10 @@ class _BiorhythmChartState extends State<BiorhythmChart>
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(shortPercent(point.point), style: pointText),
-                  Icon(point.trend.trendIcon, size: pointText.fontSize!),
+                  if (comparePoint != null)
+                    Icon(Icons.sync_alt, size: pointText.fontSize!),
+                  Text(percentText, style: pointText),
+                  Icon(icon, size: pointText.fontSize!),
                 ],
               ),
             ),

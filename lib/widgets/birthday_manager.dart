@@ -13,9 +13,11 @@
 // Biorhythmmm
 // - Birthday management widget
 
+import 'package:biorhythmmm/common/buttons.dart';
 import 'package:biorhythmmm/common/helpers.dart';
 import 'package:biorhythmmm/common/icons.dart';
 import 'package:biorhythmmm/common/notifications.dart' show NotificationType;
+import 'package:biorhythmmm/common/modals.dart';
 import 'package:biorhythmmm/common/styles.dart';
 import 'package:biorhythmmm/data/localization.dart';
 import 'package:biorhythmmm/data/prefs.dart';
@@ -32,22 +34,10 @@ const int birthdayNameMaxLength = 25;
 
 // Open a modal to add, edit, or delete user birthdays
 Future<void> showBirthdayManager(BuildContext context) async {
-  if (Platform.isIOS) {
-    await showModalBottomSheet(
-      context: context,
-      backgroundColor: Theme.of(context).canvasColor,
-      builder: (_) => const BirthdayManagerSheet(),
-    );
-  } else {
-    await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) => const BirthdayManagerSheet(),
-    );
-  }
+  await showModal(context, const BirthdayManagerSheet());
 }
 
-// Platform-specific birthday manager sheet
+// Birthday manager sheet
 class BirthdayManagerSheet extends StatelessWidget {
   const BirthdayManagerSheet({super.key});
 
@@ -62,6 +52,7 @@ class BirthdayManagerSheet extends StatelessWidget {
           builder: (context, state) {
             final birthdays = state.birthdays;
             final bool notify = state.notifications != NotificationType.none;
+
             // Size the sheet based on the number of birthdays
             return SizedBox(
               height: birthdays.length * 55 + 180,
@@ -69,39 +60,28 @@ class BirthdayManagerSheet extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   // Build a birthday manager
-                  sheetHeader(context),
+                  sheetHeader(
+                    context,
+                    title: AppString.birthdayManageLabel.translate(),
+                  ),
                   birthdayList(birthdays: birthdays, notify: notify),
-                  addBirthday(context),
+                  // Button to add a new birthday
+                  adaptiveModalButton(
+                    text: AppString.birthdayAddLabel.translate(),
+                    icon: Icon(Icons.add),
+                    onPressed: () async {
+                      final newEntry = await showBirthdayEditDialog(context);
+                      if (!context.mounted) return;
+                      if (newEntry != null) {
+                        context.read<AppStateCubit>().addBirthday(newEntry);
+                      }
+                    },
+                  ),
                 ],
               ),
             );
           },
         ),
-      ),
-    );
-  }
-
-  // Header for the birthday manager sheet
-  Widget sheetHeader(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 12, top: 12, right: 12),
-      child: ListTile(
-        title: Text(
-          AppString.birthdayManageLabel.translate(),
-          style: listTitleText(context),
-        ),
-        trailing: Platform.isIOS
-            ? CupertinoButton(
-                padding: EdgeInsets.zero,
-                child: Text(AppString.doneLabel.translate()),
-                onPressed: () => Navigator.of(context).maybePop(),
-              )
-            : IconButton(
-                padding: EdgeInsets.zero,
-                icon: Icon(Icons.close),
-                tooltip: AppString.doneLabel.translate(),
-                onPressed: () => Navigator.of(context).maybePop(),
-              ),
       ),
     );
   }
@@ -121,10 +101,7 @@ class BirthdayManagerSheet extends StatelessWidget {
             final entry = birthdays[i];
             // Birthday entry
             return ListTile(
-              leading: Padding(
-                padding: EdgeInsets.only(left: 12),
-                child: Icon(Icons.cake_outlined),
-              ),
+              leading: Icon(Icons.cake_outlined),
               title: Text(entry.name, style: listTileText(context)),
               subtitle: Text(longDate(entry.date)),
               trailing: Row(
@@ -176,35 +153,6 @@ class BirthdayManagerSheet extends StatelessWidget {
           },
         ),
       ),
-    );
-  }
-
-  // Button to add a new birthday
-  Widget addBirthday(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Platform.isIOS
-          ? CupertinoButton.filled(
-              child: Text(AppString.birthdayAddLabel.translate()),
-              onPressed: () async {
-                final newEntry = await showBirthdayEditDialog(context);
-                if (!context.mounted) return;
-                if (newEntry != null) {
-                  context.read<AppStateCubit>().addBirthday(newEntry);
-                }
-              },
-            )
-          : TextButton.icon(
-              icon: Icon(Icons.add),
-              label: Text(AppString.birthdayAddLabel.translate()),
-              onPressed: () async {
-                final newEntry = await showBirthdayEditDialog(context);
-                if (!context.mounted) return;
-                if (newEntry != null) {
-                  context.read<AppStateCubit>().addBirthday(newEntry);
-                }
-              },
-            ),
     );
   }
 }

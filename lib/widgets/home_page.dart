@@ -22,6 +22,7 @@ import 'package:biorhythmmm/data/prefs.dart';
 import 'package:biorhythmmm/widgets/about_dialog.dart';
 import 'package:biorhythmmm/widgets/biorhythm_chart.dart';
 import 'package:biorhythmmm/widgets/birthday_manager.dart';
+import 'package:biorhythmmm/widgets/compare_manager.dart';
 import 'package:biorhythmmm/widgets/settings_sheet.dart';
 
 import 'dart:io' show Platform;
@@ -120,13 +121,14 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  // Popup menu to select birthday or manage birthday list
+  // Popup menu to select birthday, compare charts, or manage birthday list
   Widget birthdaySwitcher() {
     return BlocSelector<AppStateCubit, AppState, AppState>(
       selector: (state) => state,
       builder: (context, state) {
         final entries = state.birthdays;
         final selected = state.selectedBirthday;
+        final birthdayCount = state.birthdays.length;
         if (Platform.isIOS) {
           return PullDownButton(
             buttonBuilder: (_, showMenu) => adaptiveSettingButton(
@@ -142,8 +144,15 @@ class HomePage extends StatelessWidget {
                   onTap: () =>
                       context.read<AppStateCubit>().setSelectedBirthday(i),
                 ),
-              // Manage
               PullDownMenuDivider.large(),
+              // Compare
+              if (birthdayCount > 1)
+                PullDownMenuItem(
+                  title: AppString.compareLabel.translate(),
+                  icon: Icons.sync_alt,
+                  onTap: () => showCompareModal(context),
+                ),
+              // Manage
               PullDownMenuItem(
                 title: AppString.manageLabel.translate(),
                 icon: Icons.cake_outlined,
@@ -158,6 +167,27 @@ class HomePage extends StatelessWidget {
               // Birthdays
               for (int i = 0; i < entries.length; i++)
                 DropdownMenuItem(value: i, child: Text(entries[i].name)),
+              // Compare
+              if (birthdayCount > 1)
+                DropdownMenuItem(
+                  value: -2,
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.sync_alt,
+                        size: 16,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                      SizedBox(width: 8),
+                      Text(
+                        AppString.compareLabel.translate(),
+                        style: labelText.copyWith(
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ), // Manage
               // Manage
               DropdownMenuItem(
                 value: -1,
@@ -181,7 +211,9 @@ class HomePage extends StatelessWidget {
             ],
             onChanged: (i) {
               if (i == null) return;
-              if (i == -1) {
+              if (i == -2) {
+                showCompareModal(context);
+              } else if (i == -1) {
                 showBirthdayManager(context);
               } else {
                 context.read<AppStateCubit>().setSelectedBirthday(i);

@@ -93,3 +93,22 @@ Widget adaptiveSettingButton({
     return FilledButton(onPressed: onPressed, child: child);
   }
 }
+
+// Large button for modal sheet action
+Widget adaptiveModalButton({
+  required String text,
+  Widget? icon,
+  Color? color,
+  required Function()? onPressed,
+}) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8),
+    child: Platform.isIOS
+        ? CupertinoButton.filled(
+            onPressed: onPressed,
+            color: color,
+            child: Text(text),
+          )
+        : TextButton.icon(icon: icon, label: Text(text), onPressed: onPressed),
+  );
+}
