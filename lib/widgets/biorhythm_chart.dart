@@ -249,10 +249,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
         for (final Biorhythm b in biorhythms)
           biorhythmLineData(
             birthday: compareBirthday,
-            color: getBiorhythmColor(
-              b,
-              isHighlighted: _highlighted == b,
-            ).withAlpha(64),
+            color: getBiorhythmColor(b, isHighlighted: _highlighted == b),
             pointCount: chartRange,
             pointGenerator: b.getPoint,
             dashedLine: true,
@@ -310,28 +307,62 @@ class _BiorhythmChartState extends State<BiorhythmChart>
       fitInsideHorizontally: true,
       fitInsideVertically: true,
       getTooltipItems: (List<LineBarSpot> touchedSpots) {
-        // Show date on tooltip with no other items
         List<LineTooltipItem?> items = List.filled(touchedSpots.length, null);
+
         if (touchedSpots.isNotEmpty) {
+          final DateTime birthday = context.read<AppStateCubit>().birthday;
+          final DateTime? compareBirthday = context
+              .read<AppStateCubit>()
+              .compareBirthday;
+          final int addDays = touchedSpots[0].x.toInt();
+
           // Indicate with a symbol if this is a critical day
           String criticalIndicator =
               touchedSpots.where((spot) => isCritical(spot.y)).isNotEmpty
               ? '\u26A0'
               : '';
-          items[0] = LineTooltipItem(
-            criticalIndicator +
-                dateAndDay(
-                  today.add(Duration(days: touchedSpots[0].x.toInt())),
-                ) +
-                criticalIndicator,
-            titleText,
-          );
+
+          // Date label
+          String tooltipText =
+              criticalIndicator +
+              dateAndDay(today.add(Duration(days: addDays))) +
+              criticalIndicator;
+
+          // Append biorhythm values for both birthdays when comparing
+          if (compareBirthday != null) {
+            tooltipText += '\n\n${context.read<AppStateCubit>().birthdayName}';
+            tooltipText += tooltipBiorhythmsText(
+              dateDiff(birthday, today, addDays: addDays),
+            );
+
+            tooltipText +=
+                '\n\n${context.read<AppStateCubit>().compareBirthdayName}';
+            tooltipText += tooltipBiorhythmsText(
+              dateDiff(compareBirthday, today, addDays: addDays),
+            );
+          }
+
+          // Build the tooltip as a single item
+          items[0] = LineTooltipItem(tooltipText, titleText);
         }
         return items;
       },
       getTooltipColor: (touchedSpot) => Theme.of(context).dividerColor,
     ),
   );
+
+  String tooltipBiorhythmsText(int day) {
+    final List<Biorhythm> biorhythms = context.read<AppStateCubit>().biorhythms;
+    String text = '';
+
+    for (final Biorhythm b in biorhythms) {
+      // Build the text for this biorhythm
+      text +=
+          '\n${b.localizedName.substring(0, 3)}: ${shortPercent(b.getPoint(day))}';
+    }
+
+    return text;
+  }
 
   void touchCallback(FlTouchEvent event, LineTouchResponse? response) {
     setState(() {

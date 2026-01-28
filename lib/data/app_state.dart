@@ -98,8 +98,12 @@ class AppStateCubit extends Cubit<AppState> {
 
   // Getters
   DateTime get birthday => state.birthdays[state.selectedBirthday].date;
+  String get birthdayName => state.birthdays[state.selectedBirthday].name;
   DateTime? get compareBirthday => state.compareBirthday >= 0
       ? state.birthdays[state.compareBirthday].date
+      : null;
+  String? get compareBirthdayName => state.compareBirthday >= 0
+      ? state.birthdays[state.compareBirthday].name
       : null;
   List<Biorhythm> get biorhythms => state.biorhythms;
   NotificationType get notifications => state.notifications;
