@@ -47,7 +47,7 @@ class CompareManagerSheet extends StatelessWidget {
 
             // Size the sheet based on the number of birthdays
             return SizedBox(
-              height: (birthdays.length - 1) * 55 + 160,
+              height: (birthdays.length + (compare != -1 ? 1 : 0)) * 65,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 // Build a birthday manager
@@ -63,10 +63,9 @@ class CompareManagerSheet extends StatelessWidget {
                     adaptiveModalButton(
                       text: AppString.compareClear.translate(),
                       icon: Icon(Icons.backspace),
-                      color: Colors.red,
+                      color: Colors.redAccent,
                       onPressed: () async {
                         context.read<AppStateCubit>().clearCompareBirthday();
-                        Navigator.of(context).pop();
                       },
                     ),
                 ],
@@ -113,7 +112,7 @@ class CompareManagerSheet extends StatelessWidget {
                     : Icons.circle_outlined,
               ),
               title: Row(
-                spacing: 8,
+                spacing: 12,
                 children: [
                   Text(compareName, style: listTileText(context)),
                   Icon(Icons.sync_alt),
@@ -122,7 +121,6 @@ class CompareManagerSheet extends StatelessWidget {
               ),
               onTap: () {
                 context.read<AppStateCubit>().setCompareBirthday(birthdayIndex);
-                Navigator.of(context).pop();
               },
             );
           },
