@@ -49,6 +49,7 @@ enum AppString {
   aboutAdditional('aboutAdditional'),
   aboutApp('aboutApp'),
   aboutBiorhythmDays('aboutBiorhythmDays'),
+  aboutCompare('aboutCompare'),
   aboutCopyright('aboutCopyright'),
   aboutCycles('aboutCycles'),
   aboutEmotional('aboutEmotional'),
