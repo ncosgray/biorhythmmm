@@ -141,8 +141,10 @@ class HomePage extends StatelessWidget {
                 PullDownMenuItem.selectable(
                   selected: i == selected,
                   title: entries[i].name,
-                  onTap: () =>
-                      context.read<AppStateCubit>().setSelectedBirthday(i),
+                  onTap: () {
+                    context.read<AppStateCubit>().setSelectedBirthday(i);
+                    context.read<AppStateCubit>().clearCompareBirthday();
+                  },
                 ),
               PullDownMenuDivider.large(),
               // Compare
@@ -217,6 +219,7 @@ class HomePage extends StatelessWidget {
                 showBirthdayManager(context);
               } else {
                 context.read<AppStateCubit>().setSelectedBirthday(i);
+                context.read<AppStateCubit>().clearCompareBirthday();
               }
             },
           );
