@@ -582,15 +582,16 @@ class _BiorhythmChartState extends State<BiorhythmChart>
   }) {
     IconData icon = point.trend.trendIcon;
     String percentText = shortPercent(point.point);
+    bool isCompare = comparePoint != null;
 
     // Calculate comparison and assign a status icon
-    if (comparePoint != null) {
+    if (isCompare) {
       double compareValue = 1 - (comparePoint.point - point.point).abs() / 2;
       icon = compareValue > .45 && compareValue < .55
           ? Icons.sentiment_neutral
           : compareValue >= .55
-          ? Icons.sentiment_satisfied_outlined
-          : Icons.sentiment_dissatisfied_outlined;
+          ? Icons.sentiment_very_satisfied
+          : Icons.sentiment_very_dissatisfied;
       percentText = shortPercent(compareValue);
     }
 
@@ -620,9 +621,16 @@ class _BiorhythmChartState extends State<BiorhythmChart>
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (comparePoint != null)
+                  if (isCompare)
                     Icon(Icons.sync_alt, size: pointText.fontSize!),
-                  Text(percentText, style: pointText),
+                  Text(
+                    percentText,
+                    style: pointText.copyWith(
+                      fontStyle: isCompare
+                          ? FontStyle.italic
+                          : FontStyle.normal,
+                    ),
+                  ),
                   Icon(icon, size: pointText.fontSize!),
                 ],
               ),
