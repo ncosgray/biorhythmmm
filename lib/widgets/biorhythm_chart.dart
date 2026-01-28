@@ -238,15 +238,14 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     }
 
     return [
-      for (final Biorhythm b in biorhythms)
+      for (final Biorhythm b in biorhythms) ...[
         biorhythmLineData(
           birthday: birthday,
           color: getBiorhythmColor(b, isHighlighted: _highlighted == b),
           pointCount: chartRange,
           pointGenerator: b.getPoint,
         ),
-      if (compareBirthday != null)
-        for (final Biorhythm b in biorhythms)
+        if (compareBirthday != null)
           biorhythmLineData(
             birthday: compareBirthday,
             color: getBiorhythmColor(b, isHighlighted: _highlighted == b),
@@ -254,6 +253,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
             pointGenerator: b.getPoint,
             dashedLine: true,
           ),
+      ],
     ];
   }
 
