@@ -52,7 +52,7 @@ class AppState {
   static AppState initial() => AppState(
     Prefs.birthdays,
     Prefs.selectedBirthday,
-    -1,
+    Prefs.compareBirthday,
     Prefs.biorhythms,
     Prefs.notifications,
     Prefs.notificationTime,
@@ -164,10 +164,12 @@ class AppStateCubit extends Cubit<AppState> {
   }
 
   void setCompareBirthday(int newCompareBirthday) {
+    Prefs.compareBirthday = newCompareBirthday;
     emit(state.copyWith(compareBirthday: newCompareBirthday));
   }
 
   void clearCompareBirthday() {
+    Prefs.compareBirthday = -1;
     emit(state.copyWith(compareBirthday: -1));
   }
 
