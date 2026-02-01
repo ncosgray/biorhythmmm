@@ -96,7 +96,7 @@ Future<void> main() async {
 
     // Set up user birthdays
     String name = AppString.birthdayDefaultName.translate();
-    String secondaryName = '$name #2';
+    String secondaryName = '${AppString.birthdayNameLabel.translate()} 2';
     await createBirthdayEntry($, secondaryName, 2);
     await $.tap(find.text(secondaryName));
     await $.pumpAndSettle();
