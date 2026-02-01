@@ -563,17 +563,44 @@ class _BiorhythmChartState extends State<BiorhythmChart>
         previous.selectedBirthday != current.selectedBirthday ||
         previous.compareBirthday != current.compareBirthday ||
         previous.biorhythms != current.biorhythms,
-    child: Wrap(
-      crossAxisAlignment: WrapCrossAlignment.center,
+    child: Column(
       children: [
-        for (int i = 0; i < _points.length; i++)
-          biorhythmPercentBox(
-            _points[i],
-            comparePoint: _comparePoints.isNotEmpty ? _comparePoints[i] : null,
-          ),
+        if (_comparePoints.isNotEmpty) compareTitle,
+        Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            for (int i = 0; i < _points.length; i++)
+              biorhythmPercentBox(
+                _points[i],
+                comparePoint: _comparePoints.isNotEmpty
+                    ? _comparePoints[i]
+                    : null,
+              ),
+          ],
+        ),
       ],
     ),
   );
+
+  // Title indicating comparison mode
+  Widget get compareTitle {
+    final String birthdayName = context.read<AppStateCubit>().birthdayName;
+    final String compareBirthdayName =
+        context.read<AppStateCubit>().compareBirthdayName ?? '';
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        spacing: 8,
+        children: [
+          Text(birthdayName, style: primaryLabelText),
+          Icon(Icons.sync_alt, size: primaryLabelText.fontSize!),
+          Text(compareBirthdayName, style: primaryLabelText),
+        ],
+      ),
+    );
+  }
 
   // Display a biorhythm point as a percentage with label
   Widget biorhythmPercentBox(
@@ -621,8 +648,6 @@ class _BiorhythmChartState extends State<BiorhythmChart>
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (isCompare)
-                    Icon(Icons.sync_alt, size: pointText.fontSize!),
                   Text(
                     percentText,
                     style: pointText.copyWith(
