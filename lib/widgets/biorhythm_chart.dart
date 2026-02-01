@@ -594,9 +594,18 @@ class _BiorhythmChartState extends State<BiorhythmChart>
         mainAxisAlignment: MainAxisAlignment.center,
         spacing: 8,
         children: [
+          Container(
+            width: 20,
+            height: 4,
+            color: Theme.of(context).dividerColor,
+          ),
           Text(birthdayName, style: primaryLabelText),
           Icon(Icons.sync_alt, size: primaryLabelText.fontSize!),
           Text(compareBirthdayName, style: primaryLabelText),
+          CustomPaint(
+            size: const Size(20, 4),
+            painter: DashedLinePainter(color: Theme.of(context).dividerColor),
+          ),
         ],
       ),
     );
@@ -669,4 +678,34 @@ class _BiorhythmChartState extends State<BiorhythmChart>
       onTapCancel: () => setState(() => _highlighted = null),
     );
   }
+}
+
+// Custom painter for dashed line
+class DashedLinePainter extends CustomPainter {
+  DashedLinePainter({required this.color});
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 4;
+
+    const dashWidth = 6.0;
+    const dashSpace = 3.0;
+    double startX = 0;
+
+    while (startX < size.width) {
+      canvas.drawLine(
+        Offset(startX, size.height / 2),
+        Offset(startX + dashWidth, size.height / 2),
+        paint,
+      );
+      startX += dashWidth + dashSpace;
+    }
+  }
+
+  @override
+  bool shouldRepaint(DashedLinePainter oldDelegate) =>
+      oldDelegate.color != color;
 }
