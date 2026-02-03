@@ -73,6 +73,7 @@ class BirthdayManagerSheet extends StatelessWidget {
                       final newEntry = await showBirthdayEditDialog(context);
                       if (!context.mounted) return;
                       if (newEntry != null) {
+                        context.read<AppStateCubit>().clearCompareBirthday();
                         context.read<AppStateCubit>().addBirthday(newEntry);
                       }
                     },
@@ -140,6 +141,7 @@ class BirthdayManagerSheet extends StatelessWidget {
                       icon: Icon(deleteIcon),
                       tooltip: AppString.deleteLabel.translate(),
                       onPressed: () {
+                        context.read<AppStateCubit>().clearCompareBirthday();
                         context.read<AppStateCubit>().removeBirthday(i);
                       },
                     ),
