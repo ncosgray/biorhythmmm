@@ -40,6 +40,9 @@ final int chartRangeSplit = (chartRange / 2).floor();
 final int chartGrid = 7;
 final double chartWindow = chartGrid * 4.5;
 
+// Enum for tracking which birthday is being highlighted
+enum CompareSide { primary, compare }
+
 // Interactive biorhythm chart
 class BiorhythmChart extends StatefulWidget {
   const BiorhythmChart({super.key});
@@ -54,6 +57,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
   List<BiorhythmPoint> _points = [];
   List<BiorhythmPoint> _comparePoints = [];
   Biorhythm? _highlighted;
+  CompareSide? _compareHighlighted;
   double? _touched;
 
   // Populate data points
@@ -97,6 +101,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     if (mounted) {
       setPoints();
       _highlighted = null;
+      _compareHighlighted = null;
       context.read<AppStateCubit>().reload();
     }
   }
@@ -237,24 +242,57 @@ class _BiorhythmChartState extends State<BiorhythmChart>
         });
     }
 
-    return [
-      for (final Biorhythm b in biorhythms) ...[
+    // Build the chart lines
+    final List<LineChartBarData> primaryLines = [];
+    final List<LineChartBarData> compareLines = [];
+    for (final Biorhythm b in biorhythms) {
+      // Add primary line
+      primaryLines.add(
         biorhythmLineData(
           birthday: birthday,
-          color: getBiorhythmColor(b, isHighlighted: _highlighted == b),
+          color: getBiorhythmColor(
+            b,
+            isHighlighted:
+                _highlighted == b || _compareHighlighted == CompareSide.primary,
+          ),
           pointCount: chartRange,
           pointGenerator: b.getPoint,
         ),
-        if (compareBirthday != null)
+      );
+
+      // Add compare line if applicable
+      if (compareBirthday != null) {
+        compareLines.add(
           biorhythmLineData(
             birthday: compareBirthday,
-            color: getBiorhythmColor(b, isHighlighted: _highlighted == b),
+            color: getBiorhythmColor(
+              b,
+              isHighlighted:
+                  _highlighted == b ||
+                  _compareHighlighted == CompareSide.compare,
+            ),
             pointCount: chartRange,
             pointGenerator: b.getPoint,
             dashedLine: true,
           ),
-      ],
-    ];
+        );
+      }
+    }
+
+    // Combine lines, with the highlighted side on top (end of the stack)
+    if (_compareHighlighted == CompareSide.compare) {
+      return [...primaryLines, ...compareLines];
+    } else if (_compareHighlighted == CompareSide.primary) {
+      return [...compareLines, ...primaryLines];
+    } else {
+      // Interleave lines to preserve biorhythm order
+      return [
+        for (int i = 0; i < primaryLines.length; i++) ...[
+          primaryLines[i],
+          if (i < compareLines.length) compareLines[i],
+        ],
+      ];
+    }
   }
 
   LineChartBarData biorhythmLineData({
@@ -594,17 +632,45 @@ class _BiorhythmChartState extends State<BiorhythmChart>
         mainAxisAlignment: MainAxisAlignment.center,
         spacing: 8,
         children: [
-          Container(
-            width: 20,
-            height: 4,
-            color: Theme.of(context).dividerColor,
+          // Primary birthday with tap to highlight
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            child: Row(
+              spacing: 8,
+              children: [
+                Container(
+                  width: 20,
+                  height: 4,
+                  color: Theme.of(context).dividerColor,
+                ),
+                Text(birthdayName, style: primaryLabelText),
+              ],
+            ),
+            onTapDown: (_) =>
+                setState(() => _compareHighlighted = CompareSide.primary),
+            onTapUp: (_) => setState(() => _compareHighlighted = null),
+            onTapCancel: () => setState(() => _compareHighlighted = null),
           ),
-          Text(birthdayName, style: primaryLabelText),
           Icon(Icons.sync_alt, size: primaryLabelText.fontSize!),
-          Text(compareBirthdayName, style: primaryLabelText),
-          CustomPaint(
-            size: const Size(20, 4),
-            painter: DashedLinePainter(color: Theme.of(context).dividerColor),
+          // Compare birthday with tap to highlight
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            child: Row(
+              spacing: 8,
+              children: [
+                Text(compareBirthdayName, style: primaryLabelText),
+                CustomPaint(
+                  size: const Size(20, 4),
+                  painter: DashedLinePainter(
+                    color: Theme.of(context).dividerColor,
+                  ),
+                ),
+              ],
+            ),
+            onTapDown: (_) =>
+                setState(() => _compareHighlighted = CompareSide.compare),
+            onTapUp: (_) => setState(() => _compareHighlighted = null),
+            onTapCancel: () => setState(() => _compareHighlighted = null),
           ),
         ],
       ),
