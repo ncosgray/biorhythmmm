@@ -604,23 +604,37 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     child: Column(
       children: [
         if (_comparePoints.isNotEmpty) compareTitle,
-        Wrap(
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            for (int i = 0; i < _points.length; i++)
-              biorhythmPercentBox(
-                _points[i],
-                comparePoint: _comparePoints.isNotEmpty
+        Builder(
+          builder: (context) {
+            final List<Widget> percentBoxes = List<Widget>.generate(
+              _points.length,
+              (int i) {
+                final BiorhythmPoint displayPoint =
+                    _compareHighlighted == CompareSide.compare
                     ? _comparePoints[i]
-                    : null,
-              ),
-          ],
+                    : _points[i];
+                final BiorhythmPoint? comparePoint =
+                    _compareHighlighted == null && _comparePoints.isNotEmpty
+                    ? _comparePoints[i]
+                    : null;
+                return biorhythmPercentBox(
+                  displayPoint,
+                  comparePoint: comparePoint,
+                );
+              },
+            );
+
+            return Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: percentBoxes,
+            );
+          },
         ),
       ],
     ),
   );
 
-  // Title indicating comparison mode
+  // Title indicating comparison mode with both birthday names
   Widget get compareTitle {
     final String birthdayName = context.read<AppStateCubit>().birthdayName;
     final String compareBirthdayName =
@@ -632,50 +646,58 @@ class _BiorhythmChartState extends State<BiorhythmChart>
         mainAxisAlignment: MainAxisAlignment.center,
         spacing: 8,
         children: [
-          // Primary birthday with tap to highlight
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            child: Row(
-              spacing: 8,
-              children: [
-                Container(
-                  width: 20,
-                  height: 4,
-                  color: Theme.of(context).dividerColor,
-                ),
-                Text(birthdayName, style: primaryLabelText),
-              ],
-            ),
-            onTapDown: (_) =>
-                setState(() => _compareHighlighted = CompareSide.primary),
-            onTapUp: (_) => setState(() => _compareHighlighted = null),
-            onTapCancel: () => setState(() => _compareHighlighted = null),
+          compareTitleBox(
+            name: birthdayName,
+            compareSide: CompareSide.primary,
+            dashedLine: false,
           ),
           Icon(Icons.sync_alt, size: primaryLabelText.fontSize!),
-          // Compare birthday with tap to highlight
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            child: Row(
-              spacing: 8,
-              children: [
-                Text(compareBirthdayName, style: primaryLabelText),
-                CustomPaint(
-                  size: const Size(20, 4),
-                  painter: DashedLinePainter(
-                    color: Theme.of(context).dividerColor,
-                  ),
-                ),
-              ],
-            ),
-            onTapDown: (_) =>
-                setState(() => _compareHighlighted = CompareSide.compare),
-            onTapUp: (_) => setState(() => _compareHighlighted = null),
-            onTapCancel: () => setState(() => _compareHighlighted = null),
+          compareTitleBox(
+            name: compareBirthdayName,
+            compareSide: CompareSide.compare,
+            dashedLine: true,
           ),
         ],
       ),
     );
   }
+
+  // Tappable birthday title box for comparison highlighting
+  Widget compareTitleBox({
+    required String name,
+    required CompareSide compareSide,
+    required bool dashedLine,
+  }) => GestureDetector(
+    child: Container(
+      padding: EdgeInsetsGeometry.all(4),
+      decoration: BoxDecoration(
+        color: _compareHighlighted == compareSide
+            ? Theme.of(context).highlightColor.withAlpha(30)
+            : Colors.transparent,
+      ),
+      child: Row(
+        spacing: 8,
+        children: [
+          dashedLine
+              ? CustomPaint(
+                  size: const Size(20, 4),
+                  painter: DashedLinePainter(
+                    color: Theme.of(context).dividerColor,
+                  ),
+                )
+              : Container(
+                  width: 20,
+                  height: 4,
+                  color: Theme.of(context).dividerColor,
+                ),
+          Text(name, style: primaryLabelText),
+        ],
+      ),
+    ),
+    onTapDown: (_) => setState(() => _compareHighlighted = compareSide),
+    onTapUp: (_) => setState(() => _compareHighlighted = null),
+    onTapCancel: () => setState(() => _compareHighlighted = null),
+  );
 
   // Display a biorhythm point as a percentage with label
   Widget biorhythmPercentBox(
