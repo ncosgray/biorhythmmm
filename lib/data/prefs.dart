@@ -50,6 +50,7 @@ abstract class Prefs {
   static String get _birthdayKey => 'birthday';
   static String get _birthdaysKey => 'birthdays';
   static String get _selectedBirthdayKey => 'selectedBirthday';
+  static String get _compareBirthdayKey => 'compareBirthday';
   static String get _biorhythmsKey => 'biorhythms';
   static String get _notificationsKey => 'notifications';
   static String get _notificationTimeKey => 'notificationTime';
@@ -68,6 +69,12 @@ abstract class Prefs {
       _sharedPrefs.setInt(_selectedBirthdayKey, i);
 
   static DateTime get birthday => birthdays[selectedBirthday].date;
+
+  // Get and set selected comparison birthday
+  static int get compareBirthday =>
+      (_sharedPrefs.getInt(_compareBirthdayKey) ?? -1);
+  static set compareBirthday(int i) =>
+      _sharedPrefs.setInt(_compareBirthdayKey, i);
 
   // Get and set birthdays list
   static List<BirthdayEntry> get birthdays {

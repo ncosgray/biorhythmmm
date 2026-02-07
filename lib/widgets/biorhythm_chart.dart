@@ -13,6 +13,7 @@
 // Biorhythmmm
 // - Biorhythm line chart
 // - Percentage widget
+// - Biorhythm comparison
 // - Chart interactivity (touch, pan, zoom)
 
 import 'package:biorhythmmm/common/helpers.dart';
@@ -39,6 +40,9 @@ final int chartRangeSplit = (chartRange / 2).floor();
 final int chartGrid = 7;
 final double chartWindow = chartGrid * 4.5;
 
+// Enum for tracking which birthday is being highlighted
+enum CompareSide { primary, compare }
+
 // Interactive biorhythm chart
 class BiorhythmChart extends StatefulWidget {
   const BiorhythmChart({super.key});
@@ -51,21 +55,44 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     with WidgetsBindingObserver {
   // State variables
   List<BiorhythmPoint> _points = [];
+  List<BiorhythmPoint> _comparePoints = [];
   Biorhythm? _highlighted;
+  CompareSide? _compareHighlighted;
   double? _touched;
 
   // Populate data points
-  void setPoints([List<BiorhythmPoint>? newPoints]) {
+  void setPoints([
+    List<BiorhythmPoint>? newPoints,
+    List<BiorhythmPoint>? newComparePoints,
+  ]) {
+    final List<Biorhythm> biorhythms = context.read<AppStateCubit>().biorhythms;
+
     if (newPoints != null) {
       // Update points with specified data
       _points = newPoints;
     } else {
       // Reset points to today
-      int day = dateDiff(context.read<AppStateCubit>().birthday, today);
+      final int day = dateDiff(context.read<AppStateCubit>().birthday, today);
       _points = [
-        for (final Biorhythm b in context.read<AppStateCubit>().biorhythms)
-          b.getBiorhythmPoint(day),
+        for (final Biorhythm b in biorhythms) b.getBiorhythmPoint(day),
       ];
+    }
+
+    // Update comparison points if applicable
+    if (newComparePoints != null) {
+      _comparePoints = newComparePoints;
+    } else {
+      final DateTime? compareBirthday = context
+          .read<AppStateCubit>()
+          .compareBirthday;
+      if (compareBirthday != null) {
+        final int compareDay = dateDiff(compareBirthday, today);
+        _comparePoints = [
+          for (final Biorhythm b in biorhythms) b.getBiorhythmPoint(compareDay),
+        ];
+      } else {
+        _comparePoints = [];
+      }
     }
   }
 
@@ -74,6 +101,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     if (mounted) {
       setPoints();
       _highlighted = null;
+      _compareHighlighted = null;
       context.read<AppStateCubit>().reload();
     }
   }
@@ -199,6 +227,10 @@ class _BiorhythmChartState extends State<BiorhythmChart>
 
   List<LineChartBarData> get lineBarsData {
     List<Biorhythm> biorhythms = context.read<AppStateCubit>().biorhythms;
+    final DateTime birthday = context.read<AppStateCubit>().birthday;
+    final DateTime? compareBirthday = context
+        .read<AppStateCubit>()
+        .compareBirthday;
 
     if (_highlighted != null) {
       // Sort the biorhythm lines with highlighted first (end of the stack)
@@ -210,20 +242,65 @@ class _BiorhythmChartState extends State<BiorhythmChart>
         });
     }
 
-    return [
-      for (final Biorhythm b in biorhythms)
+    // Build the chart lines
+    final List<LineChartBarData> primaryLines = [];
+    final List<LineChartBarData> compareLines = [];
+    for (final Biorhythm b in biorhythms) {
+      // Add primary line
+      primaryLines.add(
         biorhythmLineData(
-          color: getBiorhythmColor(b, isHighlighted: _highlighted == b),
+          birthday: birthday,
+          color: getBiorhythmColor(
+            b,
+            isHighlighted:
+                _highlighted == b || _compareHighlighted == CompareSide.primary,
+          ),
           pointCount: chartRange,
           pointGenerator: b.getPoint,
         ),
-    ];
+      );
+
+      // Add compare line if applicable
+      if (compareBirthday != null) {
+        compareLines.add(
+          biorhythmLineData(
+            birthday: compareBirthday,
+            color: getBiorhythmColor(
+              b,
+              isHighlighted:
+                  _highlighted == b ||
+                  _compareHighlighted == CompareSide.compare,
+            ),
+            pointCount: chartRange,
+            pointGenerator: b.getPoint,
+            dashedLine: true,
+          ),
+        );
+      }
+    }
+
+    // Combine lines, with the highlighted side on top (end of the stack)
+    if (_compareHighlighted == CompareSide.compare) {
+      return [...primaryLines, ...compareLines];
+    } else if (_compareHighlighted == CompareSide.primary) {
+      return [...compareLines, ...primaryLines];
+    } else {
+      // Interleave lines to preserve biorhythm order
+      return [
+        for (int i = 0; i < primaryLines.length; i++) ...[
+          primaryLines[i],
+          if (i < compareLines.length) compareLines[i],
+        ],
+      ];
+    }
   }
 
   LineChartBarData biorhythmLineData({
+    required DateTime birthday,
     required Color color,
     required int pointCount,
     required double Function(int) pointGenerator,
+    bool dashedLine = false,
   }) {
     return LineChartBarData(
       isCurved: true,
@@ -236,17 +313,14 @@ class _BiorhythmChartState extends State<BiorhythmChart>
         checkToShowDot: (spot, _) => spot.x == 0 && _touched == null,
       ),
       belowBarData: BarAreaData(show: false),
+      dashArray: dashedLine ? [6, 8] : null,
       // Graph a range of biorhythm points
       spots: List.generate(
         pointCount,
         (int day) => FlSpot(
           (day - chartRangeSplit).toDouble(),
           pointGenerator(
-            dateDiff(
-              context.read<AppStateCubit>().birthday,
-              today,
-              addDays: day - chartRangeSplit,
-            ),
+            dateDiff(birthday, today, addDays: day - chartRangeSplit),
           ),
         ),
       ),
@@ -271,22 +345,43 @@ class _BiorhythmChartState extends State<BiorhythmChart>
       fitInsideHorizontally: true,
       fitInsideVertically: true,
       getTooltipItems: (List<LineBarSpot> touchedSpots) {
-        // Show date on tooltip with no other items
         List<LineTooltipItem?> items = List.filled(touchedSpots.length, null);
+
         if (touchedSpots.isNotEmpty) {
+          final DateTime birthday = context.read<AppStateCubit>().birthday;
+          final DateTime? compareBirthday = context
+              .read<AppStateCubit>()
+              .compareBirthday;
+          final int addDays = touchedSpots[0].x.toInt();
+
           // Indicate with a symbol if this is a critical day
           String criticalIndicator =
               touchedSpots.where((spot) => isCritical(spot.y)).isNotEmpty
               ? '\u26A0'
               : '';
-          items[0] = LineTooltipItem(
-            criticalIndicator +
-                dateAndDay(
-                  today.add(Duration(days: touchedSpots[0].x.toInt())),
-                ) +
-                criticalIndicator,
-            titleText,
-          );
+
+          // Date label
+          String tooltipText =
+              criticalIndicator +
+              dateAndDay(today.add(Duration(days: addDays))) +
+              criticalIndicator;
+
+          // Append biorhythm values for both birthdays when comparing
+          if (compareBirthday != null) {
+            tooltipText += '\n\n${context.read<AppStateCubit>().birthdayName}';
+            tooltipText += tooltipBiorhythmsText(
+              dateDiff(birthday, today, addDays: addDays),
+            );
+
+            tooltipText +=
+                '\n\n${context.read<AppStateCubit>().compareBirthdayName}';
+            tooltipText += tooltipBiorhythmsText(
+              dateDiff(compareBirthday, today, addDays: addDays),
+            );
+          }
+
+          // Build the tooltip as a single item
+          items[0] = LineTooltipItem(tooltipText, titleText);
         }
         return items;
       },
@@ -294,24 +389,50 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     ),
   );
 
+  String tooltipBiorhythmsText(int day) {
+    final List<Biorhythm> biorhythms = context.read<AppStateCubit>().biorhythms;
+    String text = '';
+
+    for (final Biorhythm b in biorhythms) {
+      // Build the text for this biorhythm
+      text +=
+          '\n${b.localizedName.substring(0, 3)}: ${shortPercent(b.getPoint(day))}';
+    }
+
+    return text;
+  }
+
   void touchCallback(FlTouchEvent event, LineTouchResponse? response) {
     setState(() {
       if (event.isInterestedForInteractions) {
         if (response?.lineBarSpots != null) {
+          final List<TouchLineBarSpot> spots = response!.lineBarSpots!;
+          final List<Biorhythm> biorhythms = context
+              .read<AppStateCubit>()
+              .biorhythms;
+          final DateTime birthday = context.read<AppStateCubit>().birthday;
+          final DateTime? compareBirthday = context
+              .read<AppStateCubit>()
+              .compareBirthday;
+
           // Update points for percent displays
-          setPoints([
-            for (final TouchLineBarSpot spot in response!.lineBarSpots!)
-              context
-                  .read<AppStateCubit>()
-                  .biorhythms[spot.barIndex]
-                  .getBiorhythmPoint(
-                    dateDiff(
-                      context.read<AppStateCubit>().birthday,
-                      today,
-                      addDays: spot.x.toInt(),
-                    ),
+          setPoints(
+            [
+              for (final TouchLineBarSpot spot in spots)
+                if (spot.barIndex < biorhythms.length)
+                  biorhythms[spot.barIndex].getBiorhythmPoint(
+                    dateDiff(birthday, today, addDays: spot.x.toInt()),
                   ),
-          ]);
+            ],
+            [
+              if (compareBirthday != null)
+                for (final TouchLineBarSpot spot in spots)
+                  if (spot.barIndex < biorhythms.length)
+                    biorhythms[spot.barIndex].getBiorhythmPoint(
+                      dateDiff(compareBirthday, today, addDays: spot.x.toInt()),
+                    ),
+            ],
+          );
 
           // Update the touched position
           _touched = response.lineBarSpots![0].x;
@@ -478,18 +599,126 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     listenWhen: (previous, current) =>
         previous.birthdays != current.birthdays ||
         previous.selectedBirthday != current.selectedBirthday ||
+        previous.compareBirthday != current.compareBirthday ||
         previous.biorhythms != current.biorhythms,
-    child: Wrap(
-      crossAxisAlignment: WrapCrossAlignment.center,
+    child: Column(
       children: [
-        for (int i = 0; i < _points.length; i++)
-          biorhythmPercentBox(_points[i]),
+        if (_comparePoints.isNotEmpty) compareTitle,
+        Builder(
+          builder: (context) {
+            final List<Widget> percentBoxes = List<Widget>.generate(
+              _points.length,
+              (int i) {
+                final BiorhythmPoint displayPoint =
+                    _compareHighlighted == CompareSide.compare
+                    ? _comparePoints[i]
+                    : _points[i];
+                final BiorhythmPoint? comparePoint =
+                    _compareHighlighted == null && _comparePoints.isNotEmpty
+                    ? _comparePoints[i]
+                    : null;
+                return biorhythmPercentBox(
+                  displayPoint,
+                  comparePoint: comparePoint,
+                );
+              },
+            );
+
+            return Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: percentBoxes,
+            );
+          },
+        ),
       ],
     ),
   );
 
+  // Title indicating comparison mode with both birthday names
+  Widget get compareTitle {
+    final String birthdayName = context.read<AppStateCubit>().birthdayName;
+    final String compareBirthdayName =
+        context.read<AppStateCubit>().compareBirthdayName ?? '';
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        spacing: 8,
+        children: [
+          compareTitleBox(
+            name: birthdayName,
+            compareSide: CompareSide.primary,
+            dashedLine: false,
+          ),
+          Icon(Icons.sync_alt, size: primaryLabelText.fontSize!),
+          compareTitleBox(
+            name: compareBirthdayName,
+            compareSide: CompareSide.compare,
+            dashedLine: true,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Tappable birthday title box for comparison highlighting
+  Widget compareTitleBox({
+    required String name,
+    required CompareSide compareSide,
+    required bool dashedLine,
+  }) => GestureDetector(
+    child: Container(
+      padding: EdgeInsetsGeometry.all(4),
+      decoration: BoxDecoration(
+        color: _compareHighlighted == compareSide
+            ? Theme.of(context).highlightColor.withAlpha(30)
+            : Colors.transparent,
+      ),
+      child: Row(
+        spacing: 8,
+        children: [
+          dashedLine
+              ? CustomPaint(
+                  size: const Size(20, 4),
+                  painter: DashedLinePainter(
+                    color: Theme.of(context).dividerColor,
+                  ),
+                )
+              : Container(
+                  width: 20,
+                  height: 4,
+                  color: Theme.of(context).dividerColor,
+                ),
+          Text(name, style: primaryLabelText),
+        ],
+      ),
+    ),
+    onTapDown: (_) => setState(() => _compareHighlighted = compareSide),
+    onTapUp: (_) => setState(() => _compareHighlighted = null),
+    onTapCancel: () => setState(() => _compareHighlighted = null),
+  );
+
   // Display a biorhythm point as a percentage with label
-  Widget biorhythmPercentBox(BiorhythmPoint point) {
+  Widget biorhythmPercentBox(
+    BiorhythmPoint point, {
+    BiorhythmPoint? comparePoint,
+  }) {
+    IconData icon = point.trend.trendIcon;
+    String percentText = shortPercent(point.point);
+    bool isCompare = comparePoint != null;
+
+    // Calculate comparison and assign a status icon
+    if (isCompare) {
+      double compareValue = 1 - (comparePoint.point - point.point).abs() / 2;
+      icon = compareValue > .45 && compareValue < .55
+          ? Icons.sentiment_neutral
+          : compareValue >= .55
+          ? Icons.sentiment_very_satisfied
+          : Icons.sentiment_very_dissatisfied;
+      percentText = shortPercent(compareValue);
+    }
+
     return GestureDetector(
       child: Container(
         padding: EdgeInsets.all(8),
@@ -516,8 +745,15 @@ class _BiorhythmChartState extends State<BiorhythmChart>
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(shortPercent(point.point), style: pointText),
-                  Icon(point.trend.trendIcon, size: pointText.fontSize!),
+                  Text(
+                    percentText,
+                    style: pointText.copyWith(
+                      fontStyle: isCompare
+                          ? FontStyle.italic
+                          : FontStyle.normal,
+                    ),
+                  ),
+                  Icon(icon, size: pointText.fontSize!),
                 ],
               ),
             ),
@@ -530,4 +766,34 @@ class _BiorhythmChartState extends State<BiorhythmChart>
       onTapCancel: () => setState(() => _highlighted = null),
     );
   }
+}
+
+// Custom painter for dashed line
+class DashedLinePainter extends CustomPainter {
+  DashedLinePainter({required this.color});
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 4;
+
+    const dashWidth = 6.0;
+    const dashSpace = 3.0;
+    double startX = 0;
+
+    while (startX < size.width) {
+      canvas.drawLine(
+        Offset(startX, size.height / 2),
+        Offset(startX + dashWidth, size.height / 2),
+        paint,
+      );
+      startX += dashWidth + dashSpace;
+    }
+  }
+
+  @override
+  bool shouldRepaint(DashedLinePainter oldDelegate) =>
+      oldDelegate.color != color;
 }

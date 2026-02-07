@@ -25,6 +25,7 @@ class AppState {
   AppState(
     this.birthdays,
     this.selectedBirthday,
+    this.compareBirthday,
     this.biorhythms,
     this.notifications,
     this.notificationTime,
@@ -37,6 +38,7 @@ class AppState {
 
   final List<BirthdayEntry> birthdays;
   final int selectedBirthday;
+  final int compareBirthday;
   final List<Biorhythm> biorhythms;
   final NotificationType notifications;
   final TimeOfDay notificationTime;
@@ -50,6 +52,7 @@ class AppState {
   static AppState initial() => AppState(
     Prefs.birthdays,
     Prefs.selectedBirthday,
+    Prefs.compareBirthday,
     Prefs.biorhythms,
     Prefs.notifications,
     Prefs.notificationTime,
@@ -64,6 +67,7 @@ class AppState {
   AppState copyWith({
     List<BirthdayEntry>? birthdays,
     int? selectedBirthday,
+    int? compareBirthday,
     List<Biorhythm>? biorhythms,
     NotificationType? notifications,
     TimeOfDay? notificationTime,
@@ -76,6 +80,7 @@ class AppState {
     return AppState(
       birthdays ?? this.birthdays,
       selectedBirthday ?? this.selectedBirthday,
+      compareBirthday ?? this.compareBirthday,
       biorhythms ?? this.biorhythms,
       notifications ?? this.notifications,
       notificationTime ?? this.notificationTime,
@@ -93,6 +98,13 @@ class AppStateCubit extends Cubit<AppState> {
 
   // Getters
   DateTime get birthday => state.birthdays[state.selectedBirthday].date;
+  String get birthdayName => state.birthdays[state.selectedBirthday].name;
+  DateTime? get compareBirthday => state.compareBirthday >= 0
+      ? state.birthdays[state.compareBirthday].date
+      : null;
+  String? get compareBirthdayName => state.compareBirthday >= 0
+      ? state.birthdays[state.compareBirthday].name
+      : null;
   List<Biorhythm> get biorhythms => state.biorhythms;
   NotificationType get notifications => state.notifications;
   bool get useAccessibleColors => state.useAccessibleColors;
@@ -149,6 +161,16 @@ class AppStateCubit extends Cubit<AppState> {
   void setSelectedBirthday(int newSelectedBirthday) {
     Prefs.selectedBirthday = newSelectedBirthday;
     emit(state.copyWith(selectedBirthday: newSelectedBirthday));
+  }
+
+  void setCompareBirthday(int newCompareBirthday) {
+    Prefs.compareBirthday = newCompareBirthday;
+    emit(state.copyWith(compareBirthday: newCompareBirthday));
+  }
+
+  void clearCompareBirthday() {
+    Prefs.compareBirthday = -1;
+    emit(state.copyWith(compareBirthday: -1));
   }
 
   void toggleBirthdayNotify(int index) {

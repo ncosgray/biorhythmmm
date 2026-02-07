@@ -5,6 +5,33 @@ APP_ID="com.nathanatos.Biorhythmmm"
 LOCALES=("de-DE" "es-ES" "fr-FR" "ja-JP" "pt-PT" "zh-Hans" "en-US")
 TEST_NAME="screenshots_test.dart"
 
+# Run a command with retries: run_with_retries <attempts> <delay_seconds> <command...>
+run_with_retries() {
+    local attempts="$1"; shift
+    local delay="$1"; shift
+    local cmd=("$@")
+    local try=1
+    local exit_code=0
+
+    while [ $try -le $attempts ]; do
+        echo "Attempt $try/$attempts: ${cmd[*]}"
+        "${cmd[@]}"
+        exit_code=$?
+        if [ $exit_code -eq 0 ]; then
+            return 0
+        fi
+        echo "Command failed with exit code $exit_code."
+        if [ $try -lt $attempts ]; then
+            echo "Retrying in ${delay}s..."
+            sleep $delay
+        fi
+        try=$((try + 1))
+    done
+
+    echo "Command failed after ${attempts} attempts."
+    return $exit_code
+}
+
 # Function to run screenshots on a specified Android AVD
 run_tests_on_avd() {
     local AVD_NAME="$1"
@@ -38,12 +65,12 @@ run_tests_on_avd() {
     echo "Emulator is ready. Running screenshots..."
     adb devices
 
-    # Run Flutter integration tests
+    # Run Flutter integration tests (with retries on failure)
     export DEVICE_NAME="$AVD_NAME"
     export TEST_LOCALE="$LOCALE"
     adb uninstall $APP_ID
     sleep 5
-    flutter drive --driver=integration_test/integration_test_driver.dart \
+    run_with_retries 3 5 flutter drive --driver=integration_test/integration_test_driver.dart \
                   --target=integration_test/$TEST_NAME \
                   -d "sdk gphone64 arm64"
 
@@ -91,12 +118,12 @@ run_tests_on_ios() {
     xcrun simctl spawn "$UDID" defaults write "Apple Global Domain" AppleLocale -string $LOCALE
     killall -HUP SpringBoard
     
-    # Run Flutter integration tests
+    # Run Flutter integration tests (with retries on failure)
     echo "Simulator is ready. Running screenshots..."
     export DEVICE_NAME="$SIMULATOR_NAME"
     export TEST_LOCALE="$LOCALE"
     sleep 5
-    flutter drive --driver=integration_test/integration_test_driver.dart \
+    run_with_retries 3 5 flutter drive --driver=integration_test/integration_test_driver.dart \
                   --target=integration_test/$TEST_NAME \
                   -d "$UDID"
 

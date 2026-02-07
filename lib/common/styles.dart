@@ -40,6 +40,8 @@ const buttonText = TextStyle(fontSize: 14);
 
 const labelText = TextStyle(fontSize: 16);
 
+const primaryLabelText = TextStyle(fontSize: 16, fontWeight: FontWeight.bold);
+
 TextStyle listTileText(BuildContext context) =>
     (Platform.isIOS
             ? CupertinoTheme.of(context).textTheme.textStyle

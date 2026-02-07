@@ -39,27 +39,34 @@ Future<void> main() async {
     }
   });
 
-  testWidgets('collect screenshots', ($) async {
-    // Run app
-    await $.pumpWidget(const BiorhythmApp());
-    await $.pumpAndSettle();
-
-    // Set up a user birthday
+  // Helper to create a birthday entry
+  createBirthdayEntry($, String name, int years) async {
     await $.tap(find.text(AppString.dateSelectLabel.translate()));
     await $.pumpAndSettle();
     if (Platform.isIOS) {
       await $.tap(
-        find.textContaining((today.year - 1).toString(), skipOffstage: false),
+        find.textContaining(
+          (today.year - years).toString(),
+          skipOffstage: false,
+        ),
       );
       await $.pumpAndSettle();
-      await $.tap(find.text(AppString.doneLabel.translate()));
+      await $.tap(
+        find.descendant(
+          of: find.byType(StatefulBuilder),
+          matching: find.text(AppString.doneLabel.translate()),
+        ),
+      );
     } else {
       await $.tap(
         find.textContaining((today.year).toString(), skipOffstage: false),
       );
       await $.pumpAndSettle();
       await $.tap(
-        find.textContaining((today.year - 1).toString(), skipOffstage: false),
+        find.textContaining(
+          (today.year - years).toString(),
+          skipOffstage: false,
+        ),
       );
       await $.pumpAndSettle();
       final okButton = find
@@ -77,11 +84,31 @@ Future<void> main() async {
         )
         .first;
     await $.tap(textField);
-    await $.enterText(textField, AppString.birthdayDefaultName.translate());
+    await $.enterText(textField, name);
     await $.tap(find.text(AppString.okLabel.translate()));
     await $.pumpAndSettle();
+  }
+
+  testWidgets('collect screenshots', ($) async {
+    // Run app
+    await $.pumpWidget(const BiorhythmApp());
+    await $.pumpAndSettle();
+
+    // Set up user birthdays
+    String name = AppString.birthdayDefaultName.translate();
+    String secondaryName = '${AppString.birthdayNameLabel.translate()} 2';
+    await createBirthdayEntry($, secondaryName, 2);
+    await $.tap(find.text(secondaryName));
+    await $.pumpAndSettle();
+    await $.tap(find.text(AppString.manageLabel.translate()));
+    await $.pumpAndSettle();
+    await $.tap(find.text(AppString.birthdayAddLabel.translate()));
+    await $.pumpAndSettle();
+    await createBirthdayEntry($, name, 1);
 
     // Screenshot 1: Initial home screen
+    await $.tap(find.text(AppString.chartTitle.translate()));
+    await $.pumpAndSettle();
     sleep(const Duration(seconds: 2));
     await binding.takeScreenshot('1-initial');
 
@@ -91,10 +118,24 @@ Future<void> main() async {
     sleep(const Duration(seconds: 2));
     await binding.takeScreenshot('2-visible');
 
-    // Screenshot 3: Settings page
+    // Screenshot 3: Comparison chart
+    await $.tap(find.byIcon(visibleIcon));
+    await $.pumpAndSettle();
+    await $.tap(find.text(name));
+    await $.pumpAndSettle();
+    await $.tap(find.text(AppString.compareLabel.translate()));
+    await $.pumpAndSettle();
+    await $.tap(find.text(secondaryName));
+    await $.pumpAndSettle();
+    await $.tap(find.text(AppString.chartTitle.translate()));
+    await $.pumpAndSettle();
+    sleep(const Duration(seconds: 2));
+    await binding.takeScreenshot('3-comparison');
+
+    // Screenshot 4: Settings page
     await $.tap(find.byIcon(settingsIcon));
     await $.pumpAndSettle();
     sleep(const Duration(seconds: 2));
-    await binding.takeScreenshot('3-settings');
+    await binding.takeScreenshot('4-settings');
   });
 }
