@@ -38,7 +38,7 @@ abstract class Notifications {
   // Initialize notifications plugin
   static Future<void> init() async {
     await _notify.initialize(
-      const InitializationSettings(
+      settings: const InitializationSettings(
         android: AndroidInitializationSettings(_notifyIcon),
         iOS: DarwinInitializationSettings(
           // Wait to request permissions when user enables the setting
@@ -134,11 +134,11 @@ abstract class Notifications {
     final NotificationDetails notificationDetails = _getNotificationDetails();
     for (final (tz.TZDateTime, String) alarm in alarms) {
       await _notify.zonedSchedule(
-        alarms.indexOf(alarm),
-        Prefs.notifyTitle,
-        alarm.$2,
-        alarm.$1,
-        notificationDetails,
+        id: alarms.indexOf(alarm),
+        title: Prefs.notifyTitle,
+        body: alarm.$2,
+        scheduledDate: alarm.$1,
+        notificationDetails: notificationDetails,
         payload: _notifyChannel,
         androidScheduleMode: AndroidScheduleMode.inexact,
       );
