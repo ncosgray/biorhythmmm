@@ -16,7 +16,7 @@ Biorhythms are natural cycles that influence the states of our minds and bodies.
 
 Biorhythmmm is a simple app that displays your personal cycles for these primary biorhythms (and optionally four additional secondary cycles). We believe by having easy access to this information, your heightened awareness of biorhythm cycles will help you plan and optimize your activities based on your peak performance times.
 
-<img src="https://github.com/ncosgray/Biorhythmmm/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/1_en-US.png" width="200"/>|<img src="https://github.com/ncosgray/Biorhythmmm/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/2_en-US.png" width="200"/>|<img src="https://github.com/ncosgray/Biorhythmmm/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/3_en-US.png" width="200"/>
+<img src="https://github.com/ncosgray/Biorhythmmm/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/1_en-US.png" width="200"/>|<img src="https://github.com/ncosgray/Biorhythmmm/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/2_en-US.png" width="200"/>|<img src="https://github.com/ncosgray/Biorhythmmm/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/3_en-US.png" width="200"/>|<img src="https://github.com/ncosgray/Biorhythmmm/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/4_en-US.png" width="200"/>
 -|-|-
 
 ### Install
