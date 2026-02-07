@@ -47,14 +47,14 @@ Widget adaptiveIconButton({
 }) {
   if (Platform.isIOS) {
     return CupertinoButton(
-      padding: EdgeInsets.zero,
+      padding: .zero,
       onPressed: onPressed,
       child: Row(
-        mainAxisSize: MainAxisSize.min,
-        textDirection: iconAlignEnd ? TextDirection.ltr : TextDirection.rtl,
+        mainAxisSize: .min,
+        textDirection: iconAlignEnd ? .ltr : .rtl,
         children: [
           child,
-          Padding(padding: EdgeInsets.symmetric(horizontal: 8), child: icon),
+          Padding(padding: .symmetric(horizontal: 8), child: icon),
         ],
       ),
     );
@@ -62,7 +62,7 @@ Widget adaptiveIconButton({
     return TextButton.icon(
       label: child,
       icon: icon,
-      iconAlignment: iconAlignEnd ? IconAlignment.end : IconAlignment.start,
+      iconAlignment: iconAlignEnd ? .end : .start,
       onPressed: onPressed,
     );
   }
@@ -75,15 +75,15 @@ Widget adaptiveSettingButton({
 }) {
   if (Platform.isIOS) {
     return CupertinoButton(
-      padding: EdgeInsets.zero,
+      padding: .zero,
       onPressed: onPressed,
       child: Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: [
           child,
           // Include an ellipsis icon for iOS
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8),
+            padding: .symmetric(horizontal: 8),
             child: Icon(CupertinoIcons.ellipsis_circle),
           ),
         ],
@@ -102,7 +102,7 @@ Widget adaptiveModalButton({
   required Function()? onPressed,
 }) {
   return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8),
+    padding: const .symmetric(vertical: 8),
     child: Platform.isIOS
         ? CupertinoButton.filled(
             onPressed: onPressed,

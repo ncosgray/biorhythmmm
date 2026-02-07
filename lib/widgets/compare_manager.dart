@@ -37,7 +37,7 @@ class CompareManagerSheet extends StatelessWidget {
     final padding = MediaQuery.of(context).viewInsets;
 
     return Padding(
-      padding: EdgeInsets.only(bottom: padding.bottom),
+      padding: .only(bottom: padding.bottom),
       child: SafeArea(
         child: BlocBuilder<AppStateCubit, AppState>(
           builder: (context, state) {
@@ -49,7 +49,7 @@ class CompareManagerSheet extends StatelessWidget {
             return SizedBox(
               height: (birthdays.length + (compare != -1 ? 1 : 0)) * 65,
               child: Column(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: .min,
                 // Build a birthday manager
                 children: [
                   sheetHeader(
@@ -90,7 +90,7 @@ class CompareManagerSheet extends StatelessWidget {
 
     return Expanded(
       child: Material(
-        type: MaterialType.transparency,
+        type: .transparency,
         child: ListView.builder(
           itemCount: birthdays.length + (compare != -1 ? 1 : 0),
           itemBuilder: (context, index) {

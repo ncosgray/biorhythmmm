@@ -67,10 +67,10 @@ class HomePage extends StatelessWidget {
       ),
       body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: .start,
           children: <Widget>[
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: .spaceBetween,
               children: [
                 // Reset button
                 BlocSelector<AppStateCubit, AppState, bool>(
@@ -111,7 +111,7 @@ class HomePage extends StatelessWidget {
             // Chart
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
+                padding: const .symmetric(horizontal: 8),
                 child: BiorhythmChart(),
               ),
             ),

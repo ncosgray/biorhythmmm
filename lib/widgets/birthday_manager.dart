@@ -46,7 +46,7 @@ class BirthdayManagerSheet extends StatelessWidget {
     final padding = MediaQuery.of(context).viewInsets;
 
     return Padding(
-      padding: EdgeInsets.only(bottom: padding.bottom),
+      padding: .only(bottom: padding.bottom),
       child: SafeArea(
         child: BlocBuilder<AppStateCubit, AppState>(
           builder: (context, state) {
@@ -57,7 +57,7 @@ class BirthdayManagerSheet extends StatelessWidget {
             return SizedBox(
               height: birthdays.length * 55 + 180,
               child: Column(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: .min,
                 children: [
                   // Build a birthday manager
                   sheetHeader(
@@ -94,7 +94,7 @@ class BirthdayManagerSheet extends StatelessWidget {
   }) {
     return Expanded(
       child: Material(
-        type: MaterialType.transparency,
+        type: .transparency,
         child: ListView.separated(
           itemCount: birthdays.length,
           separatorBuilder: (_, _) => Divider(height: 1),
@@ -106,7 +106,7 @@ class BirthdayManagerSheet extends StatelessWidget {
               title: Text(entry.name, style: listTileText(context)),
               subtitle: Text(longDate(entry.date)),
               trailing: Row(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: .min,
                 children: [
                   // Toggle notifications for a birthday
                   if (notify)
@@ -261,7 +261,7 @@ Future<BirthdayEntry?> showBirthdayEditDialog(
                   ),
                   // Name field and date picker button
                   content: Column(
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisSize: .min,
                     children: [
                       TextField(
                         controller: nameController,

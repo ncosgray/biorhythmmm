@@ -53,13 +53,13 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
     toolbarHeight: 56,
   ),
   body: SingleChildScrollView(
-    padding: const EdgeInsets.all(8),
+    padding: const .all(8),
     child: SafeArea(
       child: Column(
         children: [
           // Select biorhythms
           Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const .all(8),
             child: Text(
               AppString.selectBiorhythmsTitle.translate(),
               style: titleText,
@@ -68,7 +68,7 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
           BlocSelector<AppStateCubit, AppState, List<Biorhythm>>(
             selector: (state) => state.biorhythms,
             builder: (context, biorhythms) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 for (final Biorhythm b in allBiorhythms)
                   CheckboxListTile.adaptive(
@@ -85,14 +85,14 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
                     enabled:
                         biorhythms.length > 1 ||
                         !context.read<AppStateCubit>().isBiorhythmSelected(b),
-                    visualDensity: VisualDensity.compact,
+                    visualDensity: .compact,
                   ),
               ],
             ),
           ),
           // Other settings
           Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const .all(8),
             child: Text(
               AppString.otherSettingsTitle.translate(),
               style: titleText,
@@ -197,14 +197,14 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
                 // Optional text about setting notifications
                 subtitle: showSetNotificationsLabel
                     ? FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: AlignmentGeometry.centerLeft,
+                        fit: .scaleDown,
+                        alignment: .centerLeft,
                         child: Row(
-                          mainAxisSize: MainAxisSize.min,
+                          mainAxisSize: .min,
                           children: [
                             Text(AppString.setNotificationsLabel.translate()),
                             Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8),
+                              padding: .symmetric(horizontal: 8),
                               child: Icon(notifyOnIcon, size: 16),
                             ),
                           ],

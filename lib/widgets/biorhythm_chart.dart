@@ -181,11 +181,11 @@ class _BiorhythmChartState extends State<BiorhythmChart>
 
         // Biorhythm chart and points
         return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: .stretch,
           children: <Widget>[
             Expanded(child: biorhythmChart),
             Padding(
-              padding: const EdgeInsets.all(8),
+              padding: const .all(8),
               child: Center(child: biorhythmPoints),
             ),
           ],
@@ -207,7 +207,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
   LineChart get biorhythmChart => LineChart(
     chartData,
     chartRendererKey: chartKey,
-    duration: Duration.zero,
+    duration: .zero,
     transformationConfig: chartTransformation,
   );
 
@@ -569,8 +569,8 @@ class _BiorhythmChartState extends State<BiorhythmChart>
         y1: -criticalThreshold,
         y2: criticalThreshold,
         gradient: LinearGradient(
-          begin: Alignment.bottomCenter,
-          end: Alignment.topCenter,
+          begin: .bottomCenter,
+          end: .topCenter,
           colors: [
             Colors.amberAccent.withValues(alpha: 0.01),
             Colors.amberAccent.withValues(alpha: 0.65),
@@ -624,10 +624,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
               },
             );
 
-            return Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: percentBoxes,
-            );
+            return Wrap(crossAxisAlignment: .center, children: percentBoxes);
           },
         ),
       ],
@@ -641,20 +638,20 @@ class _BiorhythmChartState extends State<BiorhythmChart>
         context.read<AppStateCubit>().compareBirthdayName ?? '';
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const .only(bottom: 8),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: .center,
         spacing: 8,
         children: [
           compareTitleBox(
             name: birthdayName,
-            compareSide: CompareSide.primary,
+            compareSide: .primary,
             dashedLine: false,
           ),
           Icon(Icons.sync_alt, size: primaryLabelText.fontSize!),
           compareTitleBox(
             name: compareBirthdayName,
-            compareSide: CompareSide.compare,
+            compareSide: .compare,
             dashedLine: true,
           ),
         ],
@@ -721,7 +718,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
 
     return GestureDetector(
       child: Container(
-        padding: EdgeInsets.all(8),
+        padding: .all(8),
         width: pointText.fontSize! * 6.2,
         height: pointText.fontSize! * 4.2,
         decoration: BoxDecoration(
@@ -731,26 +728,24 @@ class _BiorhythmChartState extends State<BiorhythmChart>
           ),
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: .center,
           children: [
             // Name label
             FittedBox(
-              fit: BoxFit.scaleDown,
+              fit: .scaleDown,
               child: Text(point.biorhythm.localizedName, style: labelText),
             ),
             // Point percentage with phase icon
             FittedBox(
-              fit: BoxFit.scaleDown,
+              fit: .scaleDown,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: .center,
+                mainAxisSize: .min,
                 children: [
                   Text(
                     percentText,
                     style: pointText.copyWith(
-                      fontStyle: isCompare
-                          ? FontStyle.italic
-                          : FontStyle.normal,
+                      fontStyle: isCompare ? .italic : .normal,
                     ),
                   ),
                   Icon(icon, size: pointText.fontSize!),

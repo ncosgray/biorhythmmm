@@ -57,12 +57,12 @@ Future<DateTime?> buildCupertinoDatePicker(
       return StatefulBuilder(
         builder: (context, setState) {
           return Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
               SizedBox(
                 height: MediaQuery.of(context).size.height / 3 - 40,
                 child: CupertinoDatePicker(
-                  mode: CupertinoDatePickerMode.date,
+                  mode: .date,
                   initialDateTime: initialDate ?? DateTime.now(),
                   maximumDate: DateTime.now(),
                   onDateTimeChanged: (picked) {
@@ -74,8 +74,8 @@ Future<DateTime?> buildCupertinoDatePicker(
               ),
               SafeArea(
                 child: CupertinoButton(
-                  padding: EdgeInsets.zero,
-                  sizeStyle: CupertinoButtonSize.medium,
+                  padding: .zero,
+                  sizeStyle: .medium,
                   child: Text(AppString.doneLabel.translate()),
                   onPressed: () {
                     Navigator.of(context).pop(tempPicked);
