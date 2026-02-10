@@ -1,0 +1,1 @@
+* Compatibility view helps compare two people's biorhythms.

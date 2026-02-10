@@ -31,7 +31,7 @@ Future<void> showAboutBiorhythms(BuildContext context) {
           return AlertDialog.adaptive(
             // About Biorhythms
             title: Padding(
-              padding: const EdgeInsets.all(8),
+              padding: const .all(8),
               child: Text(AppString.aboutTitle.translate()),
             ),
             content: SingleChildScrollView(
@@ -149,7 +149,7 @@ TextSpan buildTextWithBold({required String text, required String textToBold}) {
         if (i < parts.length - 1)
           TextSpan(
             text: textToBold,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+            style: const TextStyle(fontWeight: .bold),
           ),
       ],
     ],

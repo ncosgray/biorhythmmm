@@ -19,28 +19,28 @@ import 'package:flutter/material.dart';
 
 const bodyText = TextStyle(fontSize: 14);
 
-const bodyBoldText = TextStyle(fontSize: 14, fontWeight: FontWeight.bold);
+const bodyBoldText = TextStyle(fontSize: 14, fontWeight: .bold);
 
 const footerText = TextStyle(fontSize: 12, color: Colors.grey);
 
-const titleText = TextStyle(fontSize: 14, fontWeight: FontWeight.bold);
+const titleText = TextStyle(fontSize: 14, fontWeight: .bold);
 
 const titleDateText = TextStyle(
   fontSize: 14,
-  fontFeatures: [FontFeature.tabularFigures()],
+  fontFeatures: [.tabularFigures()],
 );
 
 const titleTodayText = TextStyle(
   fontSize: 14,
-  fontWeight: FontWeight.bold,
-  fontFeatures: [FontFeature.tabularFigures()],
+  fontWeight: .bold,
+  fontFeatures: [.tabularFigures()],
 );
 
 const buttonText = TextStyle(fontSize: 14);
 
 const labelText = TextStyle(fontSize: 16);
 
-const primaryLabelText = TextStyle(fontSize: 16, fontWeight: FontWeight.bold);
+const primaryLabelText = TextStyle(fontSize: 16, fontWeight: .bold);
 
 TextStyle listTileText(BuildContext context) =>
     (Platform.isIOS
@@ -56,6 +56,6 @@ TextStyle listTitleText(BuildContext context) =>
 
 const pointText = TextStyle(
   fontSize: 19,
-  fontWeight: FontWeight.bold,
-  fontFeatures: [FontFeature.tabularFigures()],
+  fontWeight: .bold,
+  fontFeatures: [.tabularFigures()],
 );

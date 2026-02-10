@@ -22,7 +22,7 @@ ThemeData lightTheme = ThemeData(
   colorScheme: ColorScheme.fromSeed(
     seedColor: Colors.orange.shade300,
     surface: Platform.isIOS ? CupertinoColors.systemBackground : null,
-    brightness: Brightness.light,
+    brightness: .light,
   ),
   appBarTheme: appBarTheme,
   dividerColor: Colors.black26,
@@ -35,7 +35,7 @@ ThemeData darkTheme = ThemeData(
   colorScheme: ColorScheme.fromSeed(
     seedColor: Colors.orange,
     surface: Platform.isIOS ? CupertinoColors.darkBackgroundGray : null,
-    brightness: Brightness.dark,
+    brightness: .dark,
   ),
   appBarTheme: appBarTheme,
   dividerColor: Colors.white12,

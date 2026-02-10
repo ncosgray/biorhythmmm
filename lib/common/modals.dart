@@ -40,17 +40,17 @@ Future<void> showModal(BuildContext context, Widget builder) async {
 // Adaptive modal sheet header
 Widget sheetHeader(BuildContext context, {required String title}) {
   return Padding(
-    padding: const EdgeInsets.only(left: 12, top: 12, right: 12),
+    padding: const .only(left: 12, top: 12, right: 12),
     child: ListTile(
       title: Text(title, style: listTitleText(context)),
       trailing: Platform.isIOS
           ? CupertinoButton(
-              padding: EdgeInsets.zero,
+              padding: .zero,
               child: Text(AppString.doneLabel.translate()),
               onPressed: () => Navigator.of(context).maybePop(),
             )
           : IconButton(
-              padding: EdgeInsets.zero,
+              padding: .zero,
               icon: Icon(Icons.close),
               tooltip: AppString.doneLabel.translate(),
               onPressed: () => Navigator.of(context).maybePop(),

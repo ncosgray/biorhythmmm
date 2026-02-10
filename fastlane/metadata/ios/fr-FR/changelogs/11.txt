@@ -1,0 +1,1 @@
+* La fonction de comparaison de compatibilité permet de comparer les biorythmes de deux personnes.
