@@ -31,6 +31,10 @@ The app also includes support for four other secondary cycles.
 | :--: | :--: |
 | <a href="https://play.google.com/store/apps/details?id=com.nathanatos.Biorhythmmm"><img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" width="206" height="80"/></a> | <a href="https://apps.apple.com/us/app/biorhythmmm/id6737791240"><img src="https://www.nathanatos.com/images/ios-app-store-badge.png" alt="Download on the App Store" width="168" height="50"/></a> |
 
+#### Android App Verification
+- Package ID: `com.nathanatos.Biorhythmmm`
+- SHA-256 hash of signing certificate: `01:D1:61:8A:54:57:DF:EC:B9:46:03:01:AB:6D:7A:BA:4F:FD:16:BE:6E:93:A0:E5:C7:DF:EC:F4:35:4B:C5:51`
+
 ### About
 
 Biorhythmmm is a free, open-source mobile app licensed under the terms of the BSD license.
