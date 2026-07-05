@@ -30,10 +30,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // ignore: depend_on_referenced_packages
 import 'package:vector_math/vector_math_64.dart' show Vector3;
 
-// Chart
-final GlobalKey chartKey = GlobalKey();
-final TransformationController chartController = TransformationController();
-
 // Chart ranges
 final int chartRange = 180;
 final int chartRangeSplit = (chartRange / 2).floor();
@@ -53,6 +49,10 @@ class BiorhythmChart extends StatefulWidget {
 
 class _BiorhythmChartState extends State<BiorhythmChart>
     with WidgetsBindingObserver {
+  // Chart
+  final GlobalKey chartKey = GlobalKey();
+  final TransformationController chartController = TransformationController();
+
   // State variables
   List<BiorhythmPoint> _points = [];
   List<BiorhythmPoint> _comparePoints = [];

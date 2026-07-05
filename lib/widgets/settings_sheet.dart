@@ -34,7 +34,12 @@ import 'package:pull_down_button/pull_down_button.dart';
 void showSettingsSheet(BuildContext context) {
   if (Platform.isIOS) {
     Navigator.of(context).push(
-      CupertinoSheetRoute<void>(builder: (_) => buildSettingsSheet(context)),
+      CupertinoSheetRoute<void>(
+        scrollableBuilder: (BuildContext context, ScrollController controller) {
+          Widget widgetBuilder(BuildContext _) => buildSettingsSheet(context);
+          return widgetBuilder(context);
+        },
+      ),
     );
   } else {
     Navigator.of(context).push(
