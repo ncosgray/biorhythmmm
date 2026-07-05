@@ -34,7 +34,8 @@ int dateDiff(DateTime f, DateTime t, {int addDays = 0}) {
     t.day,
   ).toUtc().add(Duration(days: addDays));
 
-  return to.difference(from).inDays;
+  // Round hours to days so a DST shift doesn't drop a calendar day
+  return (to.difference(from).inHours / 24).round();
 }
 
 // Format date as short date
