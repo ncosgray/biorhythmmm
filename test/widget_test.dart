@@ -189,5 +189,26 @@ void main() {
       await tester.pumpAndSettle();
       expect(Prefs.showCriticalZone, isFalse);
     });
+
+    testWidgets('changing default zoom updates preferences', (
+      WidgetTester tester,
+    ) async {
+      await openSettings(tester);
+
+      // Zoom dropdown shows the default selection
+      final Finder zoomDropdown = find.byType(DropdownButton<int>);
+      await tester.ensureVisible(zoomDropdown);
+      expect(find.text('Default zoom level'), findsOneWidget);
+      expect(find.text('4 weeks'), findsOneWidget);
+
+      // Select a different zoom level from the dropdown
+      await tester.tap(zoomDropdown);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('8 weeks').last);
+      await tester.pumpAndSettle();
+
+      expect(Prefs.defaultZoom, ZoomLevel.large.days);
+      expect(find.text('8 weeks'), findsOneWidget);
+    });
   });
 }

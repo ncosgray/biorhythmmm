@@ -29,6 +29,7 @@
   "compareManageLabel": "バイオリズムを比較する",
   "dateNoneLabel": "日付が選択されていません",
   "dateSelectLabel": "日付を選択",
+  "defaultZoomLabel": "デフォルトのズームレベル",
   "deleteLabel": "消去",
   "doneLabel": "終わり",
   "editLabel": "編集",
@@ -51,5 +52,6 @@
   "showCriticalZoneLabel": "グラフにクリティカルゾーンを表示する",
   "todayLabel": "今日",
   "toggleExtraLabel": "見る",
-  "useAccessibleColorsLabel": "色覚異常者向けパレット"
+  "useAccessibleColorsLabel": "色覚異常者向けパレット",
+  "zoomWeeks": "{{weeks}}週間"
 }

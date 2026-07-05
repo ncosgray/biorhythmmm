@@ -43,6 +43,7 @@ void main() {
       expect(cubit.state.useAccessibleColors, isFalse);
       expect(cubit.state.showExtraPoints, isFalse);
       expect(cubit.state.showCriticalZone, isTrue);
+      expect(cubit.state.defaultZoom, ZoomLevel.medium.days);
       expect(cubit.state.showResetButton, isFalse);
       expect(cubit.state.reload, isFalse);
     });
@@ -230,6 +231,17 @@ void main() {
       cubit.setCriticalZone(true);
       expect(cubit.state.showCriticalZone, isTrue);
       expect(Prefs.showCriticalZone, isTrue);
+    });
+
+    test('setDefaultZoom persists', () {
+      cubit.setDefaultZoom(ZoomLevel.large.days);
+      expect(cubit.state.defaultZoom, ZoomLevel.large.days);
+      expect(cubit.defaultZoom, ZoomLevel.large.days);
+      expect(Prefs.defaultZoom, ZoomLevel.large.days);
+
+      cubit.setDefaultZoom(ZoomLevel.small.days);
+      expect(cubit.state.defaultZoom, ZoomLevel.small.days);
+      expect(Prefs.defaultZoom, ZoomLevel.small.days);
     });
   });
 

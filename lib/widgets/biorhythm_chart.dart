@@ -34,7 +34,6 @@ import 'package:vector_math/vector_math_64.dart' show Vector3;
 final int chartRange = 180;
 final int chartRangeSplit = (chartRange / 2).floor();
 final int chartGrid = 7;
-final double chartWindow = chartGrid * 4.5;
 
 // Enum for tracking which birthday is being highlighted
 enum CompareSide { primary, compare }
@@ -54,6 +53,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
   final TransformationController chartController = TransformationController();
 
   // State variables
+  double _chartWindow = 0;
   List<BiorhythmPoint> _points = [];
   List<BiorhythmPoint> _comparePoints = [];
   Biorhythm? _highlighted;
@@ -99,6 +99,10 @@ class _BiorhythmChartState extends State<BiorhythmChart>
   // Reset biorhythm chart and points to today
   void resetChart() {
     if (mounted) {
+      // Set the chart zoom level per settings, adding 2 days for readability
+      final double zoom = context.read<AppStateCubit>().defaultZoom.toDouble();
+      _chartWindow = zoom + 2;
+
       setPoints();
       _highlighted = null;
       _compareHighlighted = null;
@@ -167,8 +171,8 @@ class _BiorhythmChartState extends State<BiorhythmChart>
           // Process a reload request
           if (state.reload) {
             // Scale chart to show default range centered on today
-            double scale = chartRange / chartWindow;
-            double offset = -((chartRange - chartWindow + 1) / 2);
+            double scale = chartRange / _chartWindow;
+            double offset = -((chartRange - _chartWindow + 1) / 2);
             double widthFactor =
                 chartKey.currentContext!.size!.width / chartRange;
             double translate = offset * widthFactor;
@@ -584,7 +588,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
   // Chart tranformation
   FlTransformationConfig get chartTransformation => FlTransformationConfig(
     scaleAxis: FlScaleAxis.horizontal,
-    maxScale: chartWindow,
+    maxScale: _chartWindow,
     scaleEnabled: true,
     panEnabled: true,
     transformationController: chartController,

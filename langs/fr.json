@@ -29,6 +29,7 @@
   "compareManageLabel": "Comparer les biorythmes",
   "dateNoneLabel": "Aucune date sélectionnée",
   "dateSelectLabel": "Sélectionnez la date",
+  "defaultZoomLabel": "Niveau de zoom par défaut",
   "deleteLabel": "Supprimer",
   "doneLabel": "Fait",
   "editLabel": "Modifier",
@@ -51,5 +52,6 @@
   "showCriticalZoneLabel": "Afficher la zone critique sur le graphique",
   "todayLabel": "Aujourd'hui",
   "toggleExtraLabel": "Voir",
-  "useAccessibleColorsLabel": "Palette adaptée aux daltoniens"
+  "useAccessibleColorsLabel": "Palette adaptée aux daltoniens",
+  "zoomWeeks": "{{weeks}} semaines"
 }

@@ -29,6 +29,7 @@
   "compareManageLabel": "比较生物节律",
   "dateNoneLabel": "未选择日期",
   "dateSelectLabel": "选择日期",
+  "defaultZoomLabel": "默认缩放级别",
   "deleteLabel": "删除",
   "doneLabel": "完毕",
   "editLabel": "编辑",
@@ -51,5 +52,6 @@
   "showCriticalZoneLabel": "在图上显示临界区域",
   "todayLabel": "今天",
   "toggleExtraLabel": "查看",
-  "useAccessibleColorsLabel": "色盲安全调色板"
+  "useAccessibleColorsLabel": "色盲安全调色板",
+  "zoomWeeks": "{{weeks}}周"
 }

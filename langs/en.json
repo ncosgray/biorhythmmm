@@ -29,6 +29,7 @@
   "compareManageLabel": "Compare biorhythms",
   "dateNoneLabel": "No date selected",
   "dateSelectLabel": "Select date",
+  "defaultZoomLabel": "Default zoom level",
   "deleteLabel": "Delete",
   "doneLabel": "Done",
   "editLabel": "Edit",
@@ -51,5 +52,6 @@
   "showCriticalZoneLabel": "Show critical zone on graph",
   "todayLabel": "Today",
   "toggleExtraLabel": "View",
-  "useAccessibleColorsLabel": "Colorblind safe palette"
+  "useAccessibleColorsLabel": "Colorblind safe palette",
+  "zoomWeeks": "{{weeks}} weeks"
 }

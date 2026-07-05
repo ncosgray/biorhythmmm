@@ -21,6 +21,7 @@ import 'package:biorhythmmm/common/styles.dart';
 import 'package:biorhythmmm/data/app_state.dart';
 import 'package:biorhythmmm/data/biorhythm.dart';
 import 'package:biorhythmmm/data/localization.dart';
+import 'package:biorhythmmm/data/prefs.dart';
 import 'package:biorhythmmm/widgets/birthday_manager.dart';
 import 'package:biorhythmmm/widgets/time_picker.dart';
 
@@ -251,6 +252,57 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
                   context.read<AppStateCubit>().setCriticalZone(value);
                 },
               ),
+            ),
+          ),
+          // Default zoom level
+          ListTile(
+            title: Text(
+              AppString.defaultZoomLabel.translate(),
+              style: listTileText(context),
+            ),
+            trailing: BlocSelector<AppStateCubit, AppState, int>(
+              selector: (state) => state.defaultZoom,
+              builder: (context, defaultZoom) {
+                if (Platform.isIOS) {
+                  // iOS styled dropdown menu
+                  return PullDownButton(
+                    buttonBuilder: (_, showMenu) => adaptiveSettingButton(
+                      onPressed: showMenu,
+                      child: Text(
+                        ZoomLevel.values
+                            .firstWhere((z) => z.days == defaultZoom)
+                            .name,
+                      ),
+                    ),
+                    // Zoom options
+                    itemBuilder: (_) => [
+                      for (final ZoomLevel z in ZoomLevel.values)
+                        PullDownMenuItem.selectable(
+                          selected: z.days == defaultZoom,
+                          title: z.name,
+                          // Set selected zoom level
+                          onTap: () => context
+                              .read<AppStateCubit>()
+                              .setDefaultZoom(z.days),
+                        ),
+                    ],
+                  );
+                } else {
+                  // Material dropdown menu
+                  return DropdownButton<int>(
+                    value: defaultZoom,
+                    icon: const Icon(Icons.keyboard_arrow_down),
+                    // Zoom options
+                    items: [
+                      for (final ZoomLevel z in ZoomLevel.values)
+                        DropdownMenuItem(value: z.days, child: Text(z.name)),
+                    ],
+                    // Set selected zoom level
+                    onChanged: (int? newValue) =>
+                        context.read<AppStateCubit>().setDefaultZoom(newValue!),
+                  );
+                }
+              },
             ),
           ),
         ],

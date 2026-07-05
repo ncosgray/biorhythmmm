@@ -150,6 +150,7 @@ void main() {
         ),
         '• Physical (23 days)',
       );
+      expect(AppString.zoomWeeks.translate(weeks: 4), '4 weeks');
       expect(AppString.aboutApp.translate(), contains(appName));
     });
   });

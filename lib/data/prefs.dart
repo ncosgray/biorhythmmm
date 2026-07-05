@@ -56,6 +56,7 @@ abstract class Prefs {
   static String get _notificationTimeKey => 'notificationTime';
   static String get _useAccessibleColorsKey => 'useAccessibleColors';
   static String get _showCriticalZoneKey => 'showCriticalZone';
+  static String get _defaultZoomKey => 'defaultZoom';
 
   // Determine if a birthday has been set
   static bool get isBirthdaySet =>
@@ -159,6 +160,16 @@ abstract class Prefs {
       _sharedPrefs.getBool(_showCriticalZoneKey) ?? true;
   static set showCriticalZone(bool s) =>
       _sharedPrefs.setBool(_showCriticalZoneKey, s);
+
+  // Get and set default zoom level, falling back if not a valid option
+  static int get defaultZoom {
+    final int z = _sharedPrefs.getInt(_defaultZoomKey) ?? ZoomLevel.medium.days;
+    return ZoomLevel.values
+        .firstWhere((l) => l.days == z, orElse: () => ZoomLevel.medium)
+        .days;
+  }
+
+  static set defaultZoom(int z) => _sharedPrefs.setInt(_defaultZoomKey, z);
 }
 
 class BirthdayEntry {
@@ -178,4 +189,21 @@ class BirthdayEntry {
     'date': date.millisecondsSinceEpoch,
     'notify': notify,
   };
+}
+
+// Chart zoom levels
+enum ZoomLevel {
+  small(14),
+  medium(28),
+  large(56);
+
+  const ZoomLevel(this.days);
+
+  final int days;
+
+  // Weeks conversion
+  int get weeks => (days / 7).floor();
+
+  // Display name
+  String get name => AppString.zoomWeeks.translate(weeks: weeks);
 }
