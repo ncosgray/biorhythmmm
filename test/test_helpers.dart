@@ -34,7 +34,7 @@ class FakeNotificationsPlatform extends AndroidFlutterLocalNotificationsPlugin {
     String? body,
     required tz.TZDateTime scheduledDate,
     AndroidNotificationDetails? notificationDetails,
-    required AndroidScheduleMode scheduleMode,
+    AndroidScheduleMode? scheduleMode,
     String? payload,
     DateTimeComponents? matchDateTimeComponents,
   }) async => calls.add('zonedSchedule');
@@ -51,12 +51,12 @@ class FakeNotificationsPlatform extends AndroidFlutterLocalNotificationsPlugin {
       calls.add('cancelAllPendingNotifications');
 
   @override
-  Future<List<PendingNotificationRequest>> pendingNotificationRequests() async =>
-      [];
+  Future<List<PendingNotificationRequest>>
+  pendingNotificationRequests() async => [];
 
   @override
-  Future<NotificationAppLaunchDetails?> getNotificationAppLaunchDetails() async =>
-      null;
+  Future<NotificationAppLaunchDetails?>
+  getNotificationAppLaunchDetails() async => null;
 }
 
 // Set up a test environment: time zone, locale, in-memory preferences,
