@@ -11,6 +11,7 @@ import 'package:biorhythmmm/widgets/home_page.dart';
 
 import 'dart:convert';
 import 'dart:io';
+import 'package:fl_chart/fl_chart.dart' show LineChart;
 import 'package:flutter/foundation.dart' show FlutterExceptionHandler;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -209,6 +210,15 @@ void main() {
 
       expect(Prefs.defaultZoom, ZoomLevel.large.days);
       expect(find.text('8 weeks'), findsOneWidget);
+
+      // Returning to the home page shows the chart at the new zoom level
+      await tester.tap(find.byType(CloseButton));
+      await tester.pumpAndSettle();
+      final LineChart chart = tester.widget<LineChart>(find.byType(LineChart));
+      expect(
+        chart.transformationConfig.maxScale,
+        ZoomLevel.large.days + 2,
+      );
     });
   });
 }

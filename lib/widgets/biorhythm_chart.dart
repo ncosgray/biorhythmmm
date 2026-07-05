@@ -165,7 +165,11 @@ class _BiorhythmChartState extends State<BiorhythmChart>
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AppStateCubit, AppState>(
+    return BlocConsumer<AppStateCubit, AppState>(
+      // Redraw the chart when the default zoom level setting changes
+      listenWhen: (previous, current) =>
+          previous.defaultZoom != current.defaultZoom,
+      listener: (context, state) => resetChart(),
       builder: (context, state) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           // Process a reload request
