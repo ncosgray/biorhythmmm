@@ -100,14 +100,14 @@ abstract class Prefs {
     list.map((b) => jsonEncode(b.toJson())).toList(),
   );
 
-  // Get and set biorhythm list
+  // Get and set biorhythm list, skipping names that are not valid options
   static List<Biorhythm> get biorhythms {
     List<String>? l = _sharedPrefs.getStringList(_biorhythmsKey);
     if (l == null) {
       return primaryBiorhythms;
     } else {
       return l
-          .map((name) => Biorhythm.values.where((b) => b.name == name).first)
+          .expand((name) => Biorhythm.values.where((b) => b.name == name))
           .toList();
     }
   }
@@ -115,9 +115,15 @@ abstract class Prefs {
   static set biorhythms(List<Biorhythm> l) =>
       _sharedPrefs.setStringList(_biorhythmsKey, l.map((b) => b.name).toList());
 
-  // Get and set notification choice
-  static NotificationType get notifications =>
-      NotificationType.values[_sharedPrefs.getInt(_notificationsKey) ?? 0];
+  // Get and set notification choice, falling back if not a valid option
+  static NotificationType get notifications {
+    final int t = _sharedPrefs.getInt(_notificationsKey) ?? 0;
+    return NotificationType.values.firstWhere(
+      (n) => n.value == t,
+      orElse: () => NotificationType.none,
+    );
+  }
+
   static set notifications(NotificationType n) =>
       _sharedPrefs.setInt(_notificationsKey, n.value);
 

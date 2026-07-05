@@ -156,6 +156,22 @@ void main() {
     });
   });
 
+  group('invalid stored preferences', () {
+    test('unknown notification type falls back to none', () async {
+      await initTestEnvironment(prefs: {'notifications': 99});
+      expect(Prefs.notifications, NotificationType.none);
+    });
+
+    test('unrecognized biorhythm names are skipped', () async {
+      await initTestEnvironment(
+        prefs: {
+          'biorhythms': ['Physical', 'Bogus', 'Emotional'],
+        },
+      );
+      expect(Prefs.biorhythms, [Biorhythm.physical, Biorhythm.emotional]);
+    });
+  });
+
   group('ZoomLevel', () {
     setUp(() async {
       await initTestEnvironment();
