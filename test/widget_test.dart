@@ -122,6 +122,26 @@ void main() {
     }
   });
 
+  group('home page does not overflow at larger font scales', () {
+    // The percent tiles have a fixed height, so taller-than-expected text
+    // (font upgrades, device font scale settings) must scale down instead of
+    // overflowing the bottom. Regression test for a "BOTTOM OVERFLOWED BY
+    // 1.2 PIXELS" banner seen in Android screenshots, which reproduces with
+    // real Roboto metrics at scale 1.3 (the FlutterTest font is too wide to
+    // trigger it, so load the production font)
+    for (final double scale in [1.0, 1.3, 1.5]) {
+      testWidgets('font scale $scale', (WidgetTester tester) async {
+        tester.platformDispatcher.textScaleFactorTestValue = scale;
+        addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+        await loadRobotoFonts();
+        await pumpTestApp(tester);
+
+        expect(find.textContaining('%'), findsWidgets);
+      });
+    }
+  });
+
   group('settings sheet', () {
     Future<void> openSettings(WidgetTester tester) async {
       await pumpTestApp(tester);

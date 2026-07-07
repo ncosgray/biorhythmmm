@@ -739,25 +739,29 @@ class _BiorhythmChartState extends State<BiorhythmChart>
           mainAxisAlignment: .center,
           children: [
             // Name label
-            FittedBox(
-              fit: .scaleDown,
-              child: Text(point.biorhythm.localizedName, style: labelText),
+            Flexible(
+              child: FittedBox(
+                fit: .scaleDown,
+                child: Text(point.biorhythm.localizedName, style: labelText),
+              ),
             ),
             // Point percentage with phase icon
-            FittedBox(
-              fit: .scaleDown,
-              child: Row(
-                mainAxisAlignment: .center,
-                mainAxisSize: .min,
-                children: [
-                  Text(
-                    percentText,
-                    style: pointText.copyWith(
-                      fontStyle: isCompare ? .italic : .normal,
+            Flexible(
+              child: FittedBox(
+                fit: .scaleDown,
+                child: Row(
+                  mainAxisAlignment: .center,
+                  mainAxisSize: .min,
+                  children: [
+                    Text(
+                      percentText,
+                      style: pointText.copyWith(
+                        fontStyle: isCompare ? .italic : .normal,
+                      ),
                     ),
-                  ),
-                  Icon(icon, size: pointText.fontSize!),
-                ],
+                    Icon(icon, size: pointText.fontSize!),
+                  ],
+                ),
               ),
             ),
           ],
