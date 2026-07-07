@@ -100,7 +100,7 @@ SCREENSHOT_DIR="screenshots-output"
 ##     Result: 0_APP_IPAD_PRO_3GEN_129_0.png, 1_APP_IPAD_PRO_3GEN_129_1.png, ...
 ##
 DEVICE_ENTRIES=(
-    "ios:iPad Air 13-inch (M3):{NUM}_APP_IPAD_PRO_3GEN_129_{NUM}.png"
+    "ios:iPad Air 13-inch (M4):{NUM}_APP_IPAD_PRO_3GEN_129_{NUM}.png"
     "ios:iPhone 16 Plus:{NUM}_APP_IPHONE_16_PLUS_{NUM}.png"
     "android:Pixel_9_API_36:phone{NUM}_{LOCALE}.png"
     "android:Pixel_C_Tablet_API_33:tablet{NUM}_{LOCALE}.png"
@@ -276,6 +276,12 @@ run_tests_on_avd() {
     adb shell "content insert --uri content://settings/system --bind name:s:system_locales --bind value:s:$LOCALE"
     adb shell "settings put System system_locales $LOCALE"
     adb shell "am broadcast -a com.android.intent.action.LOCALE_CHANGED --es com.android.intent.extra.LOCALE $LOCALE"
+
+    # Reset font scale and display density to defaults so screenshots are
+    # consistent regardless of accessibility settings saved in the AVD
+    adb shell "settings put system font_scale 1.0"
+    adb shell "wm density reset"
+
     adb reboot
     adb wait-for-device shell 'while [ "$(getprop sys.boot_completed | tr -d '\r')" != "1" ]; do sleep 1; done'
     adb shell input keyevent 82 # Unlock the screen
