@@ -32,6 +32,7 @@ class AppState {
     this.useAccessibleColors,
     this.showExtraPoints,
     this.showCriticalZone,
+    this.defaultZoom,
     this.showResetButton,
     this.reload,
   );
@@ -45,6 +46,7 @@ class AppState {
   final bool useAccessibleColors;
   final bool showExtraPoints;
   final bool showCriticalZone;
+  final int defaultZoom;
   final bool showResetButton;
   final bool reload;
 
@@ -59,6 +61,7 @@ class AppState {
     Prefs.useAccessibleColors,
     Prefs.biorhythms.length == allBiorhythms.length ? true : false,
     Prefs.showCriticalZone,
+    Prefs.defaultZoom,
     false,
     false,
   );
@@ -74,6 +77,7 @@ class AppState {
     bool? useAccessibleColors,
     bool? showExtraPoints,
     bool? showCriticalZone,
+    int? defaultZoom,
     bool? showResetButton,
     bool? reload,
   }) {
@@ -87,6 +91,7 @@ class AppState {
       useAccessibleColors ?? this.useAccessibleColors,
       showExtraPoints ?? this.showExtraPoints,
       showCriticalZone ?? this.showCriticalZone,
+      defaultZoom ?? this.defaultZoom,
       showResetButton ?? this.showResetButton,
       reload ?? this.reload,
     );
@@ -110,6 +115,7 @@ class AppStateCubit extends Cubit<AppState> {
   bool get useAccessibleColors => state.useAccessibleColors;
   bool get showExtraPoints => state.showExtraPoints;
   bool get showCriticalZone => state.showCriticalZone;
+  int get defaultZoom => state.defaultZoom;
   bool get showResetButton => state.showResetButton;
 
   // Manage birthday
@@ -278,6 +284,12 @@ class AppStateCubit extends Cubit<AppState> {
   void setCriticalZone(bool newShowCriticalZone) {
     Prefs.showCriticalZone = newShowCriticalZone;
     emit(state.copyWith(showCriticalZone: newShowCriticalZone));
+  }
+
+  // Set default zoom level
+  void setDefaultZoom(int newDefaultZoom) {
+    Prefs.defaultZoom = newDefaultZoom;
+    emit(state.copyWith(defaultZoom: newDefaultZoom));
   }
 
   // Enable reset button

@@ -11,6 +11,7 @@ import 'package:biorhythmmm/widgets/home_page.dart';
 
 import 'dart:convert';
 import 'dart:io';
+import 'package:fl_chart/fl_chart.dart' show LineChart;
 import 'package:flutter/foundation.dart' show FlutterExceptionHandler;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -121,6 +122,26 @@ void main() {
     }
   });
 
+  group('home page does not overflow at larger font scales', () {
+    // The percent tiles have a fixed height, so taller-than-expected text
+    // (font upgrades, device font scale settings) must scale down instead of
+    // overflowing the bottom. Regression test for a "BOTTOM OVERFLOWED BY
+    // 1.2 PIXELS" banner seen in Android screenshots, which reproduces with
+    // real Roboto metrics at scale 1.3 (the FlutterTest font is too wide to
+    // trigger it, so load the production font)
+    for (final double scale in [1.0, 1.3, 1.5]) {
+      testWidgets('font scale $scale', (WidgetTester tester) async {
+        tester.platformDispatcher.textScaleFactorTestValue = scale;
+        addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+        await loadRobotoFonts();
+        await pumpTestApp(tester);
+
+        expect(find.textContaining('%'), findsWidgets);
+      });
+    }
+  });
+
   group('settings sheet', () {
     Future<void> openSettings(WidgetTester tester) async {
       await pumpTestApp(tester);
@@ -188,6 +209,36 @@ void main() {
       await tester.tap(criticalSwitch);
       await tester.pumpAndSettle();
       expect(Prefs.showCriticalZone, isFalse);
+    });
+
+    testWidgets('changing default zoom updates preferences', (
+      WidgetTester tester,
+    ) async {
+      await openSettings(tester);
+
+      // Zoom dropdown shows the default selection
+      final Finder zoomDropdown = find.byType(DropdownButton<int>);
+      await tester.ensureVisible(zoomDropdown);
+      expect(find.text('Default zoom level'), findsOneWidget);
+      expect(find.text('4 weeks'), findsOneWidget);
+
+      // Select a different zoom level from the dropdown
+      await tester.tap(zoomDropdown);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('8 weeks').last);
+      await tester.pumpAndSettle();
+
+      expect(Prefs.defaultZoom, ZoomLevel.large.days);
+      expect(find.text('8 weeks'), findsOneWidget);
+
+      // Returning to the home page shows the chart at the new zoom level
+      await tester.tap(find.byType(CloseButton));
+      await tester.pumpAndSettle();
+      final LineChart chart = tester.widget<LineChart>(find.byType(LineChart));
+      expect(
+        chart.transformationConfig.maxScale,
+        ZoomLevel.large.days + 2,
+      );
     });
   });
 }

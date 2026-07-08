@@ -48,6 +48,10 @@ void main() {
       expect(Prefs.showCriticalZone, isTrue);
     });
 
+    test('default zoom defaults to medium', () {
+      expect(Prefs.defaultZoom, ZoomLevel.medium.days);
+    });
+
     test('birthdays falls back to a default entry', () {
       final List<BirthdayEntry> birthdays = Prefs.birthdays;
       expect(birthdays.length, 1);
@@ -137,6 +141,52 @@ void main() {
       expect(Prefs.showCriticalZone, isFalse);
       Prefs.showCriticalZone = true;
       expect(Prefs.showCriticalZone, isTrue);
+    });
+
+    test('default zoom persists for every zoom level', () {
+      for (final ZoomLevel z in ZoomLevel.values) {
+        Prefs.defaultZoom = z.days;
+        expect(Prefs.defaultZoom, z.days);
+      }
+    });
+
+    test('invalid stored zoom falls back to medium', () {
+      Prefs.defaultZoom = 13;
+      expect(Prefs.defaultZoom, ZoomLevel.medium.days);
+    });
+  });
+
+  group('invalid stored preferences', () {
+    test('unknown notification type falls back to none', () async {
+      await initTestEnvironment(prefs: {'notifications': 99});
+      expect(Prefs.notifications, NotificationType.none);
+    });
+
+    test('unrecognized biorhythm names are skipped', () async {
+      await initTestEnvironment(
+        prefs: {
+          'biorhythms': ['Physical', 'Bogus', 'Emotional'],
+        },
+      );
+      expect(Prefs.biorhythms, [Biorhythm.physical, Biorhythm.emotional]);
+    });
+  });
+
+  group('ZoomLevel', () {
+    setUp(() async {
+      await initTestEnvironment();
+    });
+
+    test('converts days to whole weeks', () {
+      expect(ZoomLevel.small.weeks, 2);
+      expect(ZoomLevel.medium.weeks, 4);
+      expect(ZoomLevel.large.weeks, 8);
+    });
+
+    test('display name is the localized weeks string', () {
+      expect(ZoomLevel.small.name, '2 weeks');
+      expect(ZoomLevel.medium.name, '4 weeks');
+      expect(ZoomLevel.large.name, '8 weeks');
     });
   });
 

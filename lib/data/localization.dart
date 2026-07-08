@@ -76,6 +76,7 @@ enum AppString {
   compareManageLabel('compareManageLabel'),
   dateNoneLabel('dateNoneLabel'),
   dateSelectLabel('dateSelectLabel'),
+  defaultZoomLabel('defaultZoomLabel'),
   deleteLabel('deleteLabel'),
   doneLabel('doneLabel'),
   editLabel('editLabel'),
@@ -98,19 +99,26 @@ enum AppString {
   showCriticalZoneLabel('showCriticalZoneLabel'),
   todayLabel('todayLabel'),
   toggleExtraLabel('toggleExtraLabel'),
-  useAccessibleColorsLabel('useAccessibleColorsLabel');
+  useAccessibleColorsLabel('useAccessibleColorsLabel'),
+  zoomWeeks('zoomWeeks');
 
   const AppString(this.key);
 
   final String key;
 
   // Lookup localized string and apply substitutions
-  String translate({String name = '', String biorhythm = '', int days = 0}) {
+  String translate({
+    String name = '',
+    String biorhythm = '',
+    int days = 0,
+    int weeks = 0,
+  }) {
     return AppLocalizations.translate(key)
         .replaceAll('{{app_name}}', appName)
         .replaceAll('{{name}}', name)
         .replaceAll('{{biorhythm}}', biorhythm)
-        .replaceAll('{{days}}', days.toString());
+        .replaceAll('{{days}}', days.toString())
+        .replaceAll('{{weeks}}', weeks.toString());
   }
 }
 

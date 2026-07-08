@@ -1,0 +1,2 @@
+* New feature: set default zoom level.
+* Bug fixes.

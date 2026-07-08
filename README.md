@@ -3,6 +3,7 @@
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/ncosgray/Biorhythmmm?label=latest%20version&sort=semver)](https://github.com/ncosgray/Biorhythmmm/releases)
 [![GitHub issues](https://img.shields.io/github/issues/ncosgray/Biorhythmmm?color=red)](https://github.com/ncosgray/Biorhythmmm/issues)
 [![GitHub license](https://img.shields.io/github/license/ncosgray/Biorhythmmm?color=lightgrey)](https://github.com/ncosgray/Biorhythmmm/blob/master/LICENSE.txt)
+[![Tests](https://img.shields.io/github/actions/workflow/status/ncosgray/Biorhythmmm/tests.yml?branch=main&label=tests)](https://github.com/ncosgray/Biorhythmmm/actions/workflows/tests.yml)
 
 ### An interactive graph of your biorhythm cycles.
 
@@ -40,3 +41,5 @@ The app also includes support for four other secondary cycles.
 Biorhythmmm is a free, open-source mobile app licensed under the terms of the BSD license.
 
 Author: [Nathan Cosgray](https://www.nathanatos.com)
+
+*Portions of this app were written by Claude Code and reviewed, tested and approved by a human.*

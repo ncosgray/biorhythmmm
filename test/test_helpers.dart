@@ -4,7 +4,9 @@
 import 'package:biorhythmmm/data/localization.dart';
 import 'package:biorhythmmm/data/prefs.dart';
 
-import 'package:flutter/services.dart' show rootBundle;
+import 'dart:io' show File, Platform;
+import 'dart:typed_data' show ByteData, Uint8List;
+import 'package:flutter/services.dart' show FontLoader, rootBundle;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
@@ -34,7 +36,7 @@ class FakeNotificationsPlatform extends AndroidFlutterLocalNotificationsPlugin {
     String? body,
     required tz.TZDateTime scheduledDate,
     AndroidNotificationDetails? notificationDetails,
-    required AndroidScheduleMode scheduleMode,
+    AndroidScheduleMode? scheduleMode,
     String? payload,
     DateTimeComponents? matchDateTimeComponents,
   }) async => calls.add('zonedSchedule');
@@ -51,12 +53,28 @@ class FakeNotificationsPlatform extends AndroidFlutterLocalNotificationsPlugin {
       calls.add('cancelAllPendingNotifications');
 
   @override
-  Future<List<PendingNotificationRequest>> pendingNotificationRequests() async =>
-      [];
+  Future<List<PendingNotificationRequest>>
+  pendingNotificationRequests() async => [];
 
   @override
-  Future<NotificationAppLaunchDetails?> getNotificationAppLaunchDetails() async =>
-      null;
+  Future<NotificationAppLaunchDetails?>
+  getNotificationAppLaunchDetails() async => null;
+}
+
+// Load the real Roboto font from the Flutter SDK cache so text renders with
+// production metrics instead of the blocky FlutterTest font. Needed by tests
+// that check for text overflow, where glyph proportions matter.
+Future<void> loadRobotoFonts() async {
+  final String root = Platform.environment['FLUTTER_ROOT']!;
+  final String dir = '$root/bin/cache/artifacts/material_fonts';
+  // Read synchronously: real async file I/O awaited inside the test's
+  // fake-async zone would deadlock
+  final FontLoader loader = FontLoader('Roboto');
+  for (final String file in ['Roboto-Regular.ttf', 'Roboto-Bold.ttf']) {
+    final Uint8List bytes = File('$dir/$file').readAsBytesSync();
+    loader.addFont(Future.value(ByteData.view(bytes.buffer)));
+  }
+  await loader.load();
 }
 
 // Set up a test environment: time zone, locale, in-memory preferences,

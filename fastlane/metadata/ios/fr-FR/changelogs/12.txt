@@ -1,0 +1,2 @@
+* Nouvelle fonctionnalité : définir le niveau de zoom par défaut.
+* Corrections de bogues.

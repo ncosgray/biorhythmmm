@@ -1,0 +1,2 @@
+* Nova funcionalidade: definir o nível de zoom padrão.
+* Correção de erros.
