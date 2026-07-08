@@ -23,7 +23,7 @@ Biorhythms are natural cycles that influence the states of our minds and bodies.
 
 The app also includes support for four other secondary cycles.
 
-<img src="https://github.com/ncosgray/Biorhythmmm/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/1_en-US.png" width="200"/>|<img src="https://github.com/ncosgray/Biorhythmmm/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/2_en-US.png" width="200"/>|<img src="https://github.com/ncosgray/Biorhythmmm/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/3_en-US.png" width="200"/>|<img src="https://github.com/ncosgray/Biorhythmmm/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/4_en-US.png" width="200"/>
+<img src="https://github.com/ncosgray/Biorhythmmm/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/phone0_en-US.png" width="200"/>|<img src="https://github.com/ncosgray/Biorhythmmm/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/phone1_en-US.png" width="200"/>|<img src="https://github.com/ncosgray/Biorhythmmm/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/phone2_en-US.png" width="200"/>|<img src="https://github.com/ncosgray/Biorhythmmm/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/phone3_en-US.png" width="200"/>
 -|-|-|-
 
 ### Install
