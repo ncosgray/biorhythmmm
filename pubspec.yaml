@@ -19,8 +19,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 3.4.0+12
 
 environment:
-  sdk: '>=3.10.0 <4.0.0'
-  flutter: ^3.44.4
+  sdk: '>=3.13.0 <4.0.0'
+  flutter: ^3.47.1
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -31,18 +31,20 @@ environment:
 dependencies:
   bloc: ^9.2.1
   cupertino_icons: ^1.0.9
+  cupertino_ui: ^1.0.1
   fl_chart: ^1.2.0
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
-  flutter_local_notifications: ^22.0.1
+  flutter_local_notifications: ^22.3.0
   flutter_localizations:
     sdk: flutter
   flutter_timezone: ^5.0.1
   intl: ^0.20.2
-  pull_down_button: ^0.10.2
+  material_ui: ^1.1.0
   shared_preferences: ^2.5.5
   timezone: ^0.11.0
+  vector_math: ^2.4.2
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

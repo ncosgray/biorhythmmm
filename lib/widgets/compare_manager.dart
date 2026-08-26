@@ -20,7 +20,7 @@ import 'package:biorhythmmm/data/app_state.dart';
 import 'package:biorhythmmm/data/localization.dart';
 import 'package:biorhythmmm/data/prefs.dart';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Open a modal to select a birthday to compare

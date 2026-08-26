@@ -6,6 +6,7 @@ import 'package:biorhythmmm/data/localization.dart';
 
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_test/flutter_test.dart';
 
@@ -40,9 +41,7 @@ void main() {
     });
 
     test('translated files contain no unknown keys', () {
-      final Set<String> knownKeys = AppString.values
-          .map((s) => s.key)
-          .toSet();
+      final Set<String> knownKeys = AppString.values.map((s) => s.key).toSet();
       for (final String code in supportedLanguageCodes) {
         final Map<String, dynamic> lang = loadLanguageFile(code);
         for (final String key in lang.keys) {
@@ -91,25 +90,28 @@ void main() {
   });
 
   group('translation loading', () {
-    test('translate returns localized strings for each supported locale',
-        () async {
-      for (final Locale locale in supportedLocales) {
-        await const AppLocalizationsDelegate().load(locale);
-        final Map<String, dynamic> lang =
-            loadLanguageFile(locale.languageCode);
-        final Map<String, dynamic> en = loadLanguageFile('en');
-
-        for (final AppString string in AppString.values) {
-          final String expected =
-              (lang[string.key] ?? en[string.key]).toString();
-          expect(
-            AppLocalizations.translate(string.key),
-            expected,
-            reason: '${locale.languageCode}: ${string.key}',
+    test(
+      'translate returns localized strings for each supported locale',
+      () async {
+        for (final Locale locale in supportedLocales) {
+          await const AppLocalizationsDelegate().load(locale);
+          final Map<String, dynamic> lang = loadLanguageFile(
+            locale.languageCode,
           );
+          final Map<String, dynamic> en = loadLanguageFile('en');
+
+          for (final AppString string in AppString.values) {
+            final String expected = (lang[string.key] ?? en[string.key])
+                .toString();
+            expect(
+              AppLocalizations.translate(string.key),
+              expected,
+              reason: '${locale.languageCode}: ${string.key}',
+            );
+          }
         }
-      }
-    });
+      },
+    );
 
     test('missing keys fall back to English', () async {
       // Verify the fallback path works for every non-English locale by
@@ -125,8 +127,7 @@ void main() {
     test('biorhythm names are localized', () async {
       for (final Locale locale in supportedLocales) {
         await const AppLocalizationsDelegate().load(locale);
-        final Map<String, dynamic> lang =
-            loadLanguageFile(locale.languageCode);
+        final Map<String, dynamic> lang = loadLanguageFile(locale.languageCode);
         final Map<String, dynamic> en = loadLanguageFile('en');
         expect(
           Biorhythm.intellectual.localizedName,
@@ -144,10 +145,7 @@ void main() {
         'Biorhythms for Alice',
       );
       expect(
-        AppString.aboutBiorhythmDays.translate(
-          biorhythm: 'Physical',
-          days: 23,
-        ),
+        AppString.aboutBiorhythmDays.translate(biorhythm: 'Physical', days: 23),
         '• Physical (23 days)',
       );
       expect(AppString.zoomWeeks.translate(weeks: 4), '4 weeks');

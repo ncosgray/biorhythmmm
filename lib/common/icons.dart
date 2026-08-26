@@ -14,8 +14,9 @@
 // - Platform aware icons
 
 import 'dart:io' show Platform;
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 
 Icon get chevronIcon => Platform.isIOS
     ? Icon(CupertinoIcons.chevron_right, color: CupertinoColors.systemBlue)

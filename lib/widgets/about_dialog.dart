@@ -18,7 +18,7 @@ import 'package:biorhythmmm/common/styles.dart';
 import 'package:biorhythmmm/data/biorhythm.dart';
 import 'package:biorhythmmm/data/localization.dart';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 // About Biorhythms dialog
 Future<void> showAboutBiorhythms(BuildContext context) {

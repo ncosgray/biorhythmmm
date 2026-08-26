@@ -18,7 +18,8 @@ import 'package:biorhythmmm/data/biorhythm.dart';
 import 'package:biorhythmmm/data/localization.dart';
 
 import 'dart:convert';
-import 'package:flutter/material.dart' show TimeOfDay;
+
+import 'package:material_ui/material_ui.dart' show TimeOfDay;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences/util/legacy_to_async_migration_util.dart';
 

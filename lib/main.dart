@@ -20,16 +20,15 @@ import 'package:biorhythmmm/data/localization.dart';
 import 'package:biorhythmmm/data/prefs.dart';
 import 'package:biorhythmmm/widgets/home_page.dart';
 
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart' as fl;
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/find_locale.dart';
 import 'package:intl/intl.dart';
-// ignore: depend_on_referenced_packages
+import 'package:material_ui/material_ui.dart';
 import 'package:timezone/data/latest.dart' as tz;
-// ignore: depend_on_referenced_packages
 import 'package:timezone/timezone.dart' as tz;
 
 void main() {
@@ -72,7 +71,7 @@ class BiorhythmApp extends StatelessWidget {
           AppLocalizationsDelegate(),
           GlobalMaterialLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
+          fl.GlobalWidgetsLocalizations.delegate,
           FallbackMaterialLocalizationsDelegate(),
           FallbackCupertinoLocalizationsDelegate(),
         ],

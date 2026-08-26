@@ -26,9 +26,10 @@ import 'package:biorhythmmm/widgets/compare_manager.dart';
 import 'package:biorhythmmm/widgets/settings_sheet.dart';
 
 import 'dart:io' show Platform;
-import 'package:flutter/material.dart';
+
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pull_down_button/pull_down_button.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -130,35 +131,38 @@ class HomePage extends StatelessWidget {
         final selected = state.selectedBirthday;
         final birthdayCount = state.birthdays.length;
         if (Platform.isIOS) {
-          return PullDownButton(
-            buttonBuilder: (_, showMenu) => adaptiveSettingButton(
-              onPressed: showMenu,
+          return CupertinoMenuAnchor(
+            builder: (_, controller, _) => adaptiveSettingButton(
+              onPressed: () =>
+                  controller.isOpen ? controller.close() : controller.open(),
               child: Text(entries[selected].name, style: labelText),
             ),
-            itemBuilder: (_) => [
+            menuChildren: [
               // Birthdays
               for (int i = 0; i < entries.length; i++)
-                PullDownMenuItem.selectable(
-                  selected: i == selected,
-                  title: entries[i].name,
-                  onTap: () {
+                CupertinoMenuItem(
+                  leading: i == selected
+                      ? const Icon(CupertinoIcons.check_mark)
+                      : null,
+                  onPressed: () {
                     context.read<AppStateCubit>().setSelectedBirthday(i);
                     context.read<AppStateCubit>().clearCompareBirthday();
                   },
+                  child: Text(entries[i].name),
                 ),
-              PullDownMenuDivider.large(),
+              const CupertinoMenuDivider(),
               // Compare
               if (birthdayCount > 1)
-                PullDownMenuItem(
-                  title: AppString.compareLabel.translate(),
-                  icon: Icons.sync_alt,
-                  onTap: () => showCompareModal(context),
+                CupertinoMenuItem(
+                  trailing: const Icon(Icons.sync_alt),
+                  onPressed: () => showCompareModal(context),
+                  child: Text(AppString.compareLabel.translate()),
                 ),
               // Manage
-              PullDownMenuItem(
-                title: AppString.manageLabel.translate(),
-                icon: Icons.cake_outlined,
-                onTap: () => showBirthdayManager(context),
+              CupertinoMenuItem(
+                trailing: const Icon(Icons.cake_outlined),
+                onPressed: () => showBirthdayManager(context),
+                child: Text(AppString.manageLabel.translate()),
               ),
             ],
           );
