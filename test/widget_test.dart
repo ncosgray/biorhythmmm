@@ -11,11 +11,13 @@ import 'package:biorhythmmm/widgets/home_page.dart';
 
 import 'dart:convert';
 import 'dart:io';
+
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:fl_chart/fl_chart.dart' show LineChart;
 import 'package:flutter/foundation.dart' show FlutterExceptionHandler;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart' as fl;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'test_helpers.dart';
@@ -34,7 +36,7 @@ Widget buildTestApp({Locale? locale}) => BlocProvider<AppStateCubit>(
       AppLocalizationsDelegate(),
       GlobalMaterialLocalizations.delegate,
       GlobalCupertinoLocalizations.delegate,
-      GlobalWidgetsLocalizations.delegate,
+      fl.GlobalWidgetsLocalizations.delegate,
       FallbackMaterialLocalizationsDelegate(),
       FallbackCupertinoLocalizationsDelegate(),
     ],
@@ -74,9 +76,7 @@ void main() {
         await pumpTestApp(tester, locale: locale);
 
         final Map<String, dynamic> en = loadLanguageFile('en');
-        final Map<String, dynamic> lang = loadLanguageFile(
-          locale.languageCode,
-        );
+        final Map<String, dynamic> lang = loadLanguageFile(locale.languageCode);
 
         // App bar shows the localized chart title
         final String chartTitle = (lang['chartTitle'] ?? en['chartTitle'])
@@ -235,10 +235,7 @@ void main() {
       await tester.tap(find.byType(CloseButton));
       await tester.pumpAndSettle();
       final LineChart chart = tester.widget<LineChart>(find.byType(LineChart));
-      expect(
-        chart.transformationConfig.maxScale,
-        ZoomLevel.large.days + 2,
-      );
+      expect(chart.transformationConfig.maxScale, ZoomLevel.large.days + 2);
     });
   });
 }

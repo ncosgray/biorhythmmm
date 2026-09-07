@@ -16,8 +16,9 @@
 import 'package:biorhythmmm/data/localization.dart';
 
 import 'dart:io' show Platform;
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 
 // Open a dialog box to choose user birthday
 Future<DateTime?> adaptiveBirthdayPicker(

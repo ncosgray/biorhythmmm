@@ -25,8 +25,9 @@ import 'package:biorhythmmm/data/app_state.dart';
 import 'package:biorhythmmm/widgets/birthday_picker.dart';
 
 import 'dart:io' show Platform;
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart' show LengthLimitingTextInputFormatter;
 import 'package:flutter_bloc/flutter_bloc.dart';
 

@@ -17,10 +17,11 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:flutter/foundation.dart' show kDebugMode, debugPrint;
 import 'package:flutter/services.dart';
+import 'package:material_ui/material_ui.dart';
 
 const String appName = 'Biorhythmmm';
 const Locale defaultLocale = Locale.fromSubtags(languageCode: 'en');
@@ -198,32 +199,38 @@ class AppLocalizations {
   Map<String, String> _localizedStrings = {};
   Map<String, String> _defaultStrings = {};
 
+  // Read one language file from the langs folder
+  static Future<Map<String, String>> _readStrings(Locale locale) async {
+    try {
+      String jsonString = await rootBundle.loadString(
+        'langs/${localeString(locale)}.json',
+      );
+      Map<String, dynamic> jsonMap = json.decode(jsonString);
+      return jsonMap.map((key, value) => MapEntry(key, value.toString()));
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('Could not load strings for ${localeString(locale)}: $e');
+      }
+      return <String, String>{};
+    }
+  }
+
   // Populate strings
   Future<bool> load() async {
     // Populate strings map from JSON file in langs folder
-    String jsonString = await rootBundle.loadString(
-      'langs/${localeString(locale)}.json',
-    );
-    Map<String, dynamic> jsonMap = json.decode(jsonString);
-    _localizedStrings = jsonMap.map(
-      (key, value) => MapEntry(key, value.toString()),
-    );
+    _localizedStrings = await _readStrings(locale);
 
     // Populate default (English) strings map
-    String jsonDefaultString = await rootBundle.loadString(
-      'langs/${localeString(defaultLocale)}.json',
-    );
-    Map<String, dynamic> jsonDefaultMap = json.decode(jsonDefaultString);
-    _defaultStrings = jsonDefaultMap.map(
-      (key, value) => MapEntry(key, value.toString()),
-    );
+    _defaultStrings = await _readStrings(defaultLocale);
 
     return true;
   }
 
   // Get translated string (or use default string if unavailable)
   static String translate(String key) {
-    return instance._localizedStrings[key] ?? instance._defaultStrings[key]!;
+    return instance._localizedStrings[key] ??
+        instance._defaultStrings[key] ??
+        key;
   }
 
   // Locale info

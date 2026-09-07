@@ -18,7 +18,9 @@ import 'package:biorhythmmm/data/biorhythm.dart';
 import 'package:biorhythmmm/data/localization.dart';
 
 import 'dart:convert';
-import 'package:flutter/material.dart' show TimeOfDay;
+
+import 'package:flutter/foundation.dart' show kDebugMode, debugPrint;
+import 'package:material_ui/material_ui.dart' show TimeOfDay;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences/util/legacy_to_async_migration_util.dart';
 
@@ -31,18 +33,41 @@ abstract class Prefs {
         SharedPreferencesOptions();
 
     // Migrate legacy prefs
-    final legacyPrefs = await SharedPreferences.getInstance();
-    await migrateLegacySharedPreferencesToSharedPreferencesAsyncIfNecessary(
-      legacySharedPreferencesInstance: legacyPrefs,
-      sharedPreferencesAsyncOptions: sharedPreferencesOptions,
-      migrationCompletedKey: _migrationCompletedKey,
-    );
+    try {
+      final legacyPrefs = await SharedPreferences.getInstance();
+      await migrateLegacySharedPreferencesToSharedPreferencesAsyncIfNecessary(
+        legacySharedPreferencesInstance: legacyPrefs,
+        sharedPreferencesAsyncOptions: sharedPreferencesOptions,
+        migrationCompletedKey: _migrationCompletedKey,
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('Legacy preference migration failed: $e');
+      }
+    }
 
     // Instantiate shared prefs with caching
-    _sharedPrefs = await SharedPreferencesWithCache.create(
-      cacheOptions: SharedPreferencesWithCacheOptions(),
-      sharedPreferencesOptions: sharedPreferencesOptions,
-    );
+    try {
+      _sharedPrefs = await SharedPreferencesWithCache.create(
+        cacheOptions: SharedPreferencesWithCacheOptions(),
+        sharedPreferencesOptions: sharedPreferencesOptions,
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('Preference store unreadable, resetting: $e');
+      }
+      try {
+        await SharedPreferencesAsync(options: sharedPreferencesOptions).clear();
+      } catch (e) {
+        if (kDebugMode) {
+          debugPrint('Preference store reset failed: $e');
+        }
+      }
+      _sharedPrefs = await SharedPreferencesWithCache.create(
+        cacheOptions: SharedPreferencesWithCacheOptions(),
+        sharedPreferencesOptions: sharedPreferencesOptions,
+      );
+    }
   }
 
   // Preference keys

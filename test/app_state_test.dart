@@ -6,7 +6,7 @@ import 'package:biorhythmmm/data/app_state.dart';
 import 'package:biorhythmmm/data/biorhythm.dart';
 import 'package:biorhythmmm/data/prefs.dart';
 
-import 'package:flutter/material.dart' show TimeOfDay;
+import 'package:material_ui/material_ui.dart' show TimeOfDay;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'test_helpers.dart';
@@ -75,10 +75,7 @@ void main() {
     });
 
     test('editBirthday updates an entry in place', () {
-      cubit.editBirthday(
-        1,
-        BirthdayEntry(name: 'Robert', date: bobBirthday),
-      );
+      cubit.editBirthday(1, BirthdayEntry(name: 'Robert', date: bobBirthday));
       expect(cubit.state.birthdays[1].name, 'Robert');
       expect(Prefs.birthdays[1].name, 'Robert');
     });
@@ -205,10 +202,7 @@ void main() {
         cubit.state.notificationTime,
         const TimeOfDay(hour: 21, minute: 15),
       );
-      expect(
-        Prefs.notificationTime,
-        const TimeOfDay(hour: 21, minute: 15),
-      );
+      expect(Prefs.notificationTime, const TimeOfDay(hour: 21, minute: 15));
     });
   });
 

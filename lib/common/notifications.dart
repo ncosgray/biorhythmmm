@@ -20,8 +20,9 @@ import 'package:biorhythmmm/data/localization.dart';
 import 'package:biorhythmmm/data/prefs.dart';
 
 import 'dart:io' show Platform;
+
 import 'package:flutter/foundation.dart' show VoidCallback;
-import 'package:flutter/material.dart' show TimeOfDay;
+import 'package:material_ui/material_ui.dart' show TimeOfDay;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // ignore: depend_on_referenced_packages
 import 'package:timezone/timezone.dart' as tz;

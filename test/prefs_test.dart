@@ -5,7 +5,7 @@ import 'package:biorhythmmm/common/notifications.dart' show NotificationType;
 import 'package:biorhythmmm/data/biorhythm.dart';
 import 'package:biorhythmmm/data/prefs.dart';
 
-import 'package:flutter/material.dart' show TimeOfDay;
+import 'package:material_ui/material_ui.dart' show TimeOfDay;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'test_helpers.dart';
@@ -115,10 +115,7 @@ void main() {
 
     test('notification time persists as encoded int', () {
       Prefs.notificationTime = const TimeOfDay(hour: 8, minute: 30);
-      expect(
-        Prefs.notificationTime,
-        const TimeOfDay(hour: 8, minute: 30),
-      );
+      expect(Prefs.notificationTime, const TimeOfDay(hour: 8, minute: 30));
 
       // Midnight edge case
       Prefs.notificationTime = const TimeOfDay(hour: 0, minute: 0);

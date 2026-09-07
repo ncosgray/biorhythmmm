@@ -28,7 +28,7 @@ The app also includes support for four other secondary cycles.
 
 ### Install
 
-| Android (7+) | iOS (13+) |
+| Android (7+) | iOS (15+) |
 | :--: | :--: |
 | <a href="https://play.google.com/store/apps/details?id=com.nathanatos.Biorhythmmm"><img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" width="206" height="80"/></a> | <a href="https://apps.apple.com/us/app/biorhythmmm/id6737791240"><img src="https://www.nathanatos.com/images/ios-app-store-badge.png" alt="Download on the App Store" width="168" height="50"/></a> |
 

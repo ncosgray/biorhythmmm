@@ -26,10 +26,10 @@ import 'package:biorhythmmm/widgets/birthday_manager.dart';
 import 'package:biorhythmmm/widgets/time_picker.dart';
 
 import 'dart:io' show Platform;
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pull_down_button/pull_down_button.dart';
 
 // Navigate to settings sheet
 void showSettingsSheet(BuildContext context) {
@@ -115,20 +115,24 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
               builder: (context, notifications) {
                 if (Platform.isIOS) {
                   // iOS styled dropdown menu
-                  return PullDownButton(
-                    buttonBuilder: (_, showMenu) => adaptiveSettingButton(
-                      onPressed: showMenu,
+                  return CupertinoMenuAnchor(
+                    builder: (_, controller, _) => adaptiveSettingButton(
+                      onPressed: () => controller.isOpen
+                          ? controller.close()
+                          : controller.open(),
                       child: Text(notifications.name),
                     ),
                     // Notification type options
-                    itemBuilder: (_) => [
+                    menuChildren: [
                       for (final NotificationType n in NotificationType.values)
-                        PullDownMenuItem.selectable(
-                          selected: n == notifications,
-                          title: n.name,
+                        CupertinoMenuItem(
+                          leading: n == notifications
+                              ? const Icon(CupertinoIcons.check_mark)
+                              : null,
                           // Set selected notification type
-                          onTap: () =>
+                          onPressed: () =>
                               context.read<AppStateCubit>().setNotifications(n),
+                          child: Text(n.name),
                         ),
                     ],
                   );
@@ -265,9 +269,11 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
               builder: (context, defaultZoom) {
                 if (Platform.isIOS) {
                   // iOS styled dropdown menu
-                  return PullDownButton(
-                    buttonBuilder: (_, showMenu) => adaptiveSettingButton(
-                      onPressed: showMenu,
+                  return CupertinoMenuAnchor(
+                    builder: (_, controller, _) => adaptiveSettingButton(
+                      onPressed: () => controller.isOpen
+                          ? controller.close()
+                          : controller.open(),
                       child: Text(
                         ZoomLevel.values
                             .firstWhere((z) => z.days == defaultZoom)
@@ -275,15 +281,17 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
                       ),
                     ),
                     // Zoom options
-                    itemBuilder: (_) => [
+                    menuChildren: [
                       for (final ZoomLevel z in ZoomLevel.values)
-                        PullDownMenuItem.selectable(
-                          selected: z.days == defaultZoom,
-                          title: z.name,
+                        CupertinoMenuItem(
+                          leading: z.days == defaultZoom
+                              ? const Icon(CupertinoIcons.check_mark)
+                              : null,
                           // Set selected zoom level
-                          onTap: () => context
+                          onPressed: () => context
                               .read<AppStateCubit>()
                               .setDefaultZoom(z.days),
+                          child: Text(z.name),
                         ),
                     ],
                   );
