@@ -90,6 +90,17 @@ Future<void> main() async {
     await $.pumpAndSettle();
   }
 
+  // Helper to close the settings sheet via its app bar button
+  closeSettings($) async {
+    await $.tap(
+      find.byWidgetPredicate((w) => w is BackButton || w is CloseButton),
+    );
+    await $.pumpAndSettle();
+  }
+
+  // Sleep for a brief delay
+  sleep2Seconds() => sleep(const Duration(seconds: 2));
+
   testWidgets('collect screenshots', ($) async {
     // Run app
     await $.pumpWidget(const BiorhythmApp());
@@ -108,18 +119,39 @@ Future<void> main() async {
     await createBirthdayEntry($, name, 1);
 
     // Screenshot 1: Initial home screen
-    await $.tap(find.text(AppString.chartTitle.translate()));
+    await $.tap(
+      find.text(AppString.chartTitle.translate()),
+      warnIfMissed: false,
+    );
     await $.pumpAndSettle();
-    sleep(const Duration(seconds: 2));
+    sleep2Seconds();
     await binding.takeScreenshot('1-initial');
 
-    // Screenshot 2: Chart with all biorhythms visible
+    // Screenshot 4: Settings page showing defaults
+    await $.tap(find.byIcon(settingsIcon));
+    await $.pumpAndSettle();
+    sleep2Seconds();
+    await binding.takeScreenshot('4-settings');
+
+    // Screenshot 2: Chart with all biorhythms visible with arc display style
+    await $.tap(find.text(AppString.pointDisplayPercent.translate()));
+    await $.pumpAndSettle();
+    await $.tap(find.text(AppString.pointDisplayArc.translate()));
+    await $.pumpAndSettle();
+    await closeSettings($);
     await $.tap(find.byIcon(invisibleIcon));
     await $.pumpAndSettle();
-    sleep(const Duration(seconds: 2));
+    sleep2Seconds();
     await binding.takeScreenshot('2-visible');
 
-    // Screenshot 3: Comparison chart
+    // Screenshot 3: Comparison chart with words display style
+    await $.tap(find.byIcon(settingsIcon));
+    await $.pumpAndSettle();
+    await $.tap(find.text(AppString.pointDisplayArc.translate()));
+    await $.pumpAndSettle();
+    await $.tap(find.text(AppString.pointDisplayWords.translate()));
+    await $.pumpAndSettle();
+    await closeSettings($);
     await $.tap(find.byIcon(visibleIcon));
     await $.pumpAndSettle();
     await $.tap(find.text(name));
@@ -128,15 +160,12 @@ Future<void> main() async {
     await $.pumpAndSettle();
     await $.tap(find.text(secondaryName));
     await $.pumpAndSettle();
-    await $.tap(find.text(AppString.chartTitle.translate()));
+    await $.tap(
+      find.text(AppString.chartTitle.translate()),
+      warnIfMissed: false,
+    );
     await $.pumpAndSettle();
-    sleep(const Duration(seconds: 2));
+    sleep2Seconds();
     await binding.takeScreenshot('3-comparison');
-
-    // Screenshot 4: Settings page
-    await $.tap(find.byIcon(settingsIcon));
-    await $.pumpAndSettle();
-    sleep(const Duration(seconds: 2));
-    await binding.takeScreenshot('4-settings');
   });
 }
