@@ -7,6 +7,8 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 
+import 'test_helpers.dart';
+
 void main() {
   group('Biorhythm cycle definitions', () {
     test('cycle lengths match the biorhythm model', () {
@@ -148,6 +150,38 @@ void main() {
       final BiorhythmPoint birth = Biorhythm.emotional.getBiorhythmPoint(0);
       expect(birth.point, 0);
       expect(birth.trend, BiorhythmTrend.critical);
+    });
+  });
+
+  group('Point descriptions in words', () {
+    setUp(() async {
+      await initTestEnvironment();
+    });
+
+    test('levels cover the full range at their thresholds', () {
+      expect(pointLevelText(1), 'Peak');
+      expect(pointLevelText(0.9), 'Peak');
+      expect(pointLevelText(0.89), 'High');
+      expect(pointLevelText(0.5), 'High');
+      expect(pointLevelText(0.49), 'Fair');
+      expect(pointLevelText(criticalThreshold), 'Fair');
+      expect(pointLevelText(-criticalThreshold), 'Low');
+      expect(pointLevelText(-0.5), 'Very low');
+      expect(pointLevelText(-0.89), 'Very low');
+      expect(pointLevelText(-0.9), 'Lowest');
+      expect(pointLevelText(-1), 'Lowest');
+    });
+
+    test('critical range takes precedence over level', () {
+      expect(pointLevelText(0), 'Critical');
+      expect(pointLevelText(0.1), 'Critical');
+      expect(pointLevelText(-0.1), 'Critical');
+    });
+
+    test('each trend has display text', () {
+      expect(BiorhythmTrend.increasing.trendText, 'rising');
+      expect(BiorhythmTrend.decreasing.trendText, 'falling');
+      expect(BiorhythmTrend.critical.trendText, 'in transition');
     });
   });
 }

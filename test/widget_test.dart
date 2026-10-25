@@ -1,12 +1,14 @@
 // Biorhythmmm
 // - Widget tests: home page across locales and screen sizes, settings sheet
 
+import 'package:biorhythmmm/common/helpers.dart';
 import 'package:biorhythmmm/common/notifications.dart' show NotificationType;
 import 'package:biorhythmmm/common/themes.dart';
 import 'package:biorhythmmm/data/app_state.dart';
 import 'package:biorhythmmm/data/biorhythm.dart';
 import 'package:biorhythmmm/data/localization.dart';
 import 'package:biorhythmmm/data/prefs.dart';
+import 'package:biorhythmmm/widgets/biorhythm_chart.dart' show PointArcPainter;
 import 'package:biorhythmmm/widgets/home_page.dart';
 
 import 'dart:convert';
@@ -44,15 +46,22 @@ Widget buildTestApp({Locale? locale}) => BlocProvider<AppStateCubit>(
   ),
 );
 
+final DateTime testBirthday = DateTime(1990, 6, 15);
+
 // Initialize the test environment and pump the app.
 // Note: initTestEnvironment must run inside the test body (not setUp) so
 // that async asset loading completes within the test's fake async zone.
-Future<void> pumpTestApp(WidgetTester tester, {Locale? locale}) async {
+Future<void> pumpTestApp(
+  WidgetTester tester, {
+  Locale? locale,
+  PointDisplay pointDisplay = PointDisplay.percent,
+}) async {
   await initTestEnvironment();
   // Set a birthday so the home page doesn't prompt for one
   Prefs.birthdays = [
-    BirthdayEntry(name: 'Me', date: DateTime(1990, 6, 15), notify: true),
+    BirthdayEntry(name: 'Me', date: testBirthday, notify: true),
   ];
+  Prefs.pointDisplay = pointDisplay;
   await tester.pumpWidget(buildTestApp(locale: locale));
   await tester.pumpAndSettle();
 }
@@ -129,17 +138,81 @@ void main() {
     // 1.2 PIXELS" banner seen in Android screenshots, which reproduces with
     // real Roboto metrics at scale 1.3 (the FlutterTest font is too wide to
     // trigger it, so load the production font)
-    for (final double scale in [1.0, 1.3, 1.5]) {
-      testWidgets('font scale $scale', (WidgetTester tester) async {
-        tester.platformDispatcher.textScaleFactorTestValue = scale;
-        addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    for (final PointDisplay display in PointDisplay.values) {
+      for (final double scale in [1.0, 1.3, 1.5]) {
+        // Not display.name: it is localized, and strings aren't loaded yet
+        testWidgets('$display font scale $scale', (WidgetTester tester) async {
+          tester.platformDispatcher.textScaleFactorTestValue = scale;
+          addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
 
-        await loadRobotoFonts();
-        await pumpTestApp(tester);
+          await loadRobotoFonts();
+          await pumpTestApp(tester, pointDisplay: display);
 
-        expect(find.textContaining('%'), findsWidgets);
-      });
+          for (final Biorhythm b in primaryBiorhythms) {
+            expect(find.text(b.localizedName), findsWidgets);
+          }
+        });
+      }
     }
+  });
+
+  group('percent boxes in each display style', () {
+    // Today's point for each primary biorhythm, as the boxes show it
+    List<BiorhythmPoint> todayPoints() => [
+      for (final Biorhythm b in primaryBiorhythms)
+        b.getBiorhythmPoint(dateDiff(testBirthday, today)),
+    ];
+
+    final Finder arcGauges = find.byWidgetPredicate(
+      (Widget w) => w is CustomPaint && w.painter is PointArcPainter,
+    );
+
+    testWidgets('percent shows each value with no arc', (
+      WidgetTester tester,
+    ) async {
+      await pumpTestApp(tester);
+
+      for (final BiorhythmPoint p in todayPoints()) {
+        expect(find.text(shortPercent(p.point)), findsWidgets);
+      }
+      expect(arcGauges, findsNothing);
+    });
+
+    testWidgets('arc draws a gauge per biorhythm with its value', (
+      WidgetTester tester,
+    ) async {
+      await pumpTestApp(tester, pointDisplay: PointDisplay.arc);
+
+      expect(arcGauges, findsNWidgets(primaryBiorhythms.length));
+      final List<PointArcPainter> painters = [
+        for (final CustomPaint w in tester.widgetList<CustomPaint>(arcGauges))
+          w.painter! as PointArcPainter,
+      ];
+      expect(
+        painters.map((PointArcPainter p) => p.value),
+        todayPoints().map((BiorhythmPoint p) => p.point),
+      );
+      expect(
+        painters.map((PointArcPainter p) => p.zone),
+        everyElement(criticalThreshold),
+      );
+      for (final BiorhythmPoint p in todayPoints()) {
+        expect(find.text(shortPercent(p.point)), findsWidgets);
+      }
+    });
+
+    testWidgets('words shows level and trend instead of a percentage', (
+      WidgetTester tester,
+    ) async {
+      await pumpTestApp(tester, pointDisplay: PointDisplay.words);
+
+      for (final BiorhythmPoint p in todayPoints()) {
+        expect(find.text(pointLevelText(p.point)), findsWidgets);
+        expect(find.text(p.trend.trendText), findsWidgets);
+      }
+      expect(find.textContaining('%'), findsNothing);
+      expect(arcGauges, findsNothing);
+    });
   });
 
   group('settings sheet', () {
@@ -236,6 +309,37 @@ void main() {
       await tester.pumpAndSettle();
       final LineChart chart = tester.widget<LineChart>(find.byType(LineChart));
       expect(chart.transformationConfig.maxScale, ZoomLevel.large.days + 2);
+    });
+
+    testWidgets('changing display style updates preferences and boxes', (
+      WidgetTester tester,
+    ) async {
+      await openSettings(tester);
+
+      // Display style dropdown shows the default selection
+      final Finder styleDropdown = find.byType(DropdownButton<PointDisplay>);
+      await tester.ensureVisible(styleDropdown);
+      expect(find.text('Biorhythm display style'), findsOneWidget);
+      expect(find.text('Percent'), findsOneWidget);
+
+      // Select the arc style from the dropdown
+      await tester.tap(styleDropdown);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Arc').last);
+      await tester.pumpAndSettle();
+
+      expect(Prefs.pointDisplay, PointDisplay.arc);
+      expect(find.text('Arc'), findsOneWidget);
+
+      // Returning to the home page shows the boxes in the new style
+      await tester.tap(find.byType(CloseButton));
+      await tester.pumpAndSettle();
+      expect(
+        find.byWidgetPredicate(
+          (Widget w) => w is CustomPaint && w.painter is PointArcPainter,
+        ),
+        findsNWidgets(primaryBiorhythms.length),
+      );
     });
   });
 }

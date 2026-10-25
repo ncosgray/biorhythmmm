@@ -44,6 +44,7 @@ void main() {
       expect(cubit.state.showExtraPoints, isFalse);
       expect(cubit.state.showCriticalZone, isTrue);
       expect(cubit.state.defaultZoom, ZoomLevel.medium.days);
+      expect(cubit.state.pointDisplay, PointDisplay.percent);
       expect(cubit.state.showResetButton, isFalse);
       expect(cubit.state.reload, isFalse);
     });
@@ -236,6 +237,17 @@ void main() {
       cubit.setDefaultZoom(ZoomLevel.small.days);
       expect(cubit.state.defaultZoom, ZoomLevel.small.days);
       expect(Prefs.defaultZoom, ZoomLevel.small.days);
+    });
+
+    test('setPointDisplay persists', () {
+      cubit.setPointDisplay(PointDisplay.arc);
+      expect(cubit.state.pointDisplay, PointDisplay.arc);
+      expect(cubit.pointDisplay, PointDisplay.arc);
+      expect(Prefs.pointDisplay, PointDisplay.arc);
+
+      cubit.setPointDisplay(PointDisplay.words);
+      expect(cubit.state.pointDisplay, PointDisplay.words);
+      expect(Prefs.pointDisplay, PointDisplay.words);
     });
   });
 
