@@ -24,6 +24,8 @@ import 'package:biorhythmmm/data/biorhythm.dart';
 import 'package:biorhythmmm/data/localization.dart';
 import 'package:biorhythmmm/data/prefs.dart';
 
+import 'dart:math' show max, min, pi;
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -711,18 +713,107 @@ class _BiorhythmChartState extends State<BiorhythmChart>
   }) {
     IconData icon = point.trend.trendIcon;
     String percentText = shortPercent(point.point);
+    String levelText = pointLevelText(point.point);
+    String trendText = point.trend.trendText;
+    double arcValue = point.point;
+    double arcZone = criticalThreshold;
     bool isCompare = comparePoint != null;
 
     // Calculate comparison and assign a status icon
     if (isCompare) {
       double compareValue = 1 - (comparePoint.point - point.point).abs() / 2;
-      icon = compareValue > .45 && compareValue < .55
+      bool isNeutral = compareValue > .45 && compareValue < .55;
+      icon = isNeutral
           ? Icons.sentiment_neutral
           : compareValue >= .55
           ? Icons.sentiment_very_satisfied
           : Icons.sentiment_very_dissatisfied;
       percentText = shortPercent(compareValue);
+      levelText = isNeutral
+          ? AppString.pointLevelNeutral.translate()
+          : compareValue >= .55
+          ? AppString.pointLevelHigh.translate()
+          : AppString.pointLevelLow.translate();
+      trendText = AppString.compareCompatibility.translate();
+      // Map compatibility onto the arc: neutral at top, compatible to the right
+      arcValue = compareValue * 2 - 1;
+      arcZone = .1;
     }
+
+    final TextStyle detailStyle = pointText.copyWith(
+      fontStyle: isCompare ? .italic : .normal,
+    );
+
+    // Name label
+    final Widget nameLabel = FittedBox(
+      fit: .scaleDown,
+      child: Text(point.biorhythm.localizedName, style: labelText),
+    );
+
+    // Point details in the selected display style
+    final List<Widget> details = switch (context
+        .read<AppStateCubit>()
+        .pointDisplay) {
+      PointDisplay.percent => [
+        Flexible(child: nameLabel),
+        // Point percentage with phase icon
+        Flexible(
+          child: FittedBox(
+            fit: .scaleDown,
+            child: Row(
+              mainAxisAlignment: .center,
+              mainAxisSize: .min,
+              children: [
+                Text(percentText, style: detailStyle),
+                Icon(icon, size: pointText.fontSize!),
+              ],
+            ),
+          ),
+        ),
+      ],
+      PointDisplay.arc => [
+        nameLabel,
+        // Arc gauge with point percentage inside
+        Expanded(
+          child: pointArc(
+            value: arcValue,
+            zone: arcZone,
+            // Size the label as the widest value so all boxes match
+            label: Stack(
+              alignment: .center,
+              children: [
+                Visibility.maintain(
+                  visible: false,
+                  child: Text(shortPercent(-1), style: detailStyle),
+                ),
+                Text(percentText, style: detailStyle),
+              ],
+            ),
+          ),
+        ),
+      ],
+      PointDisplay.words => [
+        Flexible(child: nameLabel),
+        // Point level and trend in words
+        Flexible(
+          child: FittedBox(
+            fit: .scaleDown,
+            child: Text(levelText, style: detailStyle),
+          ),
+        ),
+        Flexible(
+          child: FittedBox(
+            fit: .scaleDown,
+            child: Text(
+              trendText,
+              style: bodyText.copyWith(
+                fontStyle: isCompare ? .italic : .normal,
+              ),
+            ),
+          ),
+        ),
+      ],
+    };
 
     return GestureDetector(
       child: Container(
@@ -735,37 +826,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
             isHighlighted: _highlighted == point.biorhythm,
           ),
         ),
-        child: Column(
-          mainAxisAlignment: .center,
-          children: [
-            // Name label
-            Flexible(
-              child: FittedBox(
-                fit: .scaleDown,
-                child: Text(point.biorhythm.localizedName, style: labelText),
-              ),
-            ),
-            // Point percentage with phase icon
-            Flexible(
-              child: FittedBox(
-                fit: .scaleDown,
-                child: Row(
-                  mainAxisAlignment: .center,
-                  mainAxisSize: .min,
-                  children: [
-                    Text(
-                      percentText,
-                      style: pointText.copyWith(
-                        fontStyle: isCompare ? .italic : .normal,
-                      ),
-                    ),
-                    Icon(icon, size: pointText.fontSize!),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+        child: Column(mainAxisAlignment: .center, children: details),
       ),
       // Chart interactivity
       onTapDown: (_) => setState(() => _highlighted = point.biorhythm),
@@ -773,6 +834,110 @@ class _BiorhythmChartState extends State<BiorhythmChart>
       onTapCancel: () => setState(() => _highlighted = null),
     );
   }
+
+  // Arc gauge with a label fitted under the curve
+  Widget pointArc({
+    required double value,
+    required double zone,
+    required Widget label,
+  }) => LayoutBuilder(
+    builder: (context, constraints) {
+      final (:center, :radius) = PointArcPainter.geometry(constraints.biggest);
+      final Size labelSize = Size(radius * 1.4, radius * 0.6);
+
+      return Stack(
+        children: [
+          Positioned.fill(
+            child: CustomPaint(
+              painter: PointArcPainter(
+                value: value,
+                zone: zone,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+          ),
+          Positioned(
+            left: center.dx - labelSize.width / 2,
+            top: center.dy + PointArcPainter.strokeWidth / 2 - labelSize.height,
+            width: labelSize.width,
+            height: labelSize.height,
+            child: FittedBox(fit: .scaleDown, child: label),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+// Custom painter for a semicircle arc gauge
+class PointArcPainter extends CustomPainter {
+  PointArcPainter({
+    required this.value,
+    required this.zone,
+    required this.color,
+  });
+  final double value;
+  final double zone;
+  final Color color;
+
+  static const double strokeWidth = 4;
+  static const double maxSweep = pi / 2;
+
+  // Largest arc that fits the available space, including stroke caps
+  static ({Offset center, double radius}) geometry(Size size) {
+    final double radius = max(
+      0,
+      min((size.width - strokeWidth) / 2, size.height - strokeWidth),
+    );
+    return (
+      center: Offset(size.width / 2, strokeWidth / 2 + radius),
+      radius: radius,
+    );
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final (:center, :radius) = geometry(size);
+    final Rect rect = Rect.fromCircle(center: center, radius: radius);
+    const double top = -pi / 2;
+
+    final Paint trackPaint = Paint()
+      ..color = color.withAlpha(50)
+      ..style = .stroke
+      ..strokeWidth = strokeWidth;
+    final Paint zonePaint = Paint()
+      ..color = color.withAlpha(110)
+      ..style = .stroke
+      ..strokeWidth = strokeWidth;
+    final Paint valuePaint = Paint()
+      ..color = color.withAlpha(value < 0 ? 160 : 255)
+      ..style = .stroke
+      ..strokeCap = .round
+      ..strokeWidth = strokeWidth;
+
+    canvas
+      ..drawArc(rect, top - maxSweep, 2 * maxSweep, false, trackPaint)
+      ..drawArc(
+        rect,
+        top - zone * maxSweep,
+        2 * zone * maxSweep,
+        false,
+        zonePaint,
+      )
+      ..drawArc(
+        rect,
+        top,
+        value.clamp(-1.0, 1.0) * maxSweep,
+        false,
+        valuePaint,
+      );
+  }
+
+  @override
+  bool shouldRepaint(PointArcPainter oldDelegate) =>
+      oldDelegate.value != value ||
+      oldDelegate.zone != zone ||
+      oldDelegate.color != color;
 }
 
 // Custom painter for dashed line

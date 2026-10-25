@@ -104,6 +104,57 @@ Widget buildSettingsSheet(BuildContext context) => Scaffold(
               style: titleText,
             ),
           ),
+          // Point display style
+          ListTile(
+            title: Text(
+              AppString.pointDisplayLabel.translate(),
+              style: listTileText(context),
+            ),
+            trailing: BlocSelector<AppStateCubit, AppState, PointDisplay>(
+              selector: (state) => state.pointDisplay,
+              builder: (context, pointDisplay) {
+                if (Platform.isIOS) {
+                  // iOS styled dropdown menu
+                  return CupertinoMenuAnchor(
+                    builder: (_, controller, _) => adaptiveSettingButton(
+                      onPressed: () => controller.isOpen
+                          ? controller.close()
+                          : controller.open(),
+                      child: Text(pointDisplay.name),
+                    ),
+                    // Point display options
+                    menuChildren: [
+                      for (final PointDisplay d in PointDisplay.values)
+                        CupertinoMenuItem(
+                          leading: d == pointDisplay
+                              ? const Icon(CupertinoIcons.check_mark)
+                              : null,
+                          // Set selected point display style
+                          onPressed: () =>
+                              context.read<AppStateCubit>().setPointDisplay(d),
+                          child: Text(d.name),
+                        ),
+                    ],
+                  );
+                } else {
+                  // Material dropdown menu
+                  return DropdownButton<PointDisplay>(
+                    value: pointDisplay,
+                    icon: const Icon(Icons.keyboard_arrow_down),
+                    // Point display options
+                    items: [
+                      for (final PointDisplay d in PointDisplay.values)
+                        DropdownMenuItem(value: d, child: Text(d.name)),
+                    ],
+                    // Set selected point display style
+                    onChanged: (PointDisplay? newValue) => context
+                        .read<AppStateCubit>()
+                        .setPointDisplay(newValue!),
+                  );
+                }
+              },
+            ),
+          ),
           // Select notifications
           ListTile(
             title: Text(
