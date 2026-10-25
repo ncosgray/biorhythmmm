@@ -1,0 +1,1 @@
+* New feature: choose biorhythm display style.
