@@ -21,7 +21,6 @@ import 'package:biorhythmmm/data/prefs.dart';
 import 'package:biorhythmmm/widgets/home_page.dart';
 
 import 'dart:io' show Platform;
-import 'dart:math' show max;
 
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/foundation.dart' show kDebugMode, debugPrint;
@@ -83,19 +82,23 @@ class BiorhythmApp extends StatelessWidget {
         theme: lightTheme,
         darkTheme: darkTheme,
         debugShowCheckedModeBanner: false,
-        // Adjust margins for iOS devices with asymmetric insets (such as Duo)
         builder: (context, child) {
-          final MediaQueryData mq = MediaQuery.of(context);
-          if (!Platform.isIOS || mq.padding.left == mq.padding.right) {
+          if (!Platform.isIOS) {
             return child!;
           }
-          const double minInset = 24;
-          final double left = max(mq.padding.left, minInset);
-          final double right = max(mq.padding.right, minInset);
+          final MediaQueryData mq = MediaQuery.of(context);
+          EdgeInsets atLeast(EdgeInsets insets, EdgeInsets min) =>
+              insets.clamp(min, EdgeInsetsGeometry.infinity) as EdgeInsets;
+          // Adjust margins for devices with asymmetric insets (such as Duo)
+          final EdgeInsets minPadding = mq.padding.left == mq.padding.right
+              ? EdgeInsets.zero
+              : const EdgeInsets.symmetric(horizontal: 24);
           return MediaQuery(
             data: mq.copyWith(
-              padding: mq.padding.copyWith(left: left, right: right),
-              viewPadding: mq.viewPadding.copyWith(left: left, right: right),
+              // Ensure padding is never less than zero
+              viewInsets: atLeast(mq.viewInsets, EdgeInsets.zero),
+              padding: atLeast(mq.padding, minPadding),
+              viewPadding: atLeast(mq.viewPadding, minPadding),
             ),
             child: child!,
           );
