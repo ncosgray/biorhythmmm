@@ -1,0 +1,2 @@
+* Neue Funktion: Anzeigestil für Biorhythmen auswählen.
+* Fehlerbehebungen.
