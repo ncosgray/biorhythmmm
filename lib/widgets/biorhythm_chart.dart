@@ -614,8 +614,13 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     child: Column(
       children: [
         if (_comparePoints.isNotEmpty) compareTitle,
-        Builder(
-          builder: (context) {
+        LayoutBuilder(
+          builder: (context, constraints) {
+            // Shrink boxes if needed so at least three fit on a row
+            final double boxWidth = min(
+              pointText.fontSize! * 6.2,
+              constraints.maxWidth / 3,
+            );
             final List<Widget> percentBoxes = List<Widget>.generate(
               _points.length,
               (int i) {
@@ -630,6 +635,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
                 return biorhythmPercentBox(
                   displayPoint,
                   comparePoint: comparePoint,
+                  width: boxWidth,
                 );
               },
             );
@@ -710,6 +716,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
   Widget biorhythmPercentBox(
     BiorhythmPoint point, {
     BiorhythmPoint? comparePoint,
+    required double width,
   }) {
     IconData icon = point.trend.trendIcon;
     String percentText = shortPercent(point.point);
@@ -778,15 +785,21 @@ class _BiorhythmChartState extends State<BiorhythmChart>
           child: pointArc(
             value: arcValue,
             zone: arcZone,
-            // Size the label as the widest value so all boxes match
-            label: Stack(
-              alignment: .center,
+            // Size as the widest value so all boxes match
+            label: Column(
+              mainAxisSize: .min,
               children: [
-                Visibility.maintain(
-                  visible: false,
-                  child: Text(shortPercent(-1), style: detailStyle),
+                Icon(icon, size: pointText.fontSize!),
+                Stack(
+                  alignment: .center,
+                  children: [
+                    Visibility.maintain(
+                      visible: false,
+                      child: Text(shortPercent(-1), style: detailStyle),
+                    ),
+                    Text(percentText, style: detailStyle),
+                  ],
                 ),
-                Text(percentText, style: detailStyle),
               ],
             ),
           ),
@@ -818,7 +831,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
     return GestureDetector(
       child: Container(
         padding: .all(8),
-        width: pointText.fontSize! * 6.2,
+        width: width,
         height: pointText.fontSize! * 4.2,
         decoration: BoxDecoration(
           color: getBiorhythmColor(
@@ -843,7 +856,7 @@ class _BiorhythmChartState extends State<BiorhythmChart>
   }) => LayoutBuilder(
     builder: (context, constraints) {
       final (:center, :radius) = PointArcPainter.geometry(constraints.biggest);
-      final Size labelSize = Size(radius * 1.4, radius * 0.6);
+      final Size labelSize = Size(radius * 1.5, radius * 0.85);
 
       return Stack(
         children: [

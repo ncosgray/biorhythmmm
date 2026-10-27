@@ -13,6 +13,7 @@ import 'package:biorhythmmm/widgets/home_page.dart';
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math' show max, min;
 
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:fl_chart/fl_chart.dart' show LineChart;
@@ -128,6 +129,38 @@ void main() {
 
         expect(find.text('Today’s Biorhythms'), findsOneWidget);
       });
+
+      testWidgets('${screen.key} fits the primary boxes on one row', (
+        WidgetTester tester,
+      ) async {
+        tester.view.physicalSize = screen.value * 3;
+        tester.view.devicePixelRatio = 3;
+        addTearDown(tester.view.reset);
+
+        // Ignore overflow errors, as above
+        final FlutterExceptionHandler? onError = FlutterError.onError;
+        FlutterError.onError = (FlutterErrorDetails details) {
+          if (!details.exception.toString().contains('overflowed')) {
+            onError?.call(details);
+          }
+        };
+        addTearDown(() => FlutterError.onError = onError);
+
+        // Arc gauges give one widget per box to locate
+        await pumpTestApp(tester, pointDisplay: PointDisplay.arc);
+
+        final Finder arcGauges = find.byWidgetPredicate(
+          (Widget w) => w is CustomPaint && w.painter is PointArcPainter,
+        );
+        expect(arcGauges, findsNWidgets(primaryBiorhythms.length));
+        // Gauges shift slightly with name label scaling, but a wrapped box
+        // would sit a full box height (~80) lower
+        final List<double> gaugeTops = [
+          for (int i = 0; i < primaryBiorhythms.length; i++)
+            tester.getTopLeft(arcGauges.at(i)).dy,
+        ];
+        expect(gaugeTops.reduce(max) - gaugeTops.reduce(min), lessThan(20));
+      });
     }
   });
 
@@ -198,6 +231,7 @@ void main() {
       );
       for (final BiorhythmPoint p in todayPoints()) {
         expect(find.text(shortPercent(p.point)), findsWidgets);
+        expect(find.byIcon(p.trend.trendIcon), findsWidgets);
       }
     });
 
