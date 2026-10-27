@@ -917,13 +917,15 @@ class PointArcPainter extends CustomPainter {
     final Paint trackPaint = Paint()
       ..color = color.withAlpha(50)
       ..style = .stroke
+      ..strokeCap = .round
       ..strokeWidth = strokeWidth;
     final Paint zonePaint = Paint()
       ..color = color.withAlpha(110)
       ..style = .stroke
+      ..strokeCap = .round
       ..strokeWidth = strokeWidth;
     final Paint valuePaint = Paint()
-      ..color = color.withAlpha(value < 0 ? 160 : 255)
+      ..color = color
       ..style = .stroke
       ..strokeCap = .round
       ..strokeWidth = strokeWidth;
