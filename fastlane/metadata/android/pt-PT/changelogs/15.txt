@@ -1,0 +1,2 @@
+* Nova funcionalidade: escolha o estilo de apresentação dos biorritmos.
+* Correções de erros.

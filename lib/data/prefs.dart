@@ -82,6 +82,7 @@ abstract class Prefs {
   static String get _useAccessibleColorsKey => 'useAccessibleColors';
   static String get _showCriticalZoneKey => 'showCriticalZone';
   static String get _defaultZoomKey => 'defaultZoom';
+  static String get _pointDisplayKey => 'pointDisplay';
 
   // Determine if a birthday has been set
   static bool get isBirthdaySet =>
@@ -201,6 +202,18 @@ abstract class Prefs {
   }
 
   static set defaultZoom(int z) => _sharedPrefs.setInt(_defaultZoomKey, z);
+
+  // Get and set point display style, falling back if not a valid option
+  static PointDisplay get pointDisplay {
+    final int p = _sharedPrefs.getInt(_pointDisplayKey) ?? 0;
+    return PointDisplay.values.firstWhere(
+      (d) => d.value == p,
+      orElse: () => PointDisplay.percent,
+    );
+  }
+
+  static set pointDisplay(PointDisplay p) =>
+      _sharedPrefs.setInt(_pointDisplayKey, p.value);
 }
 
 class BirthdayEntry {
@@ -237,4 +250,22 @@ enum ZoomLevel {
 
   // Display name
   String get name => AppString.zoomWeeks.translate(weeks: weeks);
+}
+
+// Biorhythm point display styles
+enum PointDisplay {
+  percent(0),
+  arc(1),
+  words(2);
+
+  const PointDisplay(this.value);
+
+  final int value;
+
+  // Display name
+  String get name => switch (this) {
+    percent => AppString.pointDisplayPercent.translate(),
+    arc => AppString.pointDisplayArc.translate(),
+    words => AppString.pointDisplayWords.translate(),
+  };
 }

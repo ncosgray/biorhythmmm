@@ -20,6 +20,8 @@ import 'package:biorhythmmm/data/localization.dart';
 import 'package:biorhythmmm/data/prefs.dart';
 import 'package:biorhythmmm/widgets/home_page.dart';
 
+import 'dart:io' show Platform;
+
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/foundation.dart' show kDebugMode, debugPrint;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -80,6 +82,27 @@ class BiorhythmApp extends StatelessWidget {
         theme: lightTheme,
         darkTheme: darkTheme,
         debugShowCheckedModeBanner: false,
+        builder: (context, child) {
+          if (!Platform.isIOS) {
+            return child!;
+          }
+          final MediaQueryData mq = MediaQuery.of(context);
+          EdgeInsets atLeast(EdgeInsets insets, EdgeInsets min) =>
+              insets.clamp(min, EdgeInsetsGeometry.infinity) as EdgeInsets;
+          // Adjust margins for devices with asymmetric insets (such as Duo)
+          final EdgeInsets minPadding = mq.padding.left == mq.padding.right
+              ? EdgeInsets.zero
+              : const EdgeInsets.symmetric(horizontal: 24);
+          return MediaQuery(
+            data: mq.copyWith(
+              // Ensure padding is never less than zero
+              viewInsets: atLeast(mq.viewInsets, EdgeInsets.zero),
+              padding: atLeast(mq.padding, minPadding),
+              viewPadding: atLeast(mq.viewPadding, minPadding),
+            ),
+            child: child!,
+          );
+        },
         supportedLocales: supportedLocales,
         localizationsDelegates: [
           AppLocalizationsDelegate(),

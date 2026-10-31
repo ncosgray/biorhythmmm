@@ -31,22 +31,32 @@ import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+
+    // Prompt user once if birthday is unset
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // Prompt user once if birthday is unset
-      if (context.mounted && !Prefs.isBirthdaySet) {
+      if (mounted && !Prefs.isBirthdaySet) {
         final newEntry = await showBirthdayEditDialog(context);
-        if (!context.mounted) return;
+        if (!mounted) return;
         if (newEntry != null) {
           context.read<AppStateCubit>().setBirthdays([newEntry]);
         }
       }
     });
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,

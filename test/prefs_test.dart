@@ -52,6 +52,10 @@ void main() {
       expect(Prefs.defaultZoom, ZoomLevel.medium.days);
     });
 
+    test('point display defaults to percent', () {
+      expect(Prefs.pointDisplay, PointDisplay.percent);
+    });
+
     test('birthdays falls back to a default entry', () {
       final List<BirthdayEntry> birthdays = Prefs.birthdays;
       expect(birthdays.length, 1);
@@ -151,6 +155,13 @@ void main() {
       Prefs.defaultZoom = 13;
       expect(Prefs.defaultZoom, ZoomLevel.medium.days);
     });
+
+    test('point display persists for every style', () {
+      for (final PointDisplay d in PointDisplay.values) {
+        Prefs.pointDisplay = d;
+        expect(Prefs.pointDisplay, d);
+      }
+    });
   });
 
   group('invalid stored preferences', () {
@@ -166,6 +177,23 @@ void main() {
         },
       );
       expect(Prefs.biorhythms, [Biorhythm.physical, Biorhythm.emotional]);
+    });
+
+    test('unknown point display falls back to percent', () async {
+      await initTestEnvironment(prefs: {'pointDisplay': 99});
+      expect(Prefs.pointDisplay, PointDisplay.percent);
+    });
+  });
+
+  group('PointDisplay', () {
+    setUp(() async {
+      await initTestEnvironment();
+    });
+
+    test('display name is the localized style string', () {
+      expect(PointDisplay.percent.name, 'Percent');
+      expect(PointDisplay.arc.name, 'Arc');
+      expect(PointDisplay.words.name, 'Words');
     });
   });
 

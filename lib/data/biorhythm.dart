@@ -103,7 +103,28 @@ enum BiorhythmTrend {
     critical => Icons.warning,
     increasing => Icons.trending_up,
   };
+
+  // Display text
+  String get trendText => switch (this) {
+    decreasing => AppString.pointTrendFalling.translate(),
+    critical => AppString.pointTrendCritical.translate(),
+    increasing => AppString.pointTrendRising.translate(),
+  };
 }
+
+// Describe a biorhythm value in words
+String pointLevelText(double x) =>
+    (isCritical(x)
+            ? AppString.pointLevelCritical
+            : switch (x) {
+                >= 0.9 => AppString.pointLevelPeak,
+                >= 0.5 => AppString.pointLevelHigh,
+                > 0 => AppString.pointLevelFair,
+                > -0.5 => AppString.pointLevelLow,
+                > -0.9 => AppString.pointLevelVeryLow,
+                _ => AppString.pointLevelTrough,
+              })
+        .translate();
 
 // Calculate trend (increasing, critical, or decreasing)
 BiorhythmTrend getTrend(double a, double b) {

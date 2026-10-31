@@ -33,6 +33,7 @@ class AppState {
     this.showExtraPoints,
     this.showCriticalZone,
     this.defaultZoom,
+    this.pointDisplay,
     this.showResetButton,
     this.reload,
   );
@@ -47,6 +48,7 @@ class AppState {
   final bool showExtraPoints;
   final bool showCriticalZone;
   final int defaultZoom;
+  final PointDisplay pointDisplay;
   final bool showResetButton;
   final bool reload;
 
@@ -62,6 +64,7 @@ class AppState {
     Prefs.biorhythms.length == allBiorhythms.length ? true : false,
     Prefs.showCriticalZone,
     Prefs.defaultZoom,
+    Prefs.pointDisplay,
     false,
     false,
   );
@@ -78,6 +81,7 @@ class AppState {
     bool? showExtraPoints,
     bool? showCriticalZone,
     int? defaultZoom,
+    PointDisplay? pointDisplay,
     bool? showResetButton,
     bool? reload,
   }) {
@@ -92,6 +96,7 @@ class AppState {
       showExtraPoints ?? this.showExtraPoints,
       showCriticalZone ?? this.showCriticalZone,
       defaultZoom ?? this.defaultZoom,
+      pointDisplay ?? this.pointDisplay,
       showResetButton ?? this.showResetButton,
       reload ?? this.reload,
     );
@@ -116,6 +121,7 @@ class AppStateCubit extends Cubit<AppState> {
   bool get showExtraPoints => state.showExtraPoints;
   bool get showCriticalZone => state.showCriticalZone;
   int get defaultZoom => state.defaultZoom;
+  PointDisplay get pointDisplay => state.pointDisplay;
   bool get showResetButton => state.showResetButton;
 
   // Manage birthday
@@ -290,6 +296,12 @@ class AppStateCubit extends Cubit<AppState> {
   void setDefaultZoom(int newDefaultZoom) {
     Prefs.defaultZoom = newDefaultZoom;
     emit(state.copyWith(defaultZoom: newDefaultZoom));
+  }
+
+  // Set point display style
+  void setPointDisplay(PointDisplay newPointDisplay) {
+    Prefs.pointDisplay = newPointDisplay;
+    emit(state.copyWith(pointDisplay: newPointDisplay));
   }
 
   // Enable reset button
